@@ -55,8 +55,7 @@ class LoginController extends Common\Controller
         unset($userInfo['remember_token']);
         //存储用户数据
         session(['userInfo' => $userInfo]);
-        //$request->session()->put('userInfo', array('name'=>$userInfo->name));
-        p($request->session()->get('userInfo'));
+        return redirect('/');
     }
 
 }
