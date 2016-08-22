@@ -32,3 +32,7 @@ $compiledPath = __DIR__.'/cache/compiled.php';
 if (file_exists($compiledPath)) {
     require $compiledPath;
 }
+
+
+//公共函数
+require __DIR__.'/../app/Http/Helps/commonHelps.php';

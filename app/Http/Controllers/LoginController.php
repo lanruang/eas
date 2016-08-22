@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Models\Login;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
-class LoginController extends Common\CommonController
+class LoginController extends Common\Controller
 {
     //用户登录
     public function login()
@@ -32,13 +33,30 @@ class LoginController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         //返回验证信息
-        if($validator->fails()){
-            return redirect('login')->withErrors($validator);
+        /*if($validator->fails()){
+            return redirect('login')
+                    ->withErrors($validator);
+        }*/
+        $userInfo = Login::where('email', $input['userName'])
+                            ->first();
+        //判断用户名
+        if(empty($userInfo)){
+            return redirect('login')
+                    ->withErrors(array('0'=>'邮箱不存在'));
         }
+        //判断密码
+        if($userInfo->password != md5($input['password']))
+        {
+            return redirect('login')
+                    ->withErrors(array('0'=>'密码错误'));
+        }
+        $userInfo = $userInfo->toArray();
+        unset($userInfo['password']);
+        unset($userInfo['remember_token']);
+        //存储用户数据
+        session(['userInfo' => $userInfo]);
+        //$request->session()->put('userInfo', array('name'=>$userInfo->name));
+        p($request->session()->get('userInfo'));
     }
-    
-    public function test()
-    {
-        return view('test');
-    }
+
 }

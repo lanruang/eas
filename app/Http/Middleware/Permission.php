@@ -15,8 +15,8 @@ class Permission
      */
     public function handle($request, Closure $next)
     {
-        $user_info = $request->session()->has('user_info');
-        if(!$user_info){
+        $userInfo = $request->session()->has('userInfo');
+        if(!$userInfo){
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
