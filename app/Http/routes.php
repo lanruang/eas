@@ -11,8 +11,11 @@
 |
 */
 
-Route::get('/login', 'LoginController@login');
 
-Route::group(['middleware' => 'web'], function () {
+Route::get('/login', 'LoginController@login');
+Route::post('/login', 'LoginController@checkLogin');
+
+
+Route::group(['middleware' => ['permission']], function () {
     Route::get('/', 'MainController@index');
 });

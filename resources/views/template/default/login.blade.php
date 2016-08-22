@@ -35,6 +35,7 @@
 		<![endif]-->
 	</head>
 
+
 	<body class="login-layout light-login">
 		<div class="main-container">
 			<div class="main-content">
@@ -60,20 +61,22 @@
 												系统登录
 											</h4>
 
-											<div class="space-6"></div>
 
-											<form id="loginForm" method="post" action="{{url('/')}}">
+											<div class="space-6"></div>
+											<div style="color: red;">{{ $errors->first() }}</div>
+											<form id="loginForm" method="post" action="">
+												{{csrf_field()}}
 												<fieldset>
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
-															<input type="text" class="form-control" placeholder="Username" />
+															<input type="text" class="form-control" placeholder="Email" name="userName" />
 															<i class="ace-icon fa fa-user"></i>
 														</span>
 													</label>
 
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
-															<input type="password" class="form-control" placeholder="Password" />
+															<input type="password" class="form-control" placeholder="Password" name="password" />
 															<i class="ace-icon fa fa-lock"></i>
 														</span>
 													</label>
@@ -81,9 +84,9 @@
 													<div class="space"></div>
 
 													<div class="clearfix">
-														<button type="button" class="width-35 pull-right btn btn-sm btn-primary">
+														<button type="button" class="width-35 pull-right btn btn-sm btn-primary"  onclick="login();">
 															<i class="ace-icon fa fa-key"></i>
-															<span class="bigger-110" onclick="login();">登录</span>
+															<span class="bigger-110">登录</span>
 														</button>
 													</div>
 													<input type="hidden" name="_token" value="{{csrf_token()}}">
@@ -126,7 +129,7 @@
 													</label>
 
 													<div class="clearfix">
-														<button type="button" class="width-35 pull-right btn btn-sm btn-danger">
+														<button type="button" class="width-35 pull-right btn btn-sm btn-danger" onclick="reset_password();">
 															<i class="ace-icon fa fa-lightbulb-o"></i>
 															<span class="bigger-110">发送</span>
 														</button>
@@ -192,6 +195,9 @@
 			});
 			function login() {
 				$('#loginForm').submit();
+			}
+			function reset_password() {
+				alert('reset_password');
 			}
 		</script>
 	</body>

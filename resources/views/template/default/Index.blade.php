@@ -8,5 +8,5 @@
 
 {{--页面内容--}}
 @section('content')
-
+123123
 @endsection()
