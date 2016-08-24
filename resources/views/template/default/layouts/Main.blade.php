@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/font-awesome/4.2.0/css/font-awesome.min.css" />
 
 	<!-- page specific plugin styles -->
+	@section('resourcesHeader')@show
 
 	<!-- text fonts -->
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/fonts/fonts.googleapis.com.css" />
@@ -59,7 +60,7 @@
 		</button>
 
 		<div class="navbar-header pull-left">
-			<a href="index.html" class="navbar-brand">
+			<a href="{{asset('/')}}" class="navbar-brand">
 				<small>
 					<i class="fa fa-desktop"></i>
 					{{config('sysInfo.sysName')}}
@@ -70,106 +71,32 @@
 		<div class="navbar-buttons navbar-header pull-right" role="navigation">
 			<ul class="nav ace-nav">
 
-				<li class="purple">
-					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
-						<i class="ace-icon fa fa-bell icon-animated-bell"></i>
-						<span class="badge badge-important">8</span>
-					</a>
-
-					<ul class="dropdown-menu-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
-						<li class="dropdown-header">
-							<i class="ace-icon fa fa-exclamation-triangle"></i>
-							8 Notifications
-						</li>
-
-						<li class="dropdown-content">
-							<ul class="dropdown-menu dropdown-navbar navbar-pink">
-								<li>
-									<a href="#">
-										<div class="clearfix">
-													<span class="pull-left">
-														<i class="btn btn-xs no-hover btn-pink fa fa-comment"></i>
-														New Comments
-													</span>
-											<span class="pull-right badge badge-info">+12</span>
-										</div>
-									</a>
-								</li>
-
-								<li>
-									<a href="#">
-										<i class="btn btn-xs btn-primary fa fa-user"></i>
-										Bob just signed up as an editor ...
-									</a>
-								</li>
-
-								<li>
-									<a href="#">
-										<div class="clearfix">
-													<span class="pull-left">
-														<i class="btn btn-xs no-hover btn-success fa fa-shopping-cart"></i>
-														New Orders
-													</span>
-											<span class="pull-right badge badge-success">+8</span>
-										</div>
-									</a>
-								</li>
-
-								<li>
-									<a href="#">
-										<div class="clearfix">
-													<span class="pull-left">
-														<i class="btn btn-xs no-hover btn-info fa fa-twitter"></i>
-														Followers
-													</span>
-											<span class="pull-right badge badge-info">+11</span>
-										</div>
-									</a>
-								</li>
-							</ul>
-						</li>
-
-						<li class="dropdown-footer">
-							<a href="#">
-								See all notifications
-								<i class="ace-icon fa fa-arrow-right"></i>
-							</a>
-						</li>
-					</ul>
-				</li>
-
 				<li class="light-blue">
 					<a data-toggle="dropdown" href="#" class="dropdown-toggle">
-						<img class="nav-user-photo" src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/avatars/user.jpg" alt="Jason's Photo" />
+						<img class="nav-user-photo" src="{{asset('/').Session::get('userInfo.user_img')}}" alt="Jason's Photo" />
 								<span class="user-info">
-									<small>Welcome,</small>
-									Jason
+									<small>欢迎,</small>
+									{{ Session::get('userInfo.user_name') }}
 								</span>
 
 						<i class="ace-icon fa fa-caret-down"></i>
 					</a>
 
 					<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-						<li>
-							<a href="#">
-								<i class="ace-icon fa fa-cog"></i>
-								Settings
-							</a>
-						</li>
 
 						<li>
-							<a href="profile.html">
+							<a href="{{asset('/user')}}">
 								<i class="ace-icon fa fa-user"></i>
-								Profile
+								个人信息
 							</a>
 						</li>
 
 						<li class="divider"></li>
 
 						<li>
-							<a href="#">
+							<a href="{{asset('/logout')}}">
 								<i class="ace-icon fa fa-power-off"></i>
-								Logout
+								退出
 							</a>
 						</li>
 					</ul>
@@ -287,25 +214,12 @@
 <!-- basic scripts -->
 
 <!--[if !IE]> -->
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.2.1.1.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery-2.1.4.min.js"></script>
 
 <!-- <![endif]-->
 
 <!--[if IE]>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.1.11.1.min.js"></script>
-<![endif]-->
-
-<!--[if !IE]> -->
-<script type="text/javascript">
-	window.jQuery || document.write("<script src='{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.min.js'>"+"<"+"/script>");
-</script>
-
-<!-- <![endif]-->
-
-<!--[if IE]>
-<script type="text/javascript">
-	window.jQuery || document.write("<script src='{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery1x.min.js'>"+"<"+"/script>");
-</script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery-1.11.3.min.js"></script>
 <![endif]-->
 <script type="text/javascript">
 	if('ontouchstart' in document.documentElement) document.write("<script src='{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
@@ -319,17 +233,23 @@
 <![endif]-->
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery-ui.custom.min.js"></script>
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.gritter.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootbox.js"></script>
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.easypiechart.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.sparkline.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.flot.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.flot.pie.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.flot.resize.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-datepicker.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.hotkeys.index.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-wysiwyg.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/select2.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/spinbox.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-editable.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace-editable.min.js"></script>
+<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.maskedinput.min.js"></script>
 
 <!-- ace scripts -->
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace-elements.min.js"></script>
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace.min.js"></script>
 
 <!-- inline scripts related to this page -->
-
+@section('resourcesFooter')@show
 </body>
 </html>

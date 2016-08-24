@@ -14,7 +14,7 @@
 
 Route::get('/login', 'LoginController@login');
 Route::post('/login', 'LoginController@checkLogin');
-
+Route::get('/logout', 'LoginController@logout');
 
 Route::group(['middleware' => ['permission']], function () {
     //主页

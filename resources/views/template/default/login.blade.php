@@ -65,7 +65,6 @@
 											<div class="space-6"></div>
 											<div style="color: red;">{{ $errors->first() }}</div>
 											<form id="loginForm" method="post" action="">
-												{{csrf_field()}}
 												<fieldset>
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
@@ -89,9 +88,9 @@
 															<span class="bigger-110">登录</span>
 														</button>
 													</div>
-													<input type="hidden" name="_token" value="{{csrf_token()}}">
 													<div class="space-4"></div>
 												</fieldset>
+												{{csrf_field()}}
 											</form>
 										</div><!-- /.widget-main -->
 

@@ -12,12 +12,14 @@ class Users extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken();
+        Schema::create('users1', function (Blueprint $table) {
+            $table->increments('user_id');                              //id-主键
+            $table->string('user_name');                                //姓名
+            $table->string('user_email')->unique();                     //邮箱
+            $table->string('password', 32);                             //密码
+            $table->string('user_img');                                 //头像
+            $table->boolean('supper_admin')->default(0);                //超级管理员
+            $table->timestamps('last_login');                           //最后登录时间
             $table->timestamps();
         });
     }
