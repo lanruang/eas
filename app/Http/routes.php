@@ -20,6 +20,7 @@ Route::group(['middleware' => ['permission']], function () {
     //主页
     Route::get('/', 'MainController@index');
     
-    //个人信息
-    Route::get('/user', 'UserController@index');
+    //用户
+    Route::get('/user', 'UserController@index');//个人信息
+    Route::post('/editPwd', 'UserController@editPwd');//修改密码
 });

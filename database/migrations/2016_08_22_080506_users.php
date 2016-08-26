@@ -6,9 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 class Users extends Migration
 {
     /**
-     * Run the migrations.
-     *
-     * @return void
+     * 用户登录表
      */
     public function up()
     {
@@ -19,7 +17,7 @@ class Users extends Migration
             $table->string('password', 32);                             //密码
             $table->string('user_img');                                 //头像
             $table->boolean('supper_admin')->default(0);                //超级管理员
-            $table->timestamps('last_login');                           //最后登录时间
+            $table->timestamp('last_login');                            //最后登录时间
             $table->timestamps();
         });
     }

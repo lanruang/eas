@@ -13,7 +13,7 @@
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/font-awesome/4.2.0/css/font-awesome.min.css" />
 
 	<!-- page specific plugin styles -->
-	@section('resourcesHeader')@show
+	@section('pageSpecificPluginStyles')@show
 
 	<!-- text fonts -->
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/fonts/fonts.googleapis.com.css" />
@@ -33,7 +33,7 @@
 
 	<!-- ace settings handler -->
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace-extra.min.js"></script>
-
+	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery-common.js"></script>
 	<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
 
 	<!--[if lte IE 8]>
@@ -227,29 +227,13 @@
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap.min.js"></script>
 
 <!-- page specific plugin scripts -->
-
-<!--[if lte IE 8]>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/excanvas.min.js"></script>
-<![endif]-->
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery-ui.custom.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.ui.touch-punch.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.gritter.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootbox.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.easypiechart.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-datepicker.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.hotkeys.index.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-wysiwyg.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/select2.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/spinbox.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootstrap-editable.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace-editable.min.js"></script>
-<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.maskedinput.min.js"></script>
+@section('pageSpecificPluginScripts')@show
 
 <!-- ace scripts -->
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace-elements.min.js"></script>
 <script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/ace.min.js"></script>
 
 <!-- inline scripts related to this page -->
-@section('resourcesFooter')@show
+@section('FooterJs')@show
 </body>
 </html>
