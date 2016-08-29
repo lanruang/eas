@@ -372,6 +372,17 @@
 						</div>
 
 						<div id="editPassword"  class="tab-pane">
+							<div class="alert alert-danger hide" id="alertFrame">
+									<button type="button" class="close" data-dismiss="alert">
+										<i class="ace-icon fa fa-times"></i>
+									</button>
+									<strong>
+										<i class="ace-icon fa fa-times"></i>
+										<span id="alertTitle"></span>
+									</strong>
+									<span id="alertText"></span>
+									<br />
+								</div>
 								<form id="validation-form" class="form-horizontal"  method="post">
 									<div class="space-10"></div>
 									<div class="form-group">
@@ -383,20 +394,20 @@
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-pass2">新密码</label>
 										<div class="col-sm-9">
-											<input type="password" id="newPassword" name="newPassword"/>
+											<input type="password" id="password" name="password"/>
 										</div>
 									</div>
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-pass2">确认密码</label>
 										<div class="col-sm-9">
-											<input type="password" id="repeatPassword" name="repeatPassword" />
+											<input type="password" id="password_confirmation" name="password_confirmation" />
 										</div>
 									</div>
 
 									<div class="col-md-offset-3 col-md-9">
 										<button class="btn btn-info" type="button" id="editPwdSub">
 											<i class="ace-icon fa fa-check bigger-110"></i>
-											保存
+											修改
 										</button>
 										&nbsp; &nbsp;
 										<button class="btn" type="reset">
@@ -404,7 +415,7 @@
 											重置
 										</button>
 									</div>
-									{{csrf_field()}}
+									<input type="hidden" id="token" name="token" value="{{csrf_token()}}">
 								</form>
 						</div>
 					</div>
@@ -416,8 +427,8 @@
 
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
-
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.validate.min.js"></script>
+	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/bootbox.min.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -425,12 +436,42 @@
 <script type="text/javascript">
 	jQuery(function() {
 
+
 		$('#editPwdSub').click(function(e){
+			$('#alertFrame').addClass('hide');
 			if(!$('#validation-form').valid()) {
 				e.preventDefault();
 			}else{
-				$
-				$('#validation-form').submit();
+				var oldPassword = $('#oldPassword').val();
+				var password = $('#password').val();
+				var password_confirmation = $('#password_confirmation').val();
+				var token = $('#token').val();
+
+				var data = 'oldPassword='+oldPassword+'&password='+password+'&password_confirmation='+password_confirmation+'&_token='+token;
+				var result = ajaxPost(data, 'editPwd');
+				if(result.status == 0){
+					$('#alertTitle').text(result.title);
+					$('#alertText').text(result.text);
+					$('#alertFrame').removeClass('hide');
+				}else{
+					bootbox.dialog({
+						message: "<span class='bigger-110'>"+ result.title +"</span>",
+						buttons:
+						{
+							"button" :
+							{
+								"label" : "确定",
+								"className" : "btn-sm btn-primary",
+								callback: function(result) {
+									if(result){
+										window.location.href = "{{asset('/logout')}}";
+									}
+								}
+							}
+						}
+					});
+				}
+
 			}
 		});
 
@@ -443,24 +484,24 @@
 				oldPassword: {
 					required: true,
 				},
-				newPassword: {
+				password: {
 					required: true,
 				},
-				repeatPassword: {
+				password_confirmation: {
 					required: true,
-					equalTo: "#newPassword"
+					equalTo: "#password"
 				},
 			},
 			messages: {
 				oldPassword: {
-					required: "密码未填写.",
+					required: "密码未填写",
 				},
-				newPassword: {
-					required: "新密码未填写.",
+				password: {
+					required: "新密码未填写",
 				},
-				repeatPassword: {
-					required: "确认密码未填写.",
-					equalTo: "2次密码不相同.",
+				password_confirmation: {
+					required: "确认密码未填写",
+					equalTo: "2次密码不相同",
 				},
 			},
 			highlight: function (e) {

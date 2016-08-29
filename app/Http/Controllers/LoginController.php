@@ -14,7 +14,7 @@ class LoginController extends Common\Controller
     //用户登录
     public function login()
     {
-        return view('login');
+        return view('login/login');
     }
 
     //验证登录

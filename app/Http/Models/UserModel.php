@@ -4,7 +4,6 @@ namespace App\Http\Models;
 
 use App\CustomCollection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class UserModel extends Model
 {

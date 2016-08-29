@@ -13,4 +13,14 @@ if (! function_exists('p')) {
         echo '<pre>' . print_r($arr,true) . '</pre>';
         die(1);
     }
-}
+};
+
+//返回json提示信息
+    function echoAjaxJson($status, $title = '', $text = '')
+    {
+        $result['status'] = $status;
+        $result['title'] = $title;
+        $result['text'] = $text;
+        echo json_encode($result);
+        exit();
+    }

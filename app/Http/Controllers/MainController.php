@@ -10,6 +10,6 @@ class MainController extends Common\Controller
 {
     public function index()
     {
-        return view('index');
+        return view('main/index');
     }
 }
