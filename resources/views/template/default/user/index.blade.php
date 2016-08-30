@@ -17,7 +17,6 @@
 
 {{--页面内容--}}
 @section('content')
-
 	<div class="row">
 		<div class="col-xs-12">
 			<div>
@@ -448,7 +447,7 @@
 				var token = $('#token').val();
 
 				var data = 'oldPassword='+oldPassword+'&password='+password+'&password_confirmation='+password_confirmation+'&_token='+token;
-				var result = ajaxPost(data, 'editPwd');
+				var result = ajaxPost(data, "{{route('user.editPwd')}}");
 				if(result.status == 0){
 					$('#alertTitle').text(result.title);
 					$('#alertText').text(result.text);
@@ -464,7 +463,7 @@
 								"className" : "btn-sm btn-primary",
 								callback: function(result) {
 									if(result){
-										window.location.href = "{{asset('/logout')}}";
+										window.location.href = "{{route('login.logout')}}";
 									}
 								}
 							}

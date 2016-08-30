@@ -19,7 +19,7 @@ class UserController extends Common\Controller
                                         ->first();
         $userInfo = UserInfo::where('user_id',$request->session()->get('userInfo.user_id'))
                                 ->first();
-        return view('user/user', ['userProfile' => $userProfile, 'userInfo' => $userInfo]);
+        return view('user.index', ['userProfile' => $userProfile, 'userInfo' => $userInfo]);
     }
     
     //修改密码

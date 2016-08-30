@@ -60,7 +60,7 @@
 		</button>
 
 		<div class="navbar-header pull-left">
-			<a href="{{asset('/')}}" class="navbar-brand">
+			<a href="{{route('main.index')}}" class="navbar-brand">
 				<small>
 					<i class="fa fa-desktop"></i>
 					{{config('sysInfo.sysName')}}
@@ -85,7 +85,7 @@
 					<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
 
 						<li>
-							<a href="{{asset('/user')}}">
+							<a href="{{route('user.index')}}">
 								<i class="ace-icon fa fa-user"></i>
 								个人信息
 							</a>
@@ -94,7 +94,7 @@
 						<li class="divider"></li>
 
 						<li>
-							<a href="{{asset('/logout')}}">
+							<a href="{{route('login.logout')}}">
 								<i class="ace-icon fa fa-power-off"></i>
 								退出
 							</a>
@@ -148,14 +148,48 @@
 
 		<ul class="nav nav-list">
 			<li class="active">
-				<a href="{{asset('/')}}">
+				<a href="{{route('main.index')}}">
 					<i class="menu-icon fa fa-home"></i>
 					<span class="menu-text"> 系统主页 </span>
 				</a>
-
 				<b class="arrow"></b>
 			</li>
-
+			<li>
+				<a href="#" class="dropdown-toggle">
+					<i class="menu-icon fa fa-desktop"></i>
+							<span class="menu-text">
+								UI &amp; Elements
+							</span>
+					<b class="arrow fa fa-angle-down"></b>
+				</a>
+				<b class="arrow"></b>
+				<ul class="submenu">
+					<li class="">
+						<a href="#" class="dropdown-toggle">
+							<i class="menu-icon fa fa-caret-right"></i>
+							Layouts
+							<b class="arrow fa fa-angle-down"></b>
+						</a>
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a href="top-menu.html">
+									<i class="menu-icon fa fa-caret-right"></i>
+									Top Menu
+								</a>
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+					<li class="">
+						<a href="typography.html">
+							<i class="menu-icon fa fa-caret-right"></i>
+							Typography
+						</a>
+						<b class="arrow"></b>
+					</li>
+				</ul>
+			</li>
 		</ul><!-- /.nav-list -->
 
 		<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">

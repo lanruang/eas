@@ -12,9 +12,9 @@ use Validator;
 class LoginController extends Common\Controller
 {
     //用户登录
-    public function login()
+    public function index()
     {
-        return view('login/login');
+        return view('login.index');
     }
 
     //验证登录
@@ -65,7 +65,7 @@ class LoginController extends Common\Controller
     public function logout(Request $request)
     {
         $request->session()->forget('userInfo');
-        return redirect('/login');
+        return redirect()->route('login.index');
     }
 
 }
