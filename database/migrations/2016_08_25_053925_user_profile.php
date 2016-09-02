@@ -10,7 +10,7 @@ class UserProfile extends Migration
      */
     public function up()
     {
-        Schema::create('users_profile1', function (Blueprint $table) {
+        Schema::create('users_profile', function (Blueprint $table) {
             $table->integer('user_id');                                 //用户id-主键
             $table->primary('user_id');
             $table->integer('department');                              //部门

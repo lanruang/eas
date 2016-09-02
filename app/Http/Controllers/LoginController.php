@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Models\Login;
+use App\Http\Models\Login AS LoginDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
+use App\Http\Models\PermissionModel AS permissionDb;
 
 class LoginController extends Common\Controller
 {
@@ -37,7 +38,7 @@ class LoginController extends Common\Controller
             return redirect('login')
                     ->withErrors($validator);
         }
-        $userInfo = Login::where('user_email', $input['userName'])
+        $userInfo = LoginDb::where('user_email', $input['userName'])
                             ->first();
         //判断用户
         if(empty($userInfo)){
@@ -50,14 +51,19 @@ class LoginController extends Common\Controller
             return redirect('login')
                     ->withErrors(array('0'=>'密码错误'));
         }
+        //获取菜单、权限
+        $menu = $this->getMenu();
         //更新登录时间
-        Login::where('user_id', $userInfo->user_id)
+        LoginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
         $userInfo = $userInfo->toArray();
         unset($userInfo['password']);
         unset($userInfo['remember_token']);
         //存储用户数据
         session(['userInfo' => $userInfo]);
+        //存储菜单、权限数据
+        session(['userInfo.menu' => json_encode($menu['menu'])]);
+        session(['userInfo.permission' => $menu['permission']]);
         return redirect('/');
     }
 
@@ -68,4 +74,29 @@ class LoginController extends Common\Controller
         return redirect()->route('login.index');
     }
 
+    //获取权限
+    private function getMenu(){
+        //定义变量
+        $arr['menu'] = array();
+        $arr['permission'] = array();
+        //获取权限
+        $result = PermissionDb::select('id', 'pid', 'name', 'alias', 'icon')
+                                ->orderBy('sort', 'asc')
+                                ->get();
+        //格式化菜单
+        if($result){
+            foreach ($result as $k => $v) {
+                $arr['menu'][$k]['id'] = $v->id;
+                $arr['menu'][$k]['pid'] = $v->pid;
+                $arr['menu'][$k]['name'] = $v->name;
+                $arr['menu'][$k]['url'] = $v->alias == "#" ? "#" : route($v->alias);
+                $arr['menu'][$k]['alias'] = $v->alias;
+                $arr['menu'][$k]['icon'] = $v->icon;
+                //格式化权限
+                if($v->url != "#") $arr['permission'][] = $v->url;
+            }
+        }
+
+        return $arr;
+    }
 }

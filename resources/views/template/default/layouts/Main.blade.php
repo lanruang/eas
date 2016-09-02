@@ -146,20 +146,18 @@
 			</div>
 		</div><!-- /.sidebar-shortcuts -->
 
-		<ul class="nav nav-list">
+		<ul class="nav nav-list" id="sysMenu">
 			<li class="active">
 				<a href="{{route('main.index')}}">
 					<i class="menu-icon fa fa-home"></i>
-					<span class="menu-text"> 系统主页 </span>
+					<span class="menu-text">系统主页</span>
 				</a>
 				<b class="arrow"></b>
 			</li>
 			<li>
 				<a href="#" class="dropdown-toggle">
 					<i class="menu-icon fa fa-desktop"></i>
-							<span class="menu-text">
-								UI &amp; Elements
-							</span>
+						<span class="menu-text">权限管理</span>
 					<b class="arrow fa fa-angle-down"></b>
 				</a>
 				<b class="arrow"></b>
@@ -269,5 +267,50 @@
 
 <!-- inline scripts related to this page -->
 @section('FooterJs')@show
+<script type="text/javascript">
+	$(function () {
+		var menu = JSON.parse('{!! Session::get('userInfo.menu') !!}');
+		rel = menu_tree(menu, 0);
+		$('#sysMenu').html(rel);
+		alert($("#sysMenu .active" ).html());
+	});
+
+	function menu_tree(data,pid){
+		var temp = '';
+		var cSelect = '';
+		var fDown = '';
+		var fDownUl = '';
+		var fDownUll = '';
+		var cActive = '';
+		for(k in data){
+			if(data[k].alias == "{{Route::currentRouteName()}}") cActive = 'class="active"';
+			if(data[k].url == "#"){
+				cSelect = 'class="dropdown-toggle"';
+				fDown = '<b class="arrow fa fa-angle-down"></b>';
+				fDownUl = '<ul class="submenu nav-hide" style="display: none;">';
+				fDownUll = '</ul>'
+			}
+			if(data[k].pid == pid) {
+				temp += '<li '+ cActive +'>' +
+						'<a href="'+ data[k].url +'"' + cSelect + '>' +
+						'<i class="menu-icon fa '+ data[k].icon +'"></i>' +
+						'<span class="menu-text">'+ data[k].name +'</span>' +
+						fDown +
+						'</a>' +
+						'<b class="arrow"></b>'+
+						fDownUl;
+				temp += menu_tree(data, data[k].id, 0);
+				temp +=	fDownUll + '</li>';
+			}
+			cActive = '';
+			cSelect = '';
+			fDown = '';
+			fDownUl = '';
+			fDownUll = '';
+		}
+		return temp;
+	}
+</script>
 </body>
 </html>
+{{Route::currentRouteName()}}

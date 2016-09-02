@@ -10,7 +10,7 @@ class Users extends Migration
      */
     public function up()
     {
-        Schema::create('users1', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->increments('user_id');                              //id-主键
             $table->string('user_name');                                //姓名
             $table->string('user_email')->unique();                     //邮箱
