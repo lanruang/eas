@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2016-09-02 17:56:11
+Date: 2016-09-23 17:42:41
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -54,9 +54,9 @@ CREATE TABLE `permission` (
 -- ----------------------------
 INSERT INTO `permission` VALUES ('1', '0', '主页', 'main.index', '1', 'fa-home', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
 INSERT INTO `permission` VALUES ('2', '0', '权限管理', '#', '2', 'fa-desktop', '1', '2016-08-31 15:12:51', '2016-08-31 15:12:54');
-INSERT INTO `permission` VALUES ('3', '2', '角色列表', '#', '1', 'fa-caret-right', '1', '2016-08-31 15:22:26', '2016-08-31 15:22:32');
-INSERT INTO `permission` VALUES ('4', '3', '用户列表', 'user.index', '1', 'fa-caret-right', '1', '2016-08-31 15:22:34', '2016-08-31 15:22:36');
-INSERT INTO `permission` VALUES ('5', '2', '权限列表', 'permission.index', '2', 'fa-caret-right', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
+INSERT INTO `permission` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa-caret-right', '1', '2016-08-31 15:22:26', '2016-08-31 15:22:32');
+INSERT INTO `permission` VALUES ('4', '2', '用户列表', 'user.index', '3', 'fa-caret-right', '1', '2016-08-31 15:22:34', '2016-08-31 15:22:36');
+INSERT INTO `permission` VALUES ('5', '2', '权限列表', 'permission.index', '1', 'fa-caret-right', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -79,7 +79,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '2016-09-02 09:31:54', '2016-05-25 05:56:33', '2016-09-02 09:31:54');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '2016-09-23 06:28:05', '2016-05-25 05:56:33', '2016-09-23 06:28:05');
 
 -- ----------------------------
 -- Table structure for `users_info`

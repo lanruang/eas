@@ -24,6 +24,8 @@
 	<!--[if lte IE 9]>
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/css/ace-part2.min.css" class="ace-main-stylesheet" />
 	<![endif]-->
+	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/css/ace-skins.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/css/ace-rtl.min.css" />
 
 	<!--[if lte IE 9]>
 	<link rel="stylesheet" href="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/css/ace-ie.min.css" />
@@ -43,12 +45,8 @@
 </head>
 
 <body class="no-skin">
-<div id="navbar" class="navbar navbar-default">
-	<script type="text/javascript">
-		try{ace.settings.check('navbar' , 'fixed')}catch(e){}
-	</script>
-
-	<div class="navbar-container" id="navbar-container">
+<div id="navbar" class="navbar navbar-default ace-save-state">
+	<div class="navbar-container ace-save-state" id="navbar-container">
 		<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
 			<span class="sr-only">Nav</span>
 
@@ -62,7 +60,7 @@
 		<div class="navbar-header pull-left">
 			<a href="{{route('main.index')}}" class="navbar-brand">
 				<small>
-					<i class="fa fa-desktop"></i>
+					<i class="fa fa-leaf"></i>
 					{{config('sysInfo.sysName')}}
 				</small>
 			</a>
@@ -70,8 +68,7 @@
 
 		<div class="navbar-buttons navbar-header pull-right" role="navigation">
 			<ul class="nav ace-nav">
-
-				<li class="light-blue">
+				<li class="light-blue dropdown-modal">
 					<a data-toggle="dropdown" href="#" class="dropdown-toggle">
 						<img class="nav-user-photo" src="{{asset('/').Session::get('userInfo.user_img')}}" alt="Jason's Photo" />
 								<span class="user-info">
@@ -83,10 +80,9 @@
 					</a>
 
 					<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-
 						<li>
 							<a href="{{route('user.index')}}">
-								<i class="ace-icon fa fa-user"></i>
+								<i class="ace-icon fa fa-cog"></i>
 								个人信息
 							</a>
 						</li>
@@ -105,32 +101,29 @@
 		</div>
 	</div><!-- /.navbar-container -->
 </div>
-
 <div class="main-container" id="main-container">
 	<script type="text/javascript">
-		try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+		try{ace.settings.loadState('main-container')}catch(e){}
 	</script>
-
-	<div id="sidebar" class="sidebar responsive">
+	<div id="sidebar" class="sidebar responsive ace-save-state">
 		<script type="text/javascript">
-			try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+			try{ace.settings.loadState('sidebar')}catch(e){}
 		</script>
-
 		<div class="sidebar-shortcuts" id="sidebar-shortcuts">
 			<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
-				<button class="btn btn-success">
+				<button class="btn btn-success" onclick="alert('未开放');">
 					<i class="ace-icon fa  fa-folder-o"></i>
 				</button>
 
-				<button class="btn btn-info">
+				<button class="btn btn-info" onclick="alert('未开放');">
 					<i class="ace-icon fa fa-pencil"></i>
 				</button>
 
-				<button class="btn btn-warning">
+				<button class="btn btn-warning" onclick="alert('未开放');">
 					<i class="ace-icon fa fa-user"></i>
 				</button>
 
-				<button class="btn btn-danger">
+				<button class="btn btn-danger" onclick="alert('未开放');">
 					<i class="ace-icon fa fa-cogs"></i>
 				</button>
 			</div>
@@ -147,56 +140,11 @@
 		</div><!-- /.sidebar-shortcuts -->
 
 		<ul class="nav nav-list" id="sysMenu">
-			<li class="active">
-				<a href="{{route('main.index')}}">
-					<i class="menu-icon fa fa-home"></i>
-					<span class="menu-text">系统主页</span>
-				</a>
-				<b class="arrow"></b>
-			</li>
-			<li>
-				<a href="#" class="dropdown-toggle">
-					<i class="menu-icon fa fa-desktop"></i>
-						<span class="menu-text">权限管理</span>
-					<b class="arrow fa fa-angle-down"></b>
-				</a>
-				<b class="arrow"></b>
-				<ul class="submenu">
-					<li class="">
-						<a href="#" class="dropdown-toggle">
-							<i class="menu-icon fa fa-caret-right"></i>
-							Layouts
-							<b class="arrow fa fa-angle-down"></b>
-						</a>
-						<b class="arrow"></b>
-						<ul class="submenu">
-							<li class="">
-								<a href="top-menu.html">
-									<i class="menu-icon fa fa-caret-right"></i>
-									Top Menu
-								</a>
-								<b class="arrow"></b>
-							</li>
-						</ul>
-					</li>
-					<li class="">
-						<a href="typography.html">
-							<i class="menu-icon fa fa-caret-right"></i>
-							Typography
-						</a>
-						<b class="arrow"></b>
-					</li>
-				</ul>
-			</li>
 		</ul><!-- /.nav-list -->
 
 		<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
-			<i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+			<i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
 		</div>
-
-		<script type="text/javascript">
-			try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
-		</script>
 	</div>
 
 	<div class="main-content">
@@ -205,13 +153,7 @@
 				<script type="text/javascript">
 					try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
 				</script>
-				<ul class="breadcrumb">
-					<li>
-						<i class="ace-icon fa fa-home home-icon"></i>
-						<a href="{{asset('/')}}">主页</a>
-					</li>
-					@section('breadcrumbNav')@show
-				</ul><!-- /.breadcrumb -->
+				@section('breadcrumbNav')@show
 			</div>
 
 			<div class="page-content">
@@ -267,15 +209,24 @@
 
 <!-- inline scripts related to this page -->
 @section('FooterJs')@show
+
 <script type="text/javascript">
+	/**
+	 * 获取系统菜单栏
+	 *
+	 *  @param	json	data
+	 *  @return	html
+	 *
+	 */
 	$(function () {
 		var menu = JSON.parse('{!! Session::get('userInfo.menu') !!}');
-		rel = menu_tree(menu, 0);
-		$('#sysMenu').html(rel);
-		alert($("#sysMenu .active" ).html());
+		rel = sys_menu_tree(menu, 0);
+		$("#sysMenu").html(rel);
+		$("#sysMenu .active").parents('li').addClass('active open');
+		$("#sysMenu .active").parents('li').find('ul').css('display', 'block');
 	});
 
-	function menu_tree(data,pid){
+	function sys_menu_tree(data,pid){
 		var temp = '';
 		var cSelect = '';
 		var fDown = '';
@@ -283,14 +234,16 @@
 		var fDownUll = '';
 		var cActive = '';
 		for(k in data){
-			if(data[k].alias == "{{Route::currentRouteName()}}") cActive = 'class="active"';
-			if(data[k].url == "#"){
-				cSelect = 'class="dropdown-toggle"';
-				fDown = '<b class="arrow fa fa-angle-down"></b>';
-				fDownUl = '<ul class="submenu nav-hide" style="display: none;">';
-				fDownUll = '</ul>'
-			}
 			if(data[k].pid == pid) {
+				if(data[k].alias == "{{Route::currentRouteName()}}"){
+					cActive = 'class="active"';
+				}
+				if(data[k].url == "#"){
+					cSelect = 'class="dropdown-toggle"';
+					fDown = '<b class="arrow fa fa-angle-down"></b>';
+					fDownUl = '<ul class="submenu nav-hide" style="display: none;">';
+					fDownUll = '</ul>'
+				}
 				temp += '<li '+ cActive +'>' +
 						'<a href="'+ data[k].url +'"' + cSelect + '>' +
 						'<i class="menu-icon fa '+ data[k].icon +'"></i>' +
@@ -299,7 +252,7 @@
 						'</a>' +
 						'<b class="arrow"></b>'+
 						fDownUl;
-				temp += menu_tree(data, data[k].id, 0);
+				temp += sys_menu_tree(data, data[k].id);
 				temp +=	fDownUll + '</li>';
 			}
 			cActive = '';
@@ -308,9 +261,10 @@
 			fDownUl = '';
 			fDownUll = '';
 		}
+
 		return temp;
 	}
 </script>
+
 </body>
 </html>
-{{Route::currentRouteName()}}
