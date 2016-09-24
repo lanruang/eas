@@ -12,14 +12,17 @@ use Validator;
 
 class UserController extends Common\Controller
 {
-    public function index(Request $request)
+
+
+    //用户详情
+    public function info(Request $request)
     {
         //获取用户信息
         $userProfile = UserProfileDb::where('user_id',session('userInfo.user_id'))
                                         ->first();
         $userInfo = UserInfoDb::where('user_id',session('userInfo.user_id'))
                                 ->first();
-        return view('user.index', ['userProfile' => $userProfile, 'userInfo' => $userInfo]);
+        return view('user.info', ['userProfile' => $userProfile, 'userInfo' => $userInfo]);
     }
     
     //修改密码

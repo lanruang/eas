@@ -28,6 +28,15 @@ class PermissionController extends Common\Controller
         $input = Input::all();
         $pid = isset($input['pid']) ? intval($input['pid']) : 0;
 
+        //获取当前权限
+        if($pid > 0){
+            $permission = permissionDb::select('id', 'name', 'pid')
+                ->where('id', $pid)
+                ->first()
+                ->toArray();
+            $data['permission'] = $permission;
+        }
+
         //分页
         $skip = isset($input['start']) ? intval($input['start']) : 0;//从多少开始
         $take = isset($input['length']) ? intval($input['length']) : 10;//数据长度
@@ -36,13 +45,14 @@ class PermissionController extends Common\Controller
         $total = permissionDb::where('pid', $pid)
                                 ->count();
         //获取数据
-        $result = permissionDb::select('id', 'name', 'alias', 'sort', 'status', 'icon')
+        $result = permissionDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid')
                                 ->where('pid', $pid)
                                 ->skip($skip)
                                 ->take($take)
                                 ->orderBy('sort', 'asc')
                                 ->get()
                                 ->toArray();
+
 
         //创建结果数据
         $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;

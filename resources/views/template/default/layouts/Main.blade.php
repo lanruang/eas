@@ -81,7 +81,7 @@
 
 					<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
 						<li>
-							<a href="{{route('user.index')}}">
+							<a href="{{route('user.info')}}">
 								<i class="ace-icon fa fa-cog"></i>
 								个人信息
 							</a>
@@ -153,7 +153,10 @@
 				<script type="text/javascript">
 					try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
 				</script>
-				@section('breadcrumbNav')@show
+				<ul class="breadcrumb">
+					<li><i class="ace-icon fa fa-home home-icon"></i><a href="{{asset('/')}}">主页</a></li>
+					@section('breadcrumbNav')@show
+				</ul>
 			</div>
 
 			<div class="page-content">

@@ -22,6 +22,7 @@ Route::group(['middleware' => ['permission']], function () {
     
     //用户
     Route::get('user/index', ['as' => 'user.index', 'uses' => 'UserController@index']);//个人信息
+    Route::get('user/info', ['as' => 'user.info', 'uses' => 'UserController@info']);//个人信息
     Route::post('user/editPwd', ['as' => 'user.editPwd', 'uses' => 'UserController@editPwd']);//修改密码
 
     //权限列表

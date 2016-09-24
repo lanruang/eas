@@ -9,11 +9,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<ul class="breadcrumb">
-		<li><i class="ace-icon fa fa-home home-icon"></i><a href="{{asset('/')}}">主页</a></li>
-		<li class="active">权限列表</li>
-	</ul>
-
+	<li>权限列表</li>
 @endsection()
 
 {{--页面内容--}}
@@ -49,11 +45,12 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var permissionTable;
+		var per_pid = 0;
+		var per_name = '';
 		$(function($) {
 			var html;
 			permissionTable = $('#permissionTable')
 							.DataTable({
-								"iDisplayLength": 2,
 								"bAutoWidth": false,
 								"lengthChange": false,
 								"ordering": false,
@@ -101,7 +98,9 @@
 									{ "data": "status", render: function(data, type, row, meta) {
 										return formatStatus(row.status);
 									}},
-									{ "data": "icon" },
+									{ "data": "icon" , render: function(data, type, row, meta) {
+										return '<i class="fa ' + row.icon + '"></i>  [' + row.icon + ']';
+									}},
 									{ "data": "null"},
 								],
 								"columnDefs": [{
@@ -146,18 +145,64 @@
 									}
 								}]
 							} );
-
 		})
 
-		function getParameter(i){
+		function getParameter(i) {
+
 			permissionTable.settings()[0].ajax.data = {"pid": i, "_token": '{{csrf_token()}}'};
-			permissionTable.ajax.reload();
+			permissionTable.ajax.reload(function (e) {
+				if (e.permission){
+					per_pid = e.permission.pid;
+					//面包削导航
+					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
+					$('.breadcrumb').append('<li>' + e.permission.name + '</li>');
+				}
+			});
 			$('#btn_goBack').removeClass('hide');
+//
+
 		}
 
-		function goBack(){
-			permissionTable.settings()[0].ajax.data = {"pid": permissionTable.settings()[0].ajax.data.pid, "_token": '{{csrf_token()}}'};
-			permissionTable.ajax.reload();
+		function goBack(e, ti){
+			var lastText;
+			var del = 0;
+			if(e >= 0) per_pid = e;
+			permissionTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
+			permissionTable.ajax.reload(function(e){
+				if(e.permission) per_pid = e.permission.pid;
+				//面包削导航
+				if(ti){
+					var li = $('.breadcrumb').children("li");
+					var liNum = li.length;
+
+					for(var i = 0; i < liNum; i++){
+						if(del == 1){
+							li[i].remove();
+						}
+						if(li[i] == $(ti).parent()[0]) del = 1;
+					}
+					lastText = $('.breadcrumb li').last().text();
+					$('.breadcrumb li').last().remove();
+					$('.breadcrumb').append('<li>' + lastText + '</li>');
+				}else{
+					$('.breadcrumb li').last().remove();
+					lastText = $('.breadcrumb li').last().text();
+					$('.breadcrumb li').last().remove();
+					$('.breadcrumb').append('<li>' + lastText + '</li>');
+				}
+			});
+			if(per_pid == '0') $('#btn_goBack').addClass('hide');
+		}
+
+		function test(e) {
+			var li = $('.breadcrumb').children("li");
+			var liNum = li.length;
+
+			for(var i = 0; i < liNum; i++){
+				if(li[i] == e){
+					li[i].remove();
+				}
+			}
 		}
 	</script>
 
