@@ -24,7 +24,7 @@
 	}
 
 /**
- * ajax提交
+ * 格式化状态
  *
  * @param	int		val
  * @return	string
@@ -47,6 +47,33 @@
 
 		return status;
 	}
+
+/**
+ * 提示状态框
+ *
+ * @param	int		val
+ * @return	string
+ *
+ */
+	function alertDialog(status, msg){
+		var aClass,type;
+		aClass = String(status) == "0" ? "red" : "green";
+		aType = String(status) == "0" ? "错误提示" : "提示信息";
+
+		bootbox.dialog({
+			message: '<h4 class="header smaller lighter bolder '+ aClass +'"><i class="ace-icon fa fa-bullhorn"></i>' + aType + '</h4><span>　　'+ msg +'</span>',
+			buttons:
+			{
+				"button" :
+				{
+					"label" : "确定",
+					"className" : "btn-primary btn-sm"
+				}
+			}
+		});
+	}
+
+
 
 	function writeObj(obj){ 
 		var description = ""; 

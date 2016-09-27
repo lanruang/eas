@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use App\Http\Requests;
+use Validator;
 use App\Http\Models\PermissionModel AS permissionDb;
 
 
@@ -61,9 +62,40 @@ class PermissionController extends Common\Controller
         $data['data'] = $result;
 
         //返回结果
-        $data = json_encode($data);
-        echo($data);
+        ajaxJsonRes($data);
     }
-    
-    
+
+    //删除权限
+    public function delPermission(){
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson(0, $validator->errors()->first());
+        }
+        $id = $input['id'];
+       //查看是否存在子项
+        $children = permissionDb::where('pid', $id)
+                                    ->where('status', '1')
+                                    ->get()
+                                    ->toArray();
+        if($children){
+            echoAjaxJson(0, '存在子项无法删除');
+        }
+        $rel = permissionDb::where('id', $id)
+                                ->delete();
+        if($rel){
+            echoAjaxJson(1, '删除成功');
+        }else{
+            echoAjaxJson(0, '删除失败');
+        }
+    }
 }

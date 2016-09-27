@@ -16,11 +16,17 @@ if (! function_exists('p')) {
 };
 
 //返回json提示信息
-    function echoAjaxJson($status, $title = '', $text = '')
+    function echoAjaxJson($status = '0', $msg = '')
     {
         $result['status'] = $status;
-        $result['title'] = $title;
-        $result['text'] = $text;
+        $result['msg'] = $msg;
         echo json_encode($result);
+        exit();
+    }
+
+//返回json结果
+    function ajaxJsonRes($arr)
+    {
+        echo json_encode($arr);
         exit();
     }

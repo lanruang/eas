@@ -28,7 +28,7 @@ Route::group(['middleware' => ['permission']], function () {
     //权限列表
     Route::get('permission/index', ['as' => 'permission.index', 'uses' => 'PermissionController@index']);//权限列表
     Route::post('permission/getPermission', ['as' => 'permission.getPermission', 'uses' => 'PermissionController@getPermission']);//获取权限列表
-    Route::get('permission/getPermission', ['as' => 'permission.getPermission', 'uses' => 'PermissionController@getPermission']);//获取权限列表
+    Route::post('permission/delPermission', ['as' => 'permission.delPermission', 'uses' => 'PermissionController@delPermission']);//删除权限
 
     //角色列表
     Route::post('role/index', ['as' => 'role.index', 'uses' => 'UserController@editPwd']);//修改密码

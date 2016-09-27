@@ -16,7 +16,7 @@
 @section('content')
 	<p></p>
 	<button id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-	<button class="btn btn-sm btn-primary">添加</button>
+	<button class="btn btn-sm btn-primary" id="bootbox-regular">添加</button>
 
 	<table id="permissionTable" class="table table-striped table-bordered table-hover">
 		<thead>
@@ -30,14 +30,13 @@
 		</tr>
 		</thead>
 	</table>
-
-
 @endsection()
 
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/Bootbox.js"></script>
 
 @endsection()
 
@@ -111,7 +110,7 @@
 														'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>';
 										if(row.status != "-1") {
-										html +='<a class="red" href="#">' +
+										html +='<a class="red" href="#" onclick="delPermission(' + row.id + ')">' +
 												'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 												'</a>';
 										}
@@ -131,7 +130,7 @@
 															'</li>';
 										if(row.status != "-1") {
 										html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete">' +
+													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delPermission(' + row.id + ')">' +
 													'<span class="red">' +
 													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 													'</span>' +
@@ -145,10 +144,10 @@
 									}
 								}]
 							} );
+
 		})
 
 		function getParameter(i) {
-
 			permissionTable.settings()[0].ajax.data = {"pid": i, "_token": '{{csrf_token()}}'};
 			permissionTable.ajax.reload(function (e) {
 				if (e.permission){
@@ -159,8 +158,7 @@
 				}
 			});
 			$('#btn_goBack').removeClass('hide');
-//
-
+			$('#alertFrame').addClass('hide');
 		}
 
 		function goBack(e, ti){
@@ -192,18 +190,45 @@
 				}
 			});
 			if(per_pid == '0') $('#btn_goBack').addClass('hide');
+			$('#alertFrame').addClass('hide');
 		}
 
-		function test(e) {
-			var li = $('.breadcrumb').children("li");
-			var liNum = li.length;
-
-			for(var i = 0; i < liNum; i++){
-				if(li[i] == e){
-					li[i].remove();
+		function delPermission(e){
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+					buttons: {
+						confirm: {
+							label: "确定",
+							className: "btn-primary btn-sm",
+						},
+						cancel: {
+							label: "取消",
+							className: "btn-sm",
+						}
+					},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('permission.delPermission')}}',
+							data: {
+							"id": e,
+							"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									permissionTable.ajax.reload(null, true);
+									alertDialog(res.status, res.msg);
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
 				}
-			}
+			});
 		}
 	</script>
-
 @endsection()

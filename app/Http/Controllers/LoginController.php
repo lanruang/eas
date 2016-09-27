@@ -81,6 +81,7 @@ class LoginController extends Common\Controller
         $arr['permission'] = array();
         //获取权限
         $result = PermissionDb::select('id', 'pid', 'name', 'alias', 'icon')
+                                ->where('status', '1')
                                 ->orderBy('sort', 'asc')
                                 ->get();
         //格式化菜单

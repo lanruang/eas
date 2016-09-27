@@ -371,7 +371,7 @@
 						</div>
 
 						<div id="editPassword"  class="tab-pane">
-							<div class="alert alert-danger hide" id="alertFrame">
+								<div class="alert alert-danger hide" id="alertFrame">
 									<button type="button" class="close" data-dismiss="alert">
 										<i class="ace-icon fa fa-times"></i>
 									</button>
@@ -379,8 +379,6 @@
 										<i class="ace-icon fa fa-times"></i>
 										<span id="alertTitle"></span>
 									</strong>
-									<span id="alertText"></span>
-									<br />
 								</div>
 								<form id="validation-form" class="form-horizontal"  method="post">
 									<div class="space-10"></div>
@@ -449,12 +447,11 @@
 				var data = 'oldPassword='+oldPassword+'&password='+password+'&password_confirmation='+password_confirmation+'&_token='+token;
 				var result = ajaxPost(data, "{{route('user.editPwd')}}");
 				if(result.status == 0){
-					$('#alertTitle').text(result.title);
-					$('#alertText').text(result.text);
+					$('#alertTitle').text(result.msg);
 					$('#alertFrame').removeClass('hide');
 				}else{
 					bootbox.dialog({
-						message: "<span class='bigger-110'>"+ result.title +"</span>",
+						message: "<span class='bigger-110'>"+ result.msg +"</span>",
 						buttons:
 						{
 							"button" :
