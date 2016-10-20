@@ -14,22 +14,25 @@
 
 {{--页面内容--}}
 @section('content')
-	<p></p>
-	<button id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-	<button class="btn btn-sm btn-primary" id="bootbox-regular">添加</button>
+	<div class="row">
+		<div class="col-xs-12">
+			<button id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button class="btn btn-sm btn-primary" onclick="addPermission();">添加</button>
 
-	<table id="permissionTable" class="table table-striped table-bordered table-hover">
-		<thead>
-		<tr>
-			<th>名称</th>
-			<th>别名/地址</th>
-			<th>排序</th>
-			<th>状态</th>
-			<th>图标</th>
-			<th>操作</th>
-		</tr>
-		</thead>
-	</table>
+			<table id="permissionTable" class="table table-striped table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>名称</th>
+					<th>别名/地址</th>
+					<th>排序</th>
+					<th>状态</th>
+					<th>图标</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -45,6 +48,7 @@
 	<script type="text/javascript">
 		var permissionTable;
 		var per_pid = 0;
+		var per_id = 0;
 		var per_name = '';
 		$(function($) {
 			var html;
@@ -152,6 +156,7 @@
 			permissionTable.ajax.reload(function (e) {
 				if (e.permission){
 					per_pid = e.permission.pid;
+					per_id = e.permission.id;
 					//面包削导航
 					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
 					$('.breadcrumb').append('<li>' + e.permission.name + '</li>');
@@ -167,7 +172,12 @@
 			if(e >= 0) per_pid = e;
 			permissionTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			permissionTable.ajax.reload(function(e){
-				if(e.permission) per_pid = e.permission.pid;
+				if(e.permission){
+					per_pid = e.permission.pid;
+					per_id = e.permission.id;
+				}else{
+					per_id = 0;
+				}
 				//面包削导航
 				if(ti){
 					var li = $('.breadcrumb').children("li");
@@ -229,6 +239,10 @@
 					}
 				}
 			});
+		}
+
+		function addPermission(){
+			window.location.href = "{{route('permission.addPermission')}}" + "/" + per_id;
 		}
 	</script>
 @endsection()

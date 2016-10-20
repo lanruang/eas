@@ -230,6 +230,9 @@
 	});
 
 	function sys_menu_tree(data,pid){
+		var alias = '{{Route::currentRouteName()}}';
+			alias = alias.split(".",1) + '.index';
+
 		var temp = '';
 		var cSelect = '';
 		var fDown = '';
@@ -238,7 +241,7 @@
 		var cActive = '';
 		for(k in data){
 			if(data[k].pid == pid) {
-				if(data[k].alias == "{{Route::currentRouteName()}}"){
+				if(data[k].alias == alias){
 					cActive = 'class="active"';
 				}
 				if(data[k].url == "#"){

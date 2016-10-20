@@ -65,6 +65,24 @@ class PermissionController extends Common\Controller
         ajaxJsonRes($data);
     }
 
+    //添加权限视图
+    public function addPermission(Request $request, $id){
+        //检测id类型是否整数
+        //if(!ctype_digit($id))
+
+        
+        
+        
+        return view('permission.addPermission');
+    }
+
+    //添加权限
+    public function createPermission(Request $request)
+    {
+        $input = Input::all();
+        p($input);
+    }
+    
     //删除权限
     public function delPermission(){
         $input = Input::all();
