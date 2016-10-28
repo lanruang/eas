@@ -50,20 +50,23 @@ function echoAjaxJson($status = '0', $msg = '')
     exit();
 }
 
-
 /**
  * 跳转页面提示信息
  *
  * @param	int		$status
  * @param   str     $msg
+ * @param   str     $url
  * @return	json
  *
  */
-function redirectPageMsg($status = '0', $msg = '')
+function redirectPageMsg($status = '1', $msg = '', $url = '')
 {
+    //1-正常，0-提示，-1-错误
     $result['status'] = $status;
     $result['msg'] = $msg;
-    echo json_encode($result);
+    $result['url'] = $url;
+
+    echo(view('layouts.PageMsg', $result));
     exit();
 }
 
@@ -73,17 +76,58 @@ function redirectPageMsg($status = '0', $msg = '')
  * @param	str		$str
  * @param   str     $param
  * @param   str     $type
- * @return	str
+ * @return	bool
  *
  */
-function validateParam ($str, $param, $type)
+function validateParam ($str = '', $param = '', $type = '')
 {
     switch ($param){
         case "nullInt"://整数并且可以为空
-            ctype_digit($str);
+            $res = ctype_digit($str);
         break;
     }
 
+    return $res;
+}
 
-    exit();
+/**
+ * 树形排序
+ * @param	array		$array
+ * @param	int			$pid
+ * @return	array
+ */
+function sort_tree($array, $pid = 0, $level = 0)
+{
+    $arr = array();
+
+    foreach($array as $v){
+        if($v['pid']==$pid){
+            $v['level'] = $level;
+            $arr[] = $v;
+            $v['level'] = $level + 1;
+            $arr = array_merge($arr,sort_tree($array,$v['id'], $v['level']));
+        }
+    }
+    return $arr;
+}
+
+/**
+ * 转成树形结构
+ *
+ * @param	array		$data
+ * @param	int			$pid
+ * @return	array
+ */
+function getTree($data, $pid = 0)
+{
+    $tree = '';
+    foreach($data as $k => $v)
+    {
+        if($v['pid'] == $pid)
+        {
+            $v['children'] = getTree($data, $v['id']);
+            $tree[] = $v;
+        }
+    }
+    return $tree;
 }

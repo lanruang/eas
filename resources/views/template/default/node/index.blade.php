@@ -17,9 +17,9 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<button id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-			<button class="btn btn-sm btn-primary" onclick="addPermission();">添加</button>
+			<button class="btn btn-sm btn-primary" onclick="addNode();">添加</button>
 
-			<table id="permissionTable" class="table table-striped table-bordered table-hover">
+			<table id="nodeTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
 					<th>名称</th>
@@ -40,21 +40,19 @@
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateName')}}/assets/js/Bootbox.js"></script>
-
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var permissionTable;
+		var nodeTable;
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
 		$(function($) {
 			var html;
-			permissionTable = $('#permissionTable')
+			nodeTable = $('#nodeTable')
 							.DataTable({
-								"bAutoWidth": false,
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
@@ -84,7 +82,7 @@
 								},
 								"serverSide": true,
 								"ajax": {
-									"url": '{{route('permission.getPermission')}}',
+									"url": '{{route('node.getNode')}}',
 									"type": "post",
 									"dataType": "json",
 									"data": {
@@ -110,11 +108,11 @@
 									"targets": 5,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
-													'<a class="green" href="#">' +
+													'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +
 														'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>';
 										if(row.status != "-1") {
-										html +='<a class="red" href="#" onclick="delPermission(' + row.id + ')">' +
+										html +='<a class="red" href="#" onclick="delNode(' + row.id + ')">' +
 												'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 												'</a>';
 										}
@@ -127,14 +125,14 @@
 														'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
 															'<li>' +
 																'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-																	'<span class="green">' +
+																	'<span class="green" onclick="editNode(' + row.id + ')">' +
 																		'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 																	'</span>' +
 																'</a>' +
 															'</li>';
 										if(row.status != "-1") {
 										html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delPermission(' + row.id + ')">' +
+													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delNode(' + row.id + ')">' +
 													'<span class="red">' +
 													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 													'</span>' +
@@ -147,19 +145,19 @@
 										return html;
 									}
 								}]
-							} );
+							});
 
 		})
 
 		function getParameter(i) {
-			permissionTable.settings()[0].ajax.data = {"pid": i, "_token": '{{csrf_token()}}'};
-			permissionTable.ajax.reload(function (e) {
-				if (e.permission){
-					per_pid = e.permission.pid;
-					per_id = e.permission.id;
+			nodeTable.settings()[0].ajax.data = {"pid": i, "_token": '{{csrf_token()}}'};
+			nodeTable.ajax.reload(function (e) {
+				if (e.node){
+					per_pid = e.node.pid;
+					per_id = e.node.id;
 					//面包削导航
 					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
-					$('.breadcrumb').append('<li>' + e.permission.name + '</li>');
+					$('.breadcrumb').append('<li>' + e.node.name + '</li>');
 				}
 			});
 			$('#btn_goBack').removeClass('hide');
@@ -170,11 +168,11 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
-			permissionTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
-			permissionTable.ajax.reload(function(e){
-				if(e.permission){
-					per_pid = e.permission.pid;
-					per_id = e.permission.id;
+			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
+			nodeTable.ajax.reload(function(e){
+				if(e.node){
+					per_pid = e.node.pid;
+					per_id = e.node.id;
 				}else{
 					per_id = 0;
 				}
@@ -203,7 +201,7 @@
 			$('#alertFrame').addClass('hide');
 		}
 
-		function delPermission(e){
+		function delNode(e){
 			bootbox.confirm({
 				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
 					buttons: {
@@ -222,14 +220,14 @@
 							type: "post",
 							async:false,
 							dataType: "json",
-							url: '{{route('permission.delPermission')}}',
+							url: '{{route('node.delNode')}}',
 							data: {
 							"id": e,
 							"_token": '{{csrf_token()}}',
 							},
 							success: function(res){
 								if(res.status == true){
-									permissionTable.ajax.reload(null, true);
+									nodeTable.ajax.reload(null, true);
 									alertDialog(res.status, res.msg);
 								}else{
 									alertDialog(res.status, res.msg);
@@ -241,8 +239,12 @@
 			});
 		}
 
-		function addPermission(){
-			window.location.href = "{{route('permission.addPermission')}}" + "/" + per_id;
+		function addNode(){
+			window.location.href = "{{route('node.addNode')}}";
+		}
+
+		function editNode(e){
+			window.location.href = "{{route('node.editNode')}}" + "/" + e;
 		}
 	</script>
 @endsection()

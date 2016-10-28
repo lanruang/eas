@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2016-09-23 17:42:41
+Date: 2016-10-28 17:53:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,11 +33,11 @@ INSERT INTO `migrations` VALUES ('2016_08_25_082400_user_info', '1');
 INSERT INTO `migrations` VALUES ('2016_08_30_094622_permission', '2');
 
 -- ----------------------------
--- Table structure for `permission`
+-- Table structure for `node`
 -- ----------------------------
-DROP TABLE IF EXISTS `permission`;
-CREATE TABLE `permission` (
-  `id` int(10) NOT NULL,
+DROP TABLE IF EXISTS `node`;
+CREATE TABLE `node` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pid` int(11) NOT NULL,
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `alias` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -47,16 +47,50 @@ CREATE TABLE `permission` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of node
+-- ----------------------------
+INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa-home', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
+INSERT INTO `node` VALUES ('2', '0', '权限管理', '#', '2', 'fa-desktop', '1', '2016-08-31 15:12:51', '2016-08-31 15:12:54');
+INSERT INTO `node` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa-caret-right', '1', '2016-08-31 15:22:26', '2016-08-31 15:22:32');
+INSERT INTO `node` VALUES ('4', '6', '用户列表', 'user.index', '1', 'fa-caret-right', '1', '2016-08-31 15:22:34', '2016-10-27 03:19:45');
+INSERT INTO `node` VALUES ('5', '2', '节点列表', 'node.index', '1', 'fa-caret-right', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
+INSERT INTO `node` VALUES ('6', '0', '员工列表', '#', '3', 'fa-users', '1', '2016-10-25 07:11:41', '2016-10-28 09:50:58');
+INSERT INTO `node` VALUES ('7', '5', '添加权限视图', 'node.addNode', '1', '', '1', '2016-10-28 08:51:08', '2016-10-28 08:51:08');
+INSERT INTO `node` VALUES ('8', '5', '添加权限', 'node.createNode', '2', '', '1', '2016-10-28 08:52:00', '2016-10-28 08:52:00');
+
+-- ----------------------------
+-- Table structure for `role`
+-- ----------------------------
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `sort` tinyint(4) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
--- Records of permission
+-- Records of role
 -- ----------------------------
-INSERT INTO `permission` VALUES ('1', '0', '主页', 'main.index', '1', 'fa-home', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
-INSERT INTO `permission` VALUES ('2', '0', '权限管理', '#', '2', 'fa-desktop', '1', '2016-08-31 15:12:51', '2016-08-31 15:12:54');
-INSERT INTO `permission` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa-caret-right', '1', '2016-08-31 15:22:26', '2016-08-31 15:22:32');
-INSERT INTO `permission` VALUES ('4', '2', '用户列表', 'user.index', '3', 'fa-caret-right', '1', '2016-08-31 15:22:34', '2016-08-31 15:22:36');
-INSERT INTO `permission` VALUES ('5', '2', '权限列表', 'permission.index', '1', 'fa-caret-right', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
+
+-- ----------------------------
+-- Table structure for `role_permission`
+-- ----------------------------
+DROP TABLE IF EXISTS `role_permission`;
+CREATE TABLE `role_permission` (
+  `role_id` int(10) unsigned NOT NULL,
+  `permission_id` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of role_permission
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `users`
@@ -79,7 +113,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '2016-09-23 06:28:05', '2016-05-25 05:56:33', '2016-09-23 06:28:05');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '2016-10-28 09:50:44', '2016-05-25 05:56:33', '2016-10-28 09:50:44');
 
 -- ----------------------------
 -- Table structure for `users_info`

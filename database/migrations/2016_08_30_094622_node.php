@@ -12,7 +12,7 @@ class Permission extends Migration
      */
     public function up()
     {
-        Schema::create('permission', function (Blueprint $table) {
+        Schema::create('node', function (Blueprint $table) {
             $table->increments('id');                               //id-主键
             $table->integer('pid')->default(0);                     //父级id
             $table->string('name', 50);                             //昵称

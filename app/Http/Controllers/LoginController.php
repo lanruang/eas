@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Models\Login AS LoginDb;
+use App\Http\Models\Login AS loginDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\PermissionModel AS permissionDb;
+use App\Http\Models\NodeModel AS nodeDb;
 
 class LoginController extends Common\Controller
 {
@@ -38,7 +38,7 @@ class LoginController extends Common\Controller
             return redirect('login')
                     ->withErrors($validator);
         }
-        $userInfo = LoginDb::where('user_email', $input['userName'])
+        $userInfo = loginDb::where('user_email', $input['userName'])
                             ->first();
         //判断用户
         if(empty($userInfo)){
@@ -54,7 +54,7 @@ class LoginController extends Common\Controller
         //获取菜单、权限
         $menu = $this->getMenu();
         //更新登录时间
-        LoginDb::where('user_id', $userInfo->user_id)
+        loginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
         $userInfo = $userInfo->toArray();
         unset($userInfo['password']);
@@ -64,6 +64,7 @@ class LoginController extends Common\Controller
         //存储菜单、权限数据
         session(['userInfo.menu' => json_encode($menu['menu'])]);
         session(['userInfo.permission' => $menu['permission']]);
+
         return redirect('/');
     }
 
@@ -80,7 +81,7 @@ class LoginController extends Common\Controller
         $arr['menu'] = array();
         $arr['permission'] = array();
         //获取权限
-        $result = PermissionDb::select('id', 'pid', 'name', 'alias', 'icon')
+        $result = nodeDb::select('id', 'pid', 'name', 'alias', 'icon')
                                 ->where('status', '1')
                                 ->orderBy('sort', 'asc')
                                 ->get();

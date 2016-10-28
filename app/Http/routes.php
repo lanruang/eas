@@ -25,13 +25,17 @@ Route::group(['middleware' => ['permission']], function () {
     Route::get('user/info', ['as' => 'user.info', 'uses' => 'UserController@info']);//个人信息
     Route::post('user/editPwd', ['as' => 'user.editPwd', 'uses' => 'UserController@editPwd']);//修改密码
 
-    //权限列表
-    Route::get('permission/index', ['as' => 'permission.index', 'uses' => 'PermissionController@index']);//权限列表
-    Route::post('permission/getPermission', ['as' => 'permission.getPermission', 'uses' => 'PermissionController@getPermission']);//获取权限列表
-    Route::get('permission/addPermission/{id?}', ['as' => 'permission.addPermission', 'uses' => 'PermissionController@addPermission']);//添加权限视图
-    Route::post('permission/createPermission', ['as' => 'permission.createPermission', 'uses' => 'PermissionController@createPermission']);//添加权限视图
-    Route::post('permission/delPermission', ['as' => 'permission.delPermission', 'uses' => 'PermissionController@delPermission']);//删除权限
+    //节点列表
+    Route::get('node/index', ['as' => 'node.index', 'uses' => 'NodeController@index']);//节点列表
+    Route::post('node/getNode', ['as' => 'node.getNode', 'uses' => 'NodeController@getNode']);//获取节点列表
+    Route::get('node/addNode', ['as' => 'node.addNode', 'uses' => 'NodeController@addNode']);//添加节点视图
+    Route::post('node/createNode', ['as' => 'node.createNode', 'uses' => 'NodeController@createNode']);//添加节点
+    Route::get('node/editNode/{id?}', ['as' => 'node.editNode', 'uses' => 'NodeController@editNode']);//编辑节点视图
+    Route::post('node/updateNode', ['as' => 'node.updateNode', 'uses' => 'NodeController@updateNode']);//更新节点
+    Route::post('node/delNode', ['as' => 'node.delNode', 'uses' => 'NodeController@delNode']);//删除节点
 
     //角色列表
-    Route::post('role/index', ['as' => 'role.index', 'uses' => 'UserController@editPwd']);//修改密码
+    Route::get('role/index', ['as' => 'role.index', 'uses' => 'RoleController@index']);//角色列表
+    Route::post('role/getRole', ['as' => 'role.getRole', 'uses' => 'RoleController@getRole']);//获取角色列表
+    Route::get('role/addRole', ['as' => 'role.addRole', 'uses' => 'RoleController@addRole']);//添加角色视图
 });
