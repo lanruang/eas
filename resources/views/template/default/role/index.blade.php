@@ -43,13 +43,13 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var permissionTable;
+		var roleTable;
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
 		$(function($) {
 			var html;
-			permissionTable = $('#roleTable')
+			roleTable = $('#roleTable')
 							.DataTable({
 								"lengthChange": false,
 								"ordering": false,
@@ -79,17 +79,28 @@
 									}
 								},
 								"serverSide": true,
-								"ajax": {
-									"url": '{{route('role.getRole')}}',
-									"type": "post",
-									"dataType": "json",
-									"data": {
-										"_token": '{{csrf_token()}}'
-									},
-									"error":function(){alert('数据加载出错');}
+								"fnServerData": function ( url, data, fnCallback, oSettings ) {
+									oSettings.jqXHR = $.ajax( {
+										"dataType": 'json',
+										"type": "POST",
+										"url": '{{route('role.getRole')}}',
+										"data": {
+											"_token": '{{csrf_token()}}'
+										},
+										"success": function(res){
+											if(res.status == true){
+												fnCallback(res);
+											}else{
+												alertDialog(res.status, res.msg);
+											}
+
+										}
+									} );
 								},
 								"columns": [
-									{ "data": "name" },
+									{ "data": "name" , render: function(data, type, row, meta) {
+										return '<a style="cursor:pointer" onclick="roleInfo(' + row.id + ')">' + row.name + '</a>';
+									}},
 									{ "data": "sort" },
 									{ "data": "status", render: function(data, type, row, meta) {
 										return formatStatus(row.status);
@@ -141,8 +152,42 @@
 
 		})
 
-		function delRole(){
-			window.location.href = "{{route('role.addRole')}}";
+		function delRole(e){
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('role.delRole')}}',
+							data: {
+								"id": e,
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									roleTable.ajax.reload(null, true);
+									alertDialog(res.status, res.msg);
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
 		}
 
 		function addRole(){
@@ -150,7 +195,11 @@
 		}
 
 		function editRole(e){
-			alert('编辑');
+			window.location.href = "{{route('role.editRole')}}" + "/" + e;
+		}
+
+		function roleInfo(e){
+			window.location.href = "{{route('role.roleInfo')}}" + "/" + e;
 		}
 	</script>
 @endsection()

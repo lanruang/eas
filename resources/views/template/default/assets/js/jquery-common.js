@@ -57,8 +57,8 @@
  */
 	function alertDialog(status, msg){
 		var aClass,type;
-		aClass = String(status) == "0" ? "red" : "green";
-		aType = String(status) == "0" ? "错误提示" : "提示信息";
+		aClass = String(status) == "-1" ? "red" : "green";
+		aType = String(status) == "-1" ? "错误提示" : "提示信息";
 
 		bootbox.dialog({
 			message: '<h4 class="header smaller lighter bolder '+ aClass +'"><i class="ace-icon fa fa-bullhorn"></i>' + aType + '</h4><span>　　'+ msg +'</span>',

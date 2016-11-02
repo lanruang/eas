@@ -17,11 +17,20 @@ class Permission
     public function handle($request, Closure $next)
     {
         $userInfo = $request->session()->has('userInfo');
+
         if(!$userInfo){
             if ($request->ajax() || $request->wantsJson()) {
-                return response('Unauthorized.', 401);
+                echoAjaxJson('-1', '登录超时，请重新登录');
             } else {
                 return redirect('login');
+            }
+        }
+
+        if(!in_array($request->route()->getName(), session('userInfo.permission'))){
+            if ($request->ajax() || $request->wantsJson()) {
+                echoAjaxJson('-1', '没有权限');
+            } else {
+                redirectPageMsg('-1', "没有权限", route('main.index'));
             }
         }
 

@@ -10,7 +10,7 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
 	<li><a href="{{route('role.index')}}">角色列表</a></li>
-	<li>添加角色</li>
+	<li>角色详情</li>
 @endsection()
 
 {{--页面内容--}}
@@ -19,18 +19,22 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('role.createRole')}}" >
+			<div class="form-horizontal">
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 角色名称 </label>
-					<div class="col-sm-2">
-						<input type="text" name="role_name" id="role_name" placeholder="角色名称" class="form-control" />
+					<div class="col-sm-2 output">
+						<label>
+							{{$name}}
+						</label>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 排序 </label>
-					<div class="col-sm-2">
-						<input type="text" name="role_sort" id="role_sort" placeholder="排序" value="1"/>
+					<div class="col-sm-2 output">
+						<label>
+							{{$sort}}
+						</label>
 					</div>
 				</div>
 
@@ -38,35 +42,20 @@
 					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
 					<div class="col-xs-3 output">
 						<label>
-							<input name="role_status" id="role_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
-							<span class="lbl"></span>
+							@if($status == '1')是 @else 否 @endif
 						</label>
 					</div>
 				</div>
 
 				<h3 class="header smaller lighter">
-					权限分配
+					拥有权限
 				</h3>
 
 				<div class="form-group" id="role_farm">
 
 				</div>
 
-				{{csrf_field()}}
-				<div class="clearfix">
-					<div class="col-md-offset-3 col-md-9">
-						<button class="btn btn-info" type="button" onclick="postFrom();">
-							<i class="ace-icon fa fa-check bigger-110"></i>
-							提交
-						</button>
-						&nbsp; &nbsp; &nbsp;
-						<button class="btn" type="reset">
-							<i class="ace-icon fa fa-undo bigger-110"></i>
-							重置
-						</button>
-					</div>
-				</div>
-			</form>
+			</div>
 		</div>
 	</div>
 @endsection()
@@ -81,22 +70,33 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var html;
-
 		$(function(){
-			var pData = JSON.parse('{!! $data !!}');
+			var node = JSON.parse('{!! $node !!}');
+			var nodeS = new Array();
+			var pData = JSON.parse('{!! $select !!}');
+			for(ni in node){
+				nodeS.push(node[ni]);
+			}
+
+
 			var pHtml = '';
 			var tPid = 0;
 			var ck_id = 0;
 			var pObj = false;
 			var nObj = false;
 			var isS = false;
+			var is_checked = '';
 			for(i in pData){
+				is_checked = 'fa-times red';
+				if($.inArray(pData[i]['id'].toString(), nodeS) != '-1'){
+					is_checked = 'fa-check orange';
+				}
+
 				if(pData[i]['pid'] == '0'){
 					pHtml = '<div class="col-xs-12">' +
 								'<div class="control-group" id="cg_farm' + pData[i]['id'] + '">' +
 									'<label class="control-label bolder blue" style="cursor: pointer;">' +
-										'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" onclick="c_box('+ pData[i]['id'] +')"/>' +
+										'<i class="ace-icon fa ' + is_checked + '"></i>' +
 										'<span class="lbl">' + pData[i]['name'] + '</span>' +
 									'</label>' +
 								'</div>' +
@@ -109,7 +109,7 @@
 					isS = false;
 					pHtml = '<div class="checkbox" id="ck_farm' + pData[i]['id'] + '" style="padding-left:' + (20*Number(pData[i]["level"])) + 'px;">' +
 								'<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<i class="ace-icon fa ' + is_checked + '"></i>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>' +
 							'</div>';
@@ -120,7 +120,7 @@
 					}
 					if (pData[Number(i) - 1]['pid'] == pData[i]['pid'] && !isS) {
 						pHtml = '<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]"  value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<i class="ace-icon fa ' + is_checked + '"></i>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>';
 						$("#ck_farm" + ck_id).append(pHtml);
@@ -131,57 +131,11 @@
 				}
 			}
 
-			$('#validation-form').validate({
-				errorElement: 'div',
-				errorClass: 'help-block',
-				focusInvalid: false,
-				ignore: "",
-				rules: {
-					role_name: {required: true, maxlength:40},
-					role_sort: {required: true, number: true, maxlength:3}
-				},
-				messages: {
-					role_name: {required: "请填写角色名称.", maxlength: "字符数超出范围."},
-					role_sort: {required: "请填写排序.", number: "必须未数字.", maxlength: "字符数超出范围."}
-				},
-				highlight: function (e) {
-					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-				},
-				success: function (e) {
-					$(e).closest('.form-group').removeClass('has-error');
-					$(e).remove();
-				},
-			});
 		});
 
-		function c_box(i){
-			var is_check = '';
-			if($('#role_'+ i).prop("checked")){
-				is_check = true;
-			}else{
-				is_check = false;
-			}
-			c_box_c(i, is_check);
-		}
-
-		function c_box_c(i, is_check) {
-			$('#role_farm input[type="checkbox"]').each(function(){
-				if($('#' + this.id).attr('pid') == i){
-					c_box_c(this.value, is_check);
-					$('#'+ this.id).prop("checked", is_check);
-				}
-			});
-		}
-		
 		//返回
 		function goBack(){
 			window.location.href = "{{route('role.index')}}";
-		}
-		//验证表单
-		function postFrom(){
-			if($('#validation-form').valid()){
-				$('#validation-form').submit();
-			};
 		}
 
 	</script>

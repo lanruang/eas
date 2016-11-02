@@ -27,6 +27,7 @@
 					<th>排序</th>
 					<th>状态</th>
 					<th>图标</th>
+					<th>显示菜单</th>
 					<th>操作</th>
 				</tr>
 				</thead>
@@ -81,14 +82,23 @@
 									}
 								},
 								"serverSide": true,
-								"ajax": {
-									"url": '{{route('node.getNode')}}',
-									"type": "post",
-									"dataType": "json",
-									"data": {
-										"_token": '{{csrf_token()}}'
-									},
-									"error":function(){alert('数据加载出错');}
+								"fnServerData": function ( url, data, fnCallback, oSettings ) {
+									oSettings.jqXHR = $.ajax( {
+										"dataType": 'json',
+										"type": "POST",
+										"url": '{{route('node.getNode')}}',
+										"data": {
+											"_token": '{{csrf_token()}}'
+										},
+										"success": function(res){
+											if(res.status == true){
+												fnCallback(res);
+											}else{
+												alertDialog(res.status, res.msg);
+											}
+
+										}
+									} );
 								},
 								"columns": [
 									{ "data": "name" , render: function(data, type, row, meta) {
@@ -96,16 +106,23 @@
 									}},
 									{ "data": "alias" },
 									{ "data": "sort" },
-									{ "data": "status", render: function(data, type, row, meta) {
+									{ "data": "status", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
-									{ "data": "icon" , render: function(data, type, row, meta) {
+									{ "data": "icon" , render: function(data, type, row) {
 										return '<i class="fa ' + row.icon + '"></i>  [' + row.icon + ']';
+									}},
+									{ "data": "is_menu", render: function(data, type, row) {
+										if(row.is_menu == "1"){
+											return '是';
+										}else{
+											return '否';
+										}
 									}},
 									{ "data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 5,
+									"targets": 6,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +

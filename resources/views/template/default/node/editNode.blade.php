@@ -74,6 +74,16 @@
 						</label>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 显示菜单 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="node_is_menu" id="node_is_menu" class="ace ace-switch ace-switch-6" type="checkbox" @if($is_menu == '1')checked="checked"@endif>
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
 				{{csrf_field()}}
 				<input type="hidden" id="node_id" name="node_id" value="{{$id}}"/>
 				<div class="clearfix">

@@ -19,6 +19,8 @@ class Permission extends Migration
             $table->string('alias', 100);                           //别名
             $table->tinyInteger('sort')->default(0);                //排序
             $table->string('icon', 50)->nullable();                 //图标
+            $table->boolean('is_menu')->default(0);                 //是否菜单
+            $table->boolean('status')->default(0);                  //状态
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
+use App\Http\Models\RoleModel AS roleDb;
 use App\Http\Models\NodeModel AS nodeDb;
 
 class LoginController extends Common\Controller
@@ -51,8 +52,13 @@ class LoginController extends Common\Controller
             return redirect('login')
                     ->withErrors(array('0'=>'密码错误'));
         }
+
         //获取菜单、权限
-        $menu = $this->getMenu();
+        $menu = $this->getMenu($userInfo->role_id, $userInfo->supper_admin);
+        if(!$menu){
+            return redirect('login')
+                ->withErrors(array('0'=>'没有登录权限，请联系管理员。'));
+        }
         //更新登录时间
         loginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
@@ -76,26 +82,42 @@ class LoginController extends Common\Controller
     }
 
     //获取权限
-    private function getMenu(){
+    private function getMenu($role_id, $sAdmin){
         //定义变量
         $arr['menu'] = array();
         $arr['permission'] = array();
-        //获取权限
-        $result = nodeDb::select('id', 'pid', 'name', 'alias', 'icon')
-                                ->where('status', '1')
-                                ->orderBy('sort', 'asc')
-                                ->get();
+
+        //是否超级管理员
+        if($sAdmin){
+            //获取数据
+            $result = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid', 'is_menu')
+                ->orderBy('sort', 'asc')
+                ->get()
+                ->toArray();
+        }else{
+            //获取菜单、菜单
+            $result = nodeDb::Join('role_node AS rn', 'rn.node_id', '=', 'node.id')
+                ->where('rn.role_id', $role_id)
+                ->orderBy('node.sort', 'asc')
+                ->get()
+                ->toArray();
+            if(!$result){
+                return false;
+            }
+        }
+
         //格式化菜单
         if($result){
             foreach ($result as $k => $v) {
-                $arr['menu'][$k]['id'] = $v->id;
-                $arr['menu'][$k]['pid'] = $v->pid;
-                $arr['menu'][$k]['name'] = $v->name;
-                $arr['menu'][$k]['url'] = $v->alias == "#" ? "#" : route($v->alias);
-                $arr['menu'][$k]['alias'] = $v->alias;
-                $arr['menu'][$k]['icon'] = $v->icon;
+                $arr['menu'][$k]['id'] = $v['id'];
+                $arr['menu'][$k]['pid'] = $v['pid'];
+                $arr['menu'][$k]['name'] = $v['name'];
+                $arr['menu'][$k]['url'] = $v['alias'] == "#" ? "#" : route($v['alias']);
+                $arr['menu'][$k]['alias'] = $v['alias'];
+                $arr['menu'][$k]['icon'] = $v['icon'];
+                $arr['menu'][$k]['is_menu'] = $v['is_menu'];
                 //格式化权限
-                if($v->url != "#") $arr['permission'][] = $v->url;
+                if($v['alias'] != "#") $arr['permission'][] = $v['alias'];
             }
         }
 

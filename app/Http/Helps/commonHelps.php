@@ -44,6 +44,7 @@ if (! function_exists('p')) {
  */
 function echoAjaxJson($status = '0', $msg = '')
 {
+    //1-正常，0-提示，-1-错误
     $result['status'] = $status;
     $result['msg'] = $msg;
     echo json_encode($result);
@@ -62,11 +63,11 @@ function echoAjaxJson($status = '0', $msg = '')
 function redirectPageMsg($status = '1', $msg = '', $url = '')
 {
     //1-正常，0-提示，-1-错误
-    $result['status'] = $status;
-    $result['msg'] = $msg;
-    $result['url'] = $url;
+    $status = base64_encode($status);
+    $msg = base64_encode($msg);
+    $url = base64_encode($url);
 
-    echo(view('layouts.PageMsg', $result));
+    header('Location: '.route('sysMessage')."/".$status."/".$msg."/".$url);
     exit();
 }
 

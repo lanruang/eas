@@ -21,7 +21,7 @@ class NodeController extends Common\Controller
         //验证传输方式
         if(!$request->ajax())
         {
-            echoAjaxJson(0, '非法请求');
+            echoAjaxJson('-1', '非法请求');
         }
 
         //获取参数
@@ -30,11 +30,11 @@ class NodeController extends Common\Controller
 
         //获取当前权限
         if($pid > 0){
-            $permission = permissionDb::select('id', 'name', 'pid')
+            $node = nodeDb::select('id', 'name', 'pid')
                 ->where('id', $pid)
                 ->first()
                 ->toArray();
-            $data['permission'] = $permission;
+            $data['node'] = $node;
         }
 
         //分页
@@ -45,7 +45,7 @@ class NodeController extends Common\Controller
         $total = nodeDb::where('pid', $pid)
                                 ->count();
         //获取数据
-        $result = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid')
+        $result = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid', 'is_menu')
                                 ->where('pid', $pid)
                                 ->skip($skip)
                                 ->take($take)
@@ -59,6 +59,7 @@ class NodeController extends Common\Controller
         $data['recordsTotal'] = $total;//总记录数
         $data['recordsFiltered'] = $total;//条件过滤后记录数
         $data['data'] = $result;
+        $data['status'] = '1';
 
         //返回结果
         ajaxJsonRes($data);
@@ -72,7 +73,7 @@ class NodeController extends Common\Controller
             ->get()
             ->toArray();
         $node['select'] = json_encode(sort_tree($result));
-        return view('permission.addPermission', $node);
+        return view('node.addNode', $node);
     }
 
     //添加权限
@@ -106,6 +107,7 @@ class NodeController extends Common\Controller
 
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
+        $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
 
         //添加数据
         $nodeDb = new nodeDb;
@@ -115,9 +117,10 @@ class NodeController extends Common\Controller
         $nodeDb->sort = $input['node_sort'];
         $nodeDb->icon = $input['node_icon'];
         $nodeDb->status = $input['node_status'];
-        $nodeDb->save();
+        $nodeDb->is_menu = $input['node_is_menu'];
+        $result = $nodeDb->save();
 
-        if($nodeDb->save()){
+        if($result){
             redirectPageMsg('1', "添加成功", route('node.addNode'));
         }else{
             redirectPageMsg('-1', "添加失败", route('node.addNode'));
@@ -133,13 +136,13 @@ class NodeController extends Common\Controller
         };
 
         //获取权限信息
-        $node = nodeDb::select('id', 'name', 'alias', 'pid', 'sort', 'icon', 'status')
+        $node = nodeDb::select('id', 'name', 'alias', 'pid', 'sort', 'icon', 'status', 'is_menu')
                                     ->where('id', $id)
                                     ->first()
                                     ->toArray();
 
         if(!$node){
-            redirectPageMsg('1', "参数错误", route('node.index'));
+            redirectPageMsg('-1', "参数错误", route('node.index'));
         }
 
         //下拉菜单信息
@@ -191,6 +194,7 @@ class NodeController extends Common\Controller
 
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
+        $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
 
         //格式化数据
         $data['pid'] = $input['node_Fname'];
@@ -199,6 +203,7 @@ class NodeController extends Common\Controller
         $data['sort'] = $input['node_sort'];
         $data['icon'] = $input['node_icon'];
         $data['status'] = $input['node_status'];
+        $data['is_menu'] = $input['node_is_menu'];
         //更新权限
         $result = nodeDb::where('id', $input['node_id'])
                                 ->update($data);
@@ -223,7 +228,7 @@ class NodeController extends Common\Controller
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            echoAjaxJson(0, $validator->errors()->first());
+            echoAjaxJson('-1', $validator->errors()->first());
         }
         $id = $input['id'];
        //查看是否存在子项
@@ -232,14 +237,14 @@ class NodeController extends Common\Controller
                                     ->get()
                                     ->toArray();
         if($children){
-            echoAjaxJson(0, '存在子项无法删除');
+            echoAjaxJson('-1', '存在子项无法删除');
         }
         $rel = nodeDb::where('id', $id)
                                 ->delete();
         if($rel){
-            echoAjaxJson(1, '删除成功');
+            echoAjaxJson('1', '删除成功');
         }else{
-            echoAjaxJson(0, '删除失败');
+            echoAjaxJson('-1', '删除失败');
         }
     }
 }

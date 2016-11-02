@@ -92,6 +92,16 @@
 						</label>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 显示菜单 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="node_is_menu" id="node_is_menu" class="ace ace-switch ace-switch-6" type="checkbox">
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
 				{{csrf_field()}}
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
@@ -154,13 +164,12 @@
 				for(var n = 0; n<jsonData[i]['level']; n++){
 					k += "　";
 				}
-				$("#node_Fname").append("<option value='"+ jsonData[i]['id'] +"' alias='"+ jsonData[i]['alias'] +"' sort='"+ jsonData[i]['sort'] +"'>"+ k + jsonData[i]['name'] +"</option>");
+				$("#node_Fname").append("<option value='"+ jsonData[i]['id'] +"' alias='"+ jsonData[i]['alias'] +"'>"+ k + jsonData[i]['name'] +"</option>");
 				k = "";
 			};
 
 			$("#node_Fname").change(function(){
 				$("#node_Falias").val($("#node_Fname").find("option:selected").attr("alias"));
-				$("#node_sort").val(Number($("#node_Fname").find("option:selected").attr("sort"))+1);
 			})
 		});
 

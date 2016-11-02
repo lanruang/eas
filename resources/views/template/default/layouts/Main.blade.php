@@ -240,7 +240,7 @@
 		var fDownUll = '';
 		var cActive = '';
 		for(k in data){
-			if(data[k].pid == pid) {
+			if(data[k].pid == pid && data[k].is_menu == '1') {
 				if(data[k].alias == alias){
 					cActive = 'class="active"';
 				}

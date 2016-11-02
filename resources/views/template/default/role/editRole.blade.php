@@ -10,7 +10,7 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
 	<li><a href="{{route('role.index')}}">角色列表</a></li>
-	<li>添加角色</li>
+	<li>编辑角色</li>
 @endsection()
 
 {{--页面内容--}}
@@ -19,18 +19,18 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('role.createRole')}}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('role.updateRole')}}" >
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 角色名称 </label>
 					<div class="col-sm-2">
-						<input type="text" name="role_name" id="role_name" placeholder="角色名称" class="form-control" />
+						<input type="text" value="{{$name}}" name="role_name" id="role_name" placeholder="角色名称" class="form-control" />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 排序 </label>
 					<div class="col-sm-2">
-						<input type="text" name="role_sort" id="role_sort" placeholder="排序" value="1"/>
+						<input type="text" value="{{$sort}}" name="role_sort" id="role_sort" placeholder="排序" value="1"/>
 					</div>
 				</div>
 
@@ -38,7 +38,7 @@
 					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
 					<div class="col-xs-3 output">
 						<label>
-							<input name="role_status" id="role_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
+							<input name="role_status" value="{{$status}}" id="role_status" class="ace ace-switch ace-switch-6" type="checkbox" @if($status == '1')checked="checked"@endif>
 							<span class="lbl"></span>
 						</label>
 					</div>
@@ -53,16 +53,12 @@
 				</div>
 
 				{{csrf_field()}}
+				<input type="hidden" value="{{$id}}" name="role_id" >
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
 							<i class="ace-icon fa fa-check bigger-110"></i>
 							提交
-						</button>
-						&nbsp; &nbsp; &nbsp;
-						<button class="btn" type="reset">
-							<i class="ace-icon fa fa-undo bigger-110"></i>
-							重置
 						</button>
 					</div>
 				</div>
@@ -84,19 +80,32 @@
 		var html;
 
 		$(function(){
-			var pData = JSON.parse('{!! $data !!}');
+			var node = JSON.parse('{!! $node !!}');
+			var nodeS = new Array();
+			var pData = JSON.parse('{!! $select !!}');
+			for(ni in node){
+				nodeS.push(node[ni]);
+			}
+
+
 			var pHtml = '';
 			var tPid = 0;
 			var ck_id = 0;
 			var pObj = false;
 			var nObj = false;
 			var isS = false;
+			var is_checked = '';
 			for(i in pData){
+				is_checked = '';
+				if($.inArray(pData[i]['id'].toString(), nodeS) != '-1'){
+					is_checked = 'checked="checked"';
+				}
+
 				if(pData[i]['pid'] == '0'){
 					pHtml = '<div class="col-xs-12">' +
 								'<div class="control-group" id="cg_farm' + pData[i]['id'] + '">' +
 									'<label class="control-label bolder blue" style="cursor: pointer;">' +
-										'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" onclick="c_box('+ pData[i]['id'] +')"/>' +
+										'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" onclick="c_box('+ pData[i]['id'] +')" '+is_checked+'/>' +
 										'<span class="lbl">' + pData[i]['name'] + '</span>' +
 									'</label>' +
 								'</div>' +
@@ -109,7 +118,7 @@
 					isS = false;
 					pHtml = '<div class="checkbox" id="ck_farm' + pData[i]['id'] + '" style="padding-left:' + (20*Number(pData[i]["level"])) + 'px;">' +
 								'<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"  '+is_checked+'/>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>' +
 							'</div>';
@@ -120,7 +129,7 @@
 					}
 					if (pData[Number(i) - 1]['pid'] == pData[i]['pid'] && !isS) {
 						pHtml = '<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]"  value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<input id="role_'+ pData[i]['id'] +'" name="node[]"  value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"  '+is_checked+'/>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>';
 						$("#ck_farm" + ck_id).append(pHtml);
@@ -172,7 +181,7 @@
 				}
 			});
 		}
-		
+
 		//返回
 		function goBack(){
 			window.location.href = "{{route('role.index')}}";

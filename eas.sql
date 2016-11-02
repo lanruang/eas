@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2016-10-28 17:53:13
+Date: 2016-11-02 17:50:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,23 +43,35 @@ CREATE TABLE `node` (
   `alias` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `sort` tinyint(4) NOT NULL DEFAULT '0',
   `icon` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `is_menu` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of node
 -- ----------------------------
-INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa-home', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
-INSERT INTO `node` VALUES ('2', '0', '权限管理', '#', '2', 'fa-desktop', '1', '2016-08-31 15:12:51', '2016-08-31 15:12:54');
-INSERT INTO `node` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa-caret-right', '1', '2016-08-31 15:22:26', '2016-08-31 15:22:32');
-INSERT INTO `node` VALUES ('4', '6', '用户列表', 'user.index', '1', 'fa-caret-right', '1', '2016-08-31 15:22:34', '2016-10-27 03:19:45');
-INSERT INTO `node` VALUES ('5', '2', '节点列表', 'node.index', '1', 'fa-caret-right', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
-INSERT INTO `node` VALUES ('6', '0', '员工列表', '#', '3', 'fa-users', '1', '2016-10-25 07:11:41', '2016-10-28 09:50:58');
-INSERT INTO `node` VALUES ('7', '5', '添加权限视图', 'node.addNode', '1', '', '1', '2016-10-28 08:51:08', '2016-10-28 08:51:08');
-INSERT INTO `node` VALUES ('8', '5', '添加权限', 'node.createNode', '2', '', '1', '2016-10-28 08:52:00', '2016-10-28 08:52:00');
+INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa-home', '1', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
+INSERT INTO `node` VALUES ('2', '0', '权限管理', '#', '2', 'fa-desktop', '1', '1', '2016-08-31 15:12:51', '2016-08-31 15:12:54');
+INSERT INTO `node` VALUES ('3', '2', '角色列表', 'role.index', '3', 'fa-caret-right', '1', '1', '2016-08-31 15:22:26', '2016-10-31 06:34:15');
+INSERT INTO `node` VALUES ('4', '6', '用户列表', 'user.index', '1', 'fa-caret-right', '1', '1', '2016-08-31 15:22:34', '2016-10-27 03:19:45');
+INSERT INTO `node` VALUES ('5', '2', '权限列表', 'node.index', '1', 'fa-caret-right', '1', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
+INSERT INTO `node` VALUES ('6', '0', '员工列表', '#', '3', 'fa-users', '1', '1', '2016-10-25 07:11:41', '2016-11-01 17:35:03');
+INSERT INTO `node` VALUES ('7', '5', '添加权限视图', 'node.addNode', '2', '', '0', '1', '2016-10-28 08:51:08', '2016-10-28 08:51:08');
+INSERT INTO `node` VALUES ('8', '5', '添加权限', 'node.createNode', '3', '', '0', '1', '2016-10-28 08:52:00', '2016-10-28 08:52:00');
+INSERT INTO `node` VALUES ('9', '5', '编辑权限视图', 'node.editNode', '4', '', '0', '1', '2016-10-31 07:35:30', '2016-10-31 07:35:30');
+INSERT INTO `node` VALUES ('10', '5', '编辑权限', 'node.updateNode', '5', '', '0', '1', '2016-10-31 07:35:46', '2016-10-31 07:35:46');
+INSERT INTO `node` VALUES ('11', '5', '权限列表', 'node.getNode', '1', '', '0', '1', '2016-11-02 15:18:50', '2016-11-02 15:18:53');
+INSERT INTO `node` VALUES ('12', '3', '角色列表', 'role.getRole', '1', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('13', '3', '添加角色列表', 'role.addRole', '2', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('14', '3', '添加角色', 'role.createRole', '3', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('15', '3', '编辑角色视图', 'role.editRole', '4', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('16', '3', '编辑角色', 'role.updateRole', '5', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('17', '3', '角色详情', 'role.roleInfo', '7', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('18', '5', '删除权限', 'node.delNode', '6', '', '0', '1', null, null);
+INSERT INTO `node` VALUES ('19', '3', '删除角色', 'role.delRole', '6', '', '0', '1', null, null);
 
 -- ----------------------------
 -- Table structure for `role`
@@ -69,28 +81,45 @@ CREATE TABLE `role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `sort` tinyint(4) NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of role
 -- ----------------------------
+INSERT INTO `role` VALUES ('1', '管理员', '1', '1', '2016-11-01 07:06:28', '2016-11-02 17:44:44');
 
 -- ----------------------------
--- Table structure for `role_permission`
+-- Table structure for `role_node`
 -- ----------------------------
-DROP TABLE IF EXISTS `role_permission`;
-CREATE TABLE `role_permission` (
+DROP TABLE IF EXISTS `role_node`;
+CREATE TABLE `role_node` (
   `role_id` int(10) unsigned NOT NULL,
-  `permission_id` int(10) unsigned NOT NULL
+  `node_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of role_permission
+-- Records of role_node
 -- ----------------------------
+INSERT INTO `role_node` VALUES ('1', '2');
+INSERT INTO `role_node` VALUES ('1', '5');
+INSERT INTO `role_node` VALUES ('1', '11');
+INSERT INTO `role_node` VALUES ('1', '7');
+INSERT INTO `role_node` VALUES ('1', '8');
+INSERT INTO `role_node` VALUES ('1', '9');
+INSERT INTO `role_node` VALUES ('1', '10');
+INSERT INTO `role_node` VALUES ('1', '18');
+INSERT INTO `role_node` VALUES ('1', '3');
+INSERT INTO `role_node` VALUES ('1', '12');
+INSERT INTO `role_node` VALUES ('1', '13');
+INSERT INTO `role_node` VALUES ('1', '14');
+INSERT INTO `role_node` VALUES ('1', '15');
+INSERT INTO `role_node` VALUES ('1', '16');
+INSERT INTO `role_node` VALUES ('1', '19');
+INSERT INTO `role_node` VALUES ('1', '17');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -102,18 +131,20 @@ CREATE TABLE `users` (
   `user_email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `user_img` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `role_id` int(10) unsigned NOT NULL,
   `supper_admin` tinyint(1) NOT NULL DEFAULT '0',
   `last_login` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `users1_email_unique` (`user_email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '2016-10-28 09:50:44', '2016-05-25 05:56:33', '2016-10-28 09:50:44');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '0', '1', '2016-11-02 17:45:45', '2016-05-25 05:56:33', '2016-11-02 17:45:45');
+INSERT INTO `users` VALUES ('2', 'test', 'test@sh.net', 'resources/views/template/default/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '1', '0', '2016-11-02 17:46:12', '2016-11-01 15:07:59', '2016-11-02 17:46:12');
 
 -- ----------------------------
 -- Table structure for `users_info`
