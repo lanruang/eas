@@ -68,11 +68,12 @@ class NodeController extends Common\Controller
     //添加权限视图
     public function addNode(){
         //获取下拉菜单
-        $result = nodeDb::select('id', 'name', 'alias', 'pid', 'sort')
+        $result = nodeDb::select('id', 'name AS text', 'alias', 'pid')
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
-        $node['select'] = json_encode(sort_tree($result));
+        
+        $node['select'] = json_encode(getTreeT($result));
         return view('node.addNode', $node);
     }
 
@@ -86,7 +87,7 @@ class NodeController extends Common\Controller
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|max:3',
-            'node_Fname' => 'required|max:255|numeric',
+            'node_pid' => 'required|max:255|numeric',
         ];
         $message = [
             'node_name.required' => '权限名称未填写',
@@ -96,9 +97,9 @@ class NodeController extends Common\Controller
             'node_alias.max' => '别名/地址字符数过多',
             'node_icon.max' => '图标字符数过多',
             'node_sort.max' => '排序字符数过多',
-            'node_Fname.required' => '参数错误',
-            'node_Fname.max' => '参数错误',
-            'node_Fname.numeric' => '参数错误',
+            'node_pid.required' => '参数错误',
+            'node_pid.max' => '参数错误',
+            'node_pid.numeric' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -111,7 +112,7 @@ class NodeController extends Common\Controller
 
         //添加数据
         $nodeDb = new nodeDb;
-        $nodeDb->pid = $input['node_Fname'];
+        $nodeDb->pid = $input['node_pid'];
         $nodeDb->name = $input['node_name'];
         $nodeDb->alias = $input['node_alias'];
         $nodeDb->sort = $input['node_sort'];
@@ -136,21 +137,21 @@ class NodeController extends Common\Controller
         };
 
         //获取权限信息
-        $node = nodeDb::select('id', 'name', 'alias', 'pid', 'sort', 'icon', 'status', 'is_menu')
-                                    ->where('id', $id)
-                                    ->first()
-                                    ->toArray();
-
+        $node = nodeDb::leftjoin('node AS nd', 'node.pid','=','nd.id')
+                            ->select('node.id', 'node.name', 'node.alias', 'node.pid', 'node.sort', 'node.icon', 'node.status', 'node.is_menu', 'nd.name AS ndName', 'nd.alias AS ndAlias')
+                            ->where('node.id', $id)
+                            ->first()
+                            ->toArray();
         if(!$node){
             redirectPageMsg('-1', "参数错误", route('node.index'));
         }
 
         //下拉菜单信息
-        $result = nodeDb::select('id', 'name', 'alias', 'pid', 'sort')
-            ->orderBy('sort', 'asc')
-            ->get()
-            ->toArray();
-        $node['select'] = json_encode(sort_tree($result));
+        $result = nodeDb::select('id', 'name AS text', 'alias', 'pid')
+                            ->orderBy('sort', 'asc')
+                            ->get()
+                            ->toArray();
+        $node['select'] = json_encode(getTreeT($result));
         return view('node.editNode', $node);
     }
 
@@ -168,7 +169,7 @@ class NodeController extends Common\Controller
             'node_alias' => 'required|max:90',
             'node_icon' => 'required|max:40',
             'node_sort' => 'required|max:3',
-            'node_Fname' => 'required|max:255|numeric',
+            'node_pid' => 'required|max:255|numeric',
             'node_id' => 'required|max:255|numeric',
         ];
         $message = [
@@ -180,9 +181,9 @@ class NodeController extends Common\Controller
             'node_alias.max' => '别名/地址字符数过多',
             'node_icon.max' => '图标字符数过多',
             'node_sort.max' => '排序字符数过多',
-            'node_Fname.required' => '父级权限参数错误',
-            'node_Fname.max' => '父级权限参数错误',
-            'node_Fname.numeric' => '父级权限参数错误',
+            'node_pid.required' => '父级权限参数错误',
+            'node_pid.max' => '父级权限参数错误',
+            'node_pid.numeric' => '父级权限参数错误',
             'node_id.required' => '参数错误',
             'node_id.max' => '参数错误',
             'node_id.numeric' => '参数错误',
@@ -197,7 +198,7 @@ class NodeController extends Common\Controller
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
 
         //格式化数据
-        $data['pid'] = $input['node_Fname'];
+        $data['pid'] = $input['node_pid'];
         $data['name'] = $input['node_name'];
         $data['alias'] = $input['node_alias'];
         $data['sort'] = $input['node_sort'];

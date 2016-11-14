@@ -44,11 +44,28 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('roleInfo/{id?}', ['as' => 'role.roleInfo', 'uses' => 'RoleController@roleInfo']);//角色详情
     });
 
+    //公司信息
+    Route::group(['prefix' => 'company'], function () {
+        Route::get('index', ['as' => 'company.index', 'uses' => 'CompanyController@index']);//公司信息
+        Route::get('editCompany', ['as' => 'company.editCompany', 'uses' => 'CompanyController@editCompany']);//编辑信息
+        Route::post('updateCompany', ['as' => 'company.updateCompany', 'uses' => 'CompanyController@updateCompany']);//更新信息
+    });
+
+    //部门列表
+    Route::group(['prefix' => 'position'], function () {
+        Route::get('index', ['as' => 'position.index', 'uses' => 'PositionController@index']);//角色列表
+    });
+
+    //岗位列表
+    Route::group(['prefix' => 'department'], function () {
+        Route::get('index', ['as' => 'department.index', 'uses' => 'DepartmentController@index']);//角色列表
+    });
+
     //主页
     Route::get('/', ['as' => 'main.index', 'uses' => 'MainController@index']);
 
     //用户
-    Route::get('user', ['as' => 'user.index', 'uses' => 'UserController@index']);//个人信息
+    Route::get('user', ['as' => 'user.index', 'uses' => 'UserController@index']);//用户列表
     Route::get('user/info', ['as' => 'user.info', 'uses' => 'UserController@info']);//个人信息
     Route::post('user/editPwd', ['as' => 'user.editPwd', 'uses' => 'UserController@editPwd']);//修改密码
 

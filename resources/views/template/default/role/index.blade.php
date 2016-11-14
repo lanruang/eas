@@ -15,20 +15,18 @@
 {{--页面内容--}}
 @section('content')
 	<div class="row">
-		<div class="col-xs-12">
-			<button id="btn_goBack" class="btn btn-sm btn-success hide"><i class="ace-icon fa fa-reply icon-only"></i></button>
+		<div class="col-xs-12 col-sm-6">
 			<button class="btn btn-sm btn-primary" onclick="addRole();">添加</button>
-
-			<table id="roleTable" class="table table-striped table-bordered table-hover">
-				<thead>
-				<tr>
-					<th>名称</th>
-					<th>排序</th>
-					<th>状态</th>
-					<th>操作</th>
-				</tr>
-				</thead>
-			</table>
+				<table id="roleTable" class="table table-striped table-bordered table-hover">
+					<thead>
+					<tr>
+						<th>名称</th>
+						<th>排序</th>
+						<th>状态</th>
+						<th>操作</th>
+					</tr>
+					</thead>
+				</table>
 		</div>
 	</div>
 @endsection()
@@ -79,23 +77,19 @@
 									}
 								},
 								"serverSide": true,
-								"fnServerData": function ( url, data, fnCallback, oSettings ) {
-									oSettings.jqXHR = $.ajax( {
-										"dataType": 'json',
-										"type": "POST",
-										"url": '{{route('role.getRole')}}',
-										"data": {
-											"_token": '{{csrf_token()}}'
-										},
-										"success": function(res){
-											if(res.status == true){
-												fnCallback(res);
-											}else{
-												alertDialog(res.status, res.msg);
-											}
-
+								"ajax": {
+									"type": "post",
+									"async": false,
+									"dataType": "json",
+									"url": '{{route('role.getRole')}}',
+									"data": {"_token": '{{csrf_token()}}'},
+									"dataSrc": function ( res ) {
+										if(res.status == true){
+											return res.data;
+										}else{
+											alertDialog(res.status, res.msg);
 										}
-									} );
+									}
 								},
 								"columns": [
 									{ "data": "name" , render: function(data, type, row, meta) {

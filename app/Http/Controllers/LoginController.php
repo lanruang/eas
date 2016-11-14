@@ -105,7 +105,7 @@ class LoginController extends Common\Controller
                 return false;
             }
         }
-
+        
         //格式化菜单
         if($result){
             foreach ($result as $k => $v) {

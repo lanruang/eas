@@ -26,7 +26,7 @@ class Permission
             }
         }
 
-        if(!in_array($request->route()->getName(), session('userInfo.permission'))){
+        if(!in_array($request->route()->getName(), session('userInfo.permission')) && session('userInfo.supper_admin') == '0'){
             if ($request->ajax() || $request->wantsJson()) {
                 echoAjaxJson('-1', '没有权限');
             } else {

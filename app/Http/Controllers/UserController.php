@@ -12,7 +12,11 @@ use Validator;
 
 class UserController extends Common\Controller
 {
-
+    //用户列表
+    public function index()
+    {
+        return view('user.index');
+    }
 
     //用户详情
     public function info(Request $request)

@@ -132,3 +132,30 @@ function getTree($data, $pid = 0)
     }
     return $tree;
 }
+
+/**
+ * 转成树形结构(特殊)
+ *
+ * @param	array		$data
+ * @param	int			$pid
+ * @return	array
+ */
+function getTreeT($data, $pid = 0)
+{
+    $tree = '';
+    foreach($data as $k => $v)
+    {
+        if($v['pid'] == $pid)
+        {
+            $type = 'item';
+            $rel = getTreeT($data, $v['id']);
+            if($rel){
+                $type = 'folder';
+                $v['additionalParameters']['children'] = $rel;
+            }
+            $v['type'] = $type;
+            $tree[] = $v;
+        }
+    }
+    return $tree;
+}

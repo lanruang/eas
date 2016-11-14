@@ -9,25 +9,39 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li>权限列表</li>
+	<li>用户列表</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
+	<div id="modal-form" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="blue bigger">用户检索</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						123123123
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="col-xs-12">
-			<button id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-			<button class="btn btn-sm btn-primary" onclick="addNode();">添加</button>
+			<button class="btn btn-sm btn-primary" onclick="addUser();">添加</button>
+			<button class="btn btn-sm btn-primary" href="#modal-form" data-toggle="modal">检索</button>
 
-			<table id="nodeTable" class="table table-striped table-bordered table-hover">
+			<table id="userTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
-					<th>名称</th>
-					<th>别名/地址</th>
+					<th>部门</th>
 					<th>排序</th>
 					<th>状态</th>
-					<th>图标</th>
-					<th>显示菜单</th>
 					<th>操作</th>
 				</tr>
 				</thead>
@@ -46,13 +60,13 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var nodeTable;
+		var roleTable;
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
 		$(function($) {
 			var html;
-			nodeTable = $('#nodeTable')
+			userTable = $('#userTable')
 							.DataTable({
 								"lengthChange": false,
 								"ordering": false,
@@ -82,49 +96,43 @@
 									}
 								},
 								"serverSide": true,
-								"ajax": {
-									"type": "post",
-									"dataType": "json",
-									"url": '{{route('node.getNode')}}',
-									"data": {"_token": '{{csrf_token()}}'},
-									"dataSrc": function ( res ) {
-										if(res.status == true){
-											return res.data;
-										}else{
-											alertDialog(res.status, res.msg);
+								"fnServerData": function ( url, data, fnCallback, oSettings ) {
+									oSettings.jqXHR = $.ajax( {
+										"dataType": 'json',
+										"type": "POST",
+										"url": '{{route('role.getRole')}}',
+										"data": {
+											"_token": '{{csrf_token()}}'
+										},
+										"success": function(res){
+											if(res.status == true){
+												fnCallback(res);
+											}else{
+												alertDialog(res.status, res.msg);
+											}
+
 										}
-									}
+									} );
 								},
 								"columns": [
-									{"data": "name" , render: function(data, type, row, meta) {
-										return '<a style="cursor:pointer" onclick="getParameter(' + row.id + ')">' + row.name + '</a>';
+									{ "data": "name" , render: function(data, type, row, meta) {
+										return '<a style="cursor:pointer" onclick="roleInfo(' + row.id + ')">' + row.name + '</a>';
 									}},
-									{"data": "alias" },
-									{"data": "sort" },
-									{"data": "status", render: function(data, type, row) {
+									{ "data": "sort" },
+									{ "data": "status", render: function(data, type, row, meta) {
 										return formatStatus(row.status);
 									}},
-									{"data": "icon" , render: function(data, type, row) {
-										return '<i class="fa ' + row.icon + '"></i>  [' + row.icon + ']';
-									}},
-									{"data": "is_menu", render: function(data, type, row) {
-										if(row.is_menu == "1"){
-											return '是';
-										}else{
-											return '否';
-										}
-									}},
-									{"data": "null"},
+									{ "data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 6,
+									"targets": 3,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
-													'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +
+													'<a class="green" href="#" onclick="editRole(' + row.id + ')">' +
 														'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>';
 										if(row.status != "-1") {
-										html +='<a class="red" href="#" onclick="delNode(' + row.id + ')">' +
+										html +='<a class="red" href="#" onclick="delRole(' + row.id + ')">' +
 												'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 												'</a>';
 										}
@@ -137,14 +145,14 @@
 														'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
 															'<li>' +
 																'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-																	'<span class="green" onclick="editNode(' + row.id + ')">' +
+																	'<span class="green" onclick="editRole(' + row.id + ')">' +
 																		'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 																	'</span>' +
 																'</a>' +
 															'</li>';
 										if(row.status != "-1") {
 										html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delNode(' + row.id + ')">' +
+													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delRole(' + row.id + ')">' +
 													'<span class="red">' +
 													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 													'</span>' +
@@ -158,87 +166,36 @@
 									}
 								}]
 							});
+
 		})
 
-		function getParameter(i) {
-			nodeTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
-			nodeTable.ajax.reload(function (e) {
-				if (e.node){
-					per_pid = e.node.pid;
-					per_id = e.node.id;
-					//面包削导航
-					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
-					$('.breadcrumb').append('<li>' + e.node.name + '</li>');
-				}
-			});
-			$('#btn_goBack').removeClass('hide');
-			$('#alertFrame').addClass('hide');
-		}
-
-		function goBack(e, ti){
-			var lastText;
-			var del = 0;
-			if(e >= 0) per_pid = e;
-			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
-			nodeTable.ajax.reload(function(e){
-				if(e.node){
-					per_pid = e.node.pid;
-					per_id = e.node.id;
-				}else{
-					per_id = 0;
-				}
-				//面包削导航
-				if(ti){
-					var li = $('.breadcrumb').children("li");
-					var liNum = li.length;
-
-					for(var i = 0; i < liNum; i++){
-						if(del == 1){
-							li[i].remove();
-						}
-						if(li[i] == $(ti).parent()[0]) del = 1;
-					}
-					lastText = $('.breadcrumb li').last().text();
-					$('.breadcrumb li').last().remove();
-					$('.breadcrumb').append('<li>' + lastText + '</li>');
-				}else{
-					$('.breadcrumb li').last().remove();
-					lastText = $('.breadcrumb li').last().text();
-					$('.breadcrumb li').last().remove();
-					$('.breadcrumb').append('<li>' + lastText + '</li>');
-				}
-			});
-			if(per_pid == '0') $('#btn_goBack').addClass('hide');
-			$('#alertFrame').addClass('hide');
-		}
-
-		function delNode(e){
+		function delRole(e){
 			bootbox.confirm({
 				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
-					buttons: {
-						confirm: {
-							label: "确定",
-							className: "btn-primary btn-sm",
-						},
-						cancel: {
-							label: "取消",
-							className: "btn-sm",
-						}
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
 					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
 				callback: function(result) {
 					if(result) {
 						$.ajax({
 							type: "post",
 							async:false,
 							dataType: "json",
-							url: '{{route('node.delNode')}}',
+							url: '{{route('role.delRole')}}',
 							data: {
-							"id": e,
-							"_token": '{{csrf_token()}}',
+								"id": e,
+								"_token": '{{csrf_token()}}',
 							},
 							success: function(res){
 								if(res.status == true){
-									nodeTable.ajax.reload(null, true);
+									roleTable.ajax.reload(null, true);
 									alertDialog(res.status, res.msg);
 								}else{
 									alertDialog(res.status, res.msg);
@@ -250,12 +207,20 @@
 			});
 		}
 
-		function addNode(){
-			window.location.href = "{{route('node.addNode')}}";
+		function addUser(){
+			window.location.href = "{{route('role.addRole')}}";
 		}
 
-		function editNode(e){
-			window.location.href = "{{route('node.editNode')}}" + "/" + e;
+		function editRole(e){
+			window.location.href = "{{route('role.editRole')}}" + "/" + e;
+		}
+
+		function roleInfo(e){
+			window.location.href = "{{route('role.roleInfo')}}" + "/" + e;
+		}
+
+		function searchUser(e){
+			window.location.href = "{{route('role.roleInfo')}}" + "/" + e;
 		}
 	</script>
 @endsection()
