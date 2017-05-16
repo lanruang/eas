@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests;
 use App\Http\Models\RoleModel AS roleDb;
 use App\Http\Models\NodeModel AS nodeDb;
-use App\Http\Requests;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;
 
-class RoleController extends Common\Controller
+class RoleController extends Common\CommonController
 {
     public function index()
     {
@@ -65,7 +65,7 @@ class RoleController extends Common\Controller
             ->get()
             ->toArray();
         //树形排序
-        $result = sort_tree($result);
+        $result = sortTree($result);
         $data['data'] = json_encode($result);
         return view('role.addRole', $data);
     }
@@ -76,13 +76,13 @@ class RoleController extends Common\Controller
         //验证表单
         $input = Input::all();
         $rules = [
-            'role_name' => 'required|max:40',
-            'role_sort' => 'required|max:3',
+            'role_name' => 'required|between:1,40',
+            'role_sort' => 'required|between:1,4',
         ];
         $message = [
             'node_name.required' => '角色名称未填写',
             'node_sort.required' => '排序未填写',
-            'node_sort.max' => '排序字符数过多',
+            'node_sort.between' => '排序字符数过多',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -125,7 +125,7 @@ class RoleController extends Common\Controller
     }
 
     //编辑权限视图
-    public function editRole(Request $request, $id = '0')
+    public function editRole($id = '0')
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
@@ -158,8 +158,8 @@ class RoleController extends Common\Controller
                     ->get()
                     ->toArray();
         //树形排序
-        $result = sort_tree($result);
-        $role['select'] = json_encode(sort_tree($result));
+        $result = sortTree($result);
+        $role['select'] = json_encode(sortTree($result));
 
         return view('role.editRole', $role);
     }
@@ -174,16 +174,17 @@ class RoleController extends Common\Controller
             redirectPageMsg('-1', '参数错误', route('role.index'));
         };
         $rules = [
-            'role_name' => 'required|max:40',
-            'role_sort' => 'required|max:3',
+            'role_name' => 'required|between:1,40',
+            'role_sort' => 'required|between:1,4',
+            'role_id' =>  'between:1,11'
         ];
         $message = [
             'role_name.required' => '权限名称未填写',
             'role_sort.required' => '排序未填写',
-            'role_name.max' => '权限名称字符数过多',
-            'role_sort.max' => '排序字符数过多',
+            'role_name.between' => '权限名称字符数过多',
+            'role_sort.between' => '排序字符数过多',
             'role_id.required' => '参数错误',
-            'role_id.max' => '参数错误',
+            'role_id.between' => '参数错误',
             'role_id.numeric' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
@@ -227,17 +228,23 @@ class RoleController extends Common\Controller
     }
     
     //删除角色
-    public function delRole()
+    public function delRole(Request $request)
     {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
         $input = Input::all();
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer',
+            'id' => 'required|integer|between:1,11',
         ];
         $message = [
             'id.required' => '参数不存在',
             'id.integer' => '参数类型错误',
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {
@@ -245,9 +252,19 @@ class RoleController extends Common\Controller
         }
         $id = $input['id'];
   
-        $rel = roleDb::where('id', $id)
-            ->delete();
-        if ($rel) {
+        $result = DB::transaction(function () use($id) {
+            $role = roleDb::where('id', $id)
+                ->delete();
+            $role_node = DB::table('role_node')->where('role_id', $id)
+                ->delete();
+            if($role && $role_node){
+                return true;
+            }else{
+                return false;
+            }
+        });
+        
+        if ($result) {
             echoAjaxJson('1', '删除成功');
         } else {
             echoAjaxJson('-1', '删除失败');
@@ -255,7 +272,7 @@ class RoleController extends Common\Controller
     }
     
     //角色详情
-    public function roleInfo(Request $request, $id = '0')
+    public function roleInfo($id = '0')
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
@@ -288,8 +305,8 @@ class RoleController extends Common\Controller
                     ->get()
                     ->toArray();
         //树形排序
-        $result = sort_tree($result);
-        $role['select'] = json_encode(sort_tree($result));
+        $result = sortTree($result);
+        $role['select'] = json_encode(sortTree($result));
 
         return view('role.roleInfo', $role);
     }

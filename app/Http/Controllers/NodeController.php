@@ -3,27 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use App\Http\Requests;
+use Illuminate\Support\Facades\Input;
 use Validator;
 use App\Http\Models\NodeModel AS nodeDb;
 
 
-class NodeController extends Common\Controller
+class NodeController extends Common\CommonController
 {
     public function index()
     {
+
         return view('node.index');
     }
 
-    public function getNode(Request $request)
+    public function getNode()
     {
-        //验证传输方式
-        if(!$request->ajax())
-        {
-            echoAjaxJson('-1', '非法请求');
-        }
-
         //获取参数
         $input = Input::all();
         $pid = isset($input['pid']) ? intval($input['pid']) : 0;
@@ -53,7 +48,6 @@ class NodeController extends Common\Controller
                                 ->get()
                                 ->toArray();
 
-
         //创建结果数据
         $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;
         $data['recordsTotal'] = $total;//总记录数
@@ -72,13 +66,14 @@ class NodeController extends Common\Controller
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
-        
-        $node['select'] = json_encode(getTreeT($result));
+
+        $result = !$result ? $result = array() : getTreeT($result);
+        $node['select'] = json_encode($result);
         return view('node.addNode', $node);
     }
 
     //添加权限
-    public function createNode(Request $request)
+    public function createNode()
     {
         //验证表单
         $input = Input::all();
@@ -86,20 +81,18 @@ class NodeController extends Common\Controller
             'node_name' => 'required|max:40',
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
-            'node_sort' => 'required|max:3',
-            'node_pid' => 'required|max:255|numeric',
+            'node_sort' => 'required|digits_between:1,4',
+            'node_pid' => 'digits_between:1,11'
         ];
         $message = [
             'node_name.required' => '权限名称未填写',
-            'node_alias.required' => '别名/地址未填写',
-            'node_sort.required' => '排序未填写',
             'node_name.max' => '权限名称字符数过多',
+            'node_alias.required' => '别名/地址未填写',
             'node_alias.max' => '别名/地址字符数过多',
+            'node_sort.required' => '排序未填写',
+            'node_sort.digits_between' => '排序字符数过多',
             'node_icon.max' => '图标字符数过多',
-            'node_sort.max' => '排序字符数过多',
-            'node_pid.required' => '参数错误',
-            'node_pid.max' => '参数错误',
-            'node_pid.numeric' => '参数错误',
+            'node_pid.digits_between' => '父级权限参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -129,11 +122,11 @@ class NodeController extends Common\Controller
     }
 
     //编辑权限视图
-    public function editNode(Request $request, $id = '0')
+    public function editNode($id = '0')
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('node.index'));
+            redirectPageMsg('-1', '缺少必要参数', route('node.index'));
         };
 
         //获取权限信息
@@ -143,7 +136,7 @@ class NodeController extends Common\Controller
                             ->first()
                             ->toArray();
         if(!$node){
-            redirectPageMsg('-1', "参数错误", route('node.index'));
+            redirectPageMsg('-1', "权限获取失败", route('node.index'));
         }
 
         //下拉菜单信息
@@ -151,7 +144,9 @@ class NodeController extends Common\Controller
                             ->orderBy('sort', 'asc')
                             ->get()
                             ->toArray();
-        $node['select'] = json_encode(getTreeT($result));
+
+        $result = !$result ? $result = array() : getTreeT($result);
+        $node['select'] = json_encode($result);
         return view('node.editNode', $node);
     }
 
@@ -160,39 +155,35 @@ class NodeController extends Common\Controller
     {
         //验证表单
         $input = Input::all();
+
         //检测id类型是否整数
         if(!array_key_exists('node_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('node.index'));
+            redirectPageMsg('-1', '缺少必要参数', route('node.index'));
         };
         $rules = [
             'node_name' => 'required|max:40',
             'node_alias' => 'required|max:90',
-            'node_icon' => 'required|max:40',
-            'node_sort' => 'required|max:3',
-            'node_pid' => 'required|max:255|numeric',
-            'node_id' => 'required|max:255|numeric',
+            'node_icon' => 'max:40',
+            'node_sort' => 'required|digits_between:1,4',
+            'node_pid' => 'digits_between:1,11',
+            'node_id' => 'required|digits_between:1,11',
         ];
         $message = [
             'node_name.required' => '权限名称未填写',
-            'node_alias.required' => '别名/地址未填写',
-            'node_icon.required' => '图标未填写',
-            'node_sort.required' => '排序未填写',
             'node_name.max' => '权限名称字符数过多',
+            'node_alias.required' => '别名/地址未填写',
             'node_alias.max' => '别名/地址字符数过多',
+            'node_sort.required' => '排序未填写',
+            'node_sort.digits_between' => '排序字符数过多',
             'node_icon.max' => '图标字符数过多',
-            'node_sort.max' => '排序字符数过多',
-            'node_pid.required' => '父级权限参数错误',
-            'node_pid.max' => '父级权限参数错误',
-            'node_pid.numeric' => '父级权限参数错误',
-            'node_id.required' => '参数错误',
-            'node_id.max' => '参数错误',
-            'node_id.numeric' => '参数错误',
+            'node_pid.digits_between' => '父级权限参数错误',
+            'node_id.required' => '缺少必要参数',
+            'node_id.digits_between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
             redirectPageMsg('-1', $validator->errors()->first(), route('node.editNode')."/".$input['node_id']);
         }
-
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
@@ -216,16 +207,22 @@ class NodeController extends Common\Controller
     }
 
     //删除权限
-    public function delNode(){
+    public function delNode(Request $request){
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
         $input = Input::all();
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer',
+            'id' => 'required|integer|digits_between:1,11',
         ];
         $message = [
             'id.required' => '参数不存在',
             'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){

@@ -66,7 +66,7 @@ function redirectPageMsg($status = '1', $msg = '', $url = '')
     $status = base64_encode($status);
     $msg = base64_encode($msg);
     $url = base64_encode($url);
-
+    
     header('Location: '.route('sysMessage')."/".$status."/".$msg."/".$url);
     exit();
 }
@@ -97,7 +97,7 @@ function validateParam ($str = '', $param = '', $type = '')
  * @param	int			$pid
  * @return	array
  */
-function sort_tree($array, $pid = 0, $level = 0)
+function sortTree($array, $pid = 0, $level = 0)
 {
     $arr = array();
 
@@ -106,7 +106,7 @@ function sort_tree($array, $pid = 0, $level = 0)
             $v['level'] = $level;
             $arr[] = $v;
             $v['level'] = $level + 1;
-            $arr = array_merge($arr,sort_tree($array,$v['id'], $v['level']));
+            $arr = array_merge($arr,sortTree($array,$v['id'], $v['level']));
         }
     }
     return $arr;
@@ -158,4 +158,87 @@ function getTreeT($data, $pid = 0)
         }
     }
     return $tree;
+}
+
+/**
+ * 随机数
+ *
+ * @param	int			$length
+ * @return	array
+ */
+function randomKeys($length)
+{
+    $key = '';
+    $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
+    for($i=0;$i<$length;$i++)   
+    {   
+        $key .= $pattern{mt_rand(0,35)};
+    }   
+    return $key;   
+}
+
+/**
+ * 邮件发送
+ *
+ * @param	$string			$template
+ * @param   $array          $data
+ * @return	array
+ */
+function postMail($template, $data, $subject)
+{
+    Mail::send($template, $data, function($m) use($data)
+    {
+        $m->to($data['mail'])->subject('e收贷-现金贷邮箱验证');
+    });
+}
+
+/**
+ * 获取邮箱地址
+ *
+ * @param	string			$str
+ * @return	array
+ */
+function exMailUrl($str){
+    $url = '';
+    $exMail = explode('@', $str);
+    $exMail = strtolower($exMail[1]);
+    switch ($exMail) {
+        case 'qq.com':
+            $url = 'http://mail.qq.com';
+            break;
+        case '126.com':
+            $url = 'http://mail.126.com';
+            break;
+        case '163.com':
+            $url = 'http://mail.163.com';
+            break;
+        case 'sina.com':
+            $url = 'http://mail.sina.com.cn';
+            break;
+        case 'sina.cn':
+            $url = 'http://mail.sina.com.cn';
+            break;
+        default :
+            $url = route('member.login');
+    }
+
+    return $url;
+}
+
+function imgBase64($img_file){
+    $img_base64 = '';
+    $app_img_file = $img_file;                 //组合出真实的绝对路径
+    $img_info = getimagesize($app_img_file);            //取得图片的大小，类型等
+    $fp = fopen($app_img_file,"r");                     //图片是否可读权限
+    if($fp){
+        $file_content = chunk_split(base64_encode(fread($fp,filesize($app_img_file))));//base64编码
+        switch($img_info[2]){           //判读图片类型
+            case 1:$img_type="gif";break;
+            case 2:$img_type="jpg";break;
+            case 3:$img_type="png";break;
+        }
+        $img_base64 = 'data:image/'.$img_type.';base64,'.$file_content;//合成图片的base64编码
+        fclose($fp);
+    }
+    return $img_base64;         //返回图片的base64
 }

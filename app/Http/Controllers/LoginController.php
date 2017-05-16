@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Http\Models\Login AS loginDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
+use App\Http\Models\UserModel AS loginDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\RoleModel AS roleDb;
 use App\Http\Models\NodeModel AS nodeDb;
 
-class LoginController extends Common\Controller
+class LoginController extends Common\CommonController
 {
     //用户登录
     public function index()
@@ -35,28 +33,35 @@ class LoginController extends Common\Controller
         ];
         $validator = Validator::make($input, $rules, $message);
         //返回验证信息
-        if($validator->fails()){
-            return redirect('login')
-                    ->withErrors($validator);
+        if($validator->fails()) {
+            return redirect(route('login.index'))
+                ->withErrors($validator);
         }
+
         $userInfo = loginDb::where('user_email', $input['userName'])
                             ->first();
         //判断用户
         if(empty($userInfo)){
-            return redirect('login')
+            return redirect(route('login.index'))
                     ->withErrors(array('0'=>'邮箱不存在'));
         }
         //判断密码
         if($userInfo->password != md5($input['password']))
         {
-            return redirect('login')
+            return redirect(route('login.index'))
                     ->withErrors(array('0'=>'密码错误'));
+        }
+        //是否允许登录
+        if($userInfo->status == '0')
+        {
+            return redirect(route('login.index'))
+                ->withErrors(array('0'=>'用户名已被禁止登录'));
         }
 
         //获取菜单、权限
         $menu = $this->getMenu($userInfo->role_id, $userInfo->supper_admin);
         if(!$menu){
-            return redirect('login')
+            return redirect(route('login.index'))
                 ->withErrors(array('0'=>'没有登录权限，请联系管理员。'));
         }
         //更新登录时间
@@ -71,7 +76,7 @@ class LoginController extends Common\Controller
         session(['userInfo.menu' => json_encode($menu['menu'])]);
         session(['userInfo.permission' => $menu['permission']]);
 
-        return redirect('/');
+        return redirect(route('main.index'));
     }
 
     //退出登录

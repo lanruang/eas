@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Route;
 
-class MainController extends Common\Controller
+class MainController extends Common\CommonController
 {
     public function index()
     {
