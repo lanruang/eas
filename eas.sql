@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-05-16 11:02:39
+Date: 2017-05-16 17:55:42
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -62,7 +62,7 @@ CREATE TABLE `node` (
 -- Records of node
 -- ----------------------------
 INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa fa-home', '1', '1', '2016-08-31 15:02:05', '2016-08-31 15:02:08');
-INSERT INTO `node` VALUES ('2', '0', '权限管理', '#', '2', 'fa fa-desktop', '1', '1', '2016-08-31 15:12:51', '2016-12-01 07:49:22');
+INSERT INTO `node` VALUES ('2', '0', '系统管理', '#', '11', 'fa fa-cogs', '1', '1', '2016-08-31 15:12:51', '2016-12-01 07:49:22');
 INSERT INTO `node` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa fa-caret-right', '1', '1', '2016-08-31 15:22:26', '2016-11-25 08:03:06');
 INSERT INTO `node` VALUES ('4', '32', '员工列表', 'user.index', '5', 'fa fa-caret-right', '1', '1', '2016-08-31 15:22:34', '2017-05-12 08:56:04');
 INSERT INTO `node` VALUES ('5', '2', '权限列表', 'node.index', '1', 'fa fa-caret-right', '1', '1', '2016-08-31 15:50:18', '2016-08-31 15:43:45');
@@ -88,19 +88,18 @@ INSERT INTO `node` VALUES ('28', '4', '删除员工', 'user.delUser', '6', '', '
 INSERT INTO `node` VALUES ('29', '4', '员工详情', 'user.userInfo', '6', '', '0', '1', '2016-12-06 05:59:21', '2016-12-06 05:59:21');
 INSERT INTO `node` VALUES ('30', '4', '修改密码', 'user.editPwd', '7', '', '0', '1', '2016-12-06 06:00:22', '2016-12-06 06:00:22');
 INSERT INTO `node` VALUES ('31', '4', '重置密码', 'user.resetPwd', '8', '', '0', '1', '2016-12-06 06:00:43', '2016-12-06 06:00:55');
-INSERT INTO `node` VALUES ('32', '0', '公司信息', '#', '4', 'fa fa-cog', '1', '1', '2017-02-20 08:11:24', '2017-05-12 03:39:15');
+INSERT INTO `node` VALUES ('32', '0', '公司信息', '#', '3', 'fa fa-cog', '1', '1', '2017-02-20 08:11:24', '2017-05-12 03:39:15');
 INSERT INTO `node` VALUES ('33', '32', '公司信息', 'company.index', '1', 'fa fa-caret-right', '1', '1', '2017-02-20 08:45:03', '2017-04-27 02:07:48');
 INSERT INTO `node` VALUES ('34', '32', '部门列表', 'department.index', '3', 'fa fa-caret-right', '1', '1', '2017-04-27 03:17:44', '2017-05-12 07:58:00');
 INSERT INTO `node` VALUES ('35', '32', '岗位列表', 'positions.index', '4', 'fa fa-caret-right', '1', '1', '2017-05-10 06:39:18', '2017-05-12 08:55:52');
 INSERT INTO `node` VALUES ('37', '0', '合同管理', '#', '7', 'fa fa-briefcase', '1', '1', '2017-05-12 03:08:13', '2017-05-12 03:39:36');
 INSERT INTO `node` VALUES ('38', '0', '预算管理', '#', '6', 'fa  fa-bar-chart-o', '1', '1', '2017-05-12 03:09:42', '2017-05-12 03:39:28');
-INSERT INTO `node` VALUES ('39', '0', '我的工作', '#', '3', 'fa fa-briefcase', '1', '1', '2017-05-12 03:18:54', '2017-05-12 03:18:54');
+INSERT INTO `node` VALUES ('39', '0', '我的工作', '#', '4', 'fa fa-briefcase', '1', '1', '2017-05-12 03:18:54', '2017-05-12 03:18:54');
 INSERT INTO `node` VALUES ('40', '0', '流程控制', '#', '5', 'glyphicon glyphicon-refresh', '1', '1', '2017-05-12 03:39:57', '2017-05-12 03:40:12');
 INSERT INTO `node` VALUES ('41', '0', '库存管理', '#', '8', 'fa fa-hdd-o', '1', '1', '2017-05-12 03:55:23', '2017-05-12 03:55:23');
 INSERT INTO `node` VALUES ('42', '0', '报表管理', '#', '9', 'glyphicon glyphicon-indent-left', '1', '1', '2017-05-12 03:57:44', '2017-05-12 03:57:44');
 INSERT INTO `node` VALUES ('46', '32', '科目管理', 'subjects.index', '2', 'fa fa-caret-right', '1', '1', '2017-05-12 08:55:00', '2017-05-12 08:55:00');
-INSERT INTO `node` VALUES ('47', '0', '费用管理', '#', '8', 'glyphicon-list-alt', '1', '1', '2017-05-16 02:36:36', '2017-05-16 02:36:36');
-INSERT INTO `node` VALUES ('48', '0', '系统管理', '#', '12', 'fa fa-cogs', '1', '1', '2017-05-16 02:38:06', '2017-05-16 02:38:06');
+INSERT INTO `node` VALUES ('47', '0', '费用管理', '#', '8', 'glyphicon glyphicon-list-alt', '1', '1', '2017-05-16 02:36:36', '2017-05-16 06:50:54');
 INSERT INTO `node` VALUES ('49', '0', '客户管理', '#', '6', 'fa fa-users', '1', '1', '2017-05-16 02:38:43', '2017-05-16 02:38:43');
 
 -- ----------------------------
@@ -212,7 +211,7 @@ CREATE TABLE `subjects` (
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`sub_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of subjects
@@ -221,6 +220,7 @@ INSERT INTO `subjects` VALUES ('1', '0', '1000', '资产', '0', '1', '0', '2017-
 INSERT INTO `subjects` VALUES ('2', '0', '2000', '负债', '0', '1', '0', '2017-05-12 17:47:35', '2017-05-12 17:47:35');
 INSERT INTO `subjects` VALUES ('3', '0', '4000', '权益类', '0', '1', '0', null, null);
 INSERT INTO `subjects` VALUES ('4', '0', '6000', '损益', '0', '1', '0', null, null);
+INSERT INTO `subjects` VALUES ('5', '0', '7000', 'test', '0', '1', '0', null, null);
 
 -- ----------------------------
 -- Table structure for `users`
@@ -246,7 +246,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-05-16 02:37:22', '1', '0', '2016-05-25 05:56:33', '2017-05-16 02:37:22');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-05-16 06:55:14', '1', '0', '2016-05-25 05:56:33', '2017-05-16 06:55:14');
 INSERT INTO `users` VALUES ('2', '名IT经理', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-05-10 17:27:26', '1', '0', '2016-11-01 15:07:59', '2017-04-27 02:01:45');
 INSERT INTO `users` VALUES ('3', '名it员工', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-05-10 17:57:38', '1', '1', '2017-05-10 08:56:06', '2017-05-10 09:57:38');
 
