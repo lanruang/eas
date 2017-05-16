@@ -16,7 +16,7 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-			<button type="button" id="btn_goBack" class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button type="button" id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<button type="button" class="btn btn-sm btn-primary" onclick="addNode();">添加</button>
 
 			<table id="nodeTable" class="table table-striped table-bordered table-hover">
@@ -47,9 +47,10 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var nodeTable;
-		var per_pid = 0;
+		var per_pid = {{ $pid }};
 		var per_id = 0;
 		var per_name = '';
+		var page = {{ $page }};
 		$(function($) {
 			var html;
 			nodeTable = $('#nodeTable')
@@ -57,6 +58,8 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
+								"lengthMenu": [2],
+								"displayStart" : page,
 								"language": {
 									"sProcessing":   "处理中...",
 									"sLengthMenu":   "显示 _MENU_ 项结果",
@@ -161,6 +164,7 @@
 		})
 
 		function getParameter(i) {
+			page = nodeTable.page.info().page;
 			nodeTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function (e) {
 				if (e.node){
@@ -179,7 +183,7 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
-			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
+			nodeTable.settings()[0].ajax.data = {"page":page, "pid": per_pid, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function(e){
 				if(e.node){
 					per_pid = e.node.pid;
@@ -251,7 +255,7 @@
 		}
 
 		function addNode(){
-			window.location.href = "{{route('node.addNode')}}";
+			window.location.href = "{{route('node.addNode')}}/" + page + "/" + per_id;
 		}
 
 		function editNode(e){

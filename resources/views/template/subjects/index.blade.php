@@ -32,6 +32,7 @@
 			</table>
 		</div>
 	</div>
+	<div id = "pageInfo"></div>
 @endsection()
 
 {{--页面加载js--}}
@@ -48,6 +49,7 @@
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
+		var page = 0;
 		$(function($) {
 			var html;
 			subTable = $('#subTable')
@@ -55,6 +57,7 @@
 						"lengthChange": false,
 						"ordering": false,
 						"searching": false,
+						"lengthMenu": [2],
 						"language": {
 							"sProcessing":   "处理中...",
 							"sLengthMenu":   "显示 _MENU_ 项结果",
@@ -155,15 +158,15 @@
 		})
 
 		function getParameter(i) {
-			return;
+			page = subTable.page.info().page;
 			subTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
 			subTable.ajax.reload(function (e) {
-				if (e.node){
-					per_pid = e.node.pid;
-					per_id = e.node.id;
+				if (e.subject){
+					per_pid = e.subject.pid;
+					per_id = e.subject.id;
 					//面包削导航
 					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
-					$('.breadcrumb').append('<li>' + e.node.name + '</li>');
+					$('.breadcrumb').append('<li>' + e.subject.name + '</li>');
 				}
 			});
 			$('#btn_goBack').removeClass('hide');
@@ -174,11 +177,11 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
-			subTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
+			subTable.settings()[0].ajax.data = {"page": page, "pid": per_pid, "_token": '{{csrf_token()}}'};
 			subTable.ajax.reload(function(e){
-				if(e.node){
-					per_pid = e.node.pid;
-					per_id = e.node.id;
+				if(e.subject){
+					per_pid = e.subject.pid;
+					per_id = e.subject.id;
 				}else{
 					per_id = 0;
 				}

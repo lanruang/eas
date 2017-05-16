@@ -30,8 +30,8 @@ class RoleController extends Common\CommonController
         $input = Input::all();
 
         //分页
-        $skip = isset($input['start']) ? intval($input['start']) : 0;//从多少开始
-        $take = isset($input['length']) ? intval($input['length']) : 10;//数据长度
+        $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
+        $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
 
         //获取记录总数
         $total = roleDb::count();
