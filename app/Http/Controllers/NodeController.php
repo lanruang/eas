@@ -11,11 +11,9 @@ use App\Http\Models\NodeModel AS nodeDb;
 
 class NodeController extends Common\CommonController
 {
-    public function index($page = 0, $pid  = 0)
+    public function index()
     {
-        $data['page'] = $page;
-        $data['pid'] = $pid;
-        return view('node.index', $data);
+        return view('node.index');
     }
 
     public function getNode()
@@ -34,9 +32,8 @@ class NodeController extends Common\CommonController
         }
 
         //分页
-        $page = isset($input['page']) ? intval($input['page']) : 0;
         $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
-        $skip = !empty($input['start']) ? intval($input['start']) : $page * $take;//从多少开始
+        $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
 
         //获取记录总数
         $total = nodeDb::where('pid', $pid)
@@ -62,7 +59,7 @@ class NodeController extends Common\CommonController
     }
 
     //添加权限视图
-    public function addNode($page = 0, $pid = 0){
+    public function addNode(){
         //获取下拉菜单
         $result = nodeDb::select('id', 'name AS text', 'alias', 'pid')
             ->orderBy('sort', 'asc')
@@ -71,13 +68,11 @@ class NodeController extends Common\CommonController
 
         $result = !$result ? $result = array() : getTreeT($result);
         $node['select'] = json_encode($result);
-        $node['page'] = $page;
-        $node['pid'] = $pid;
         return view('node.addNode', $node);
     }
 
     //添加权限
-    public function createNode($page = 0, $pid = 0)
+    public function createNode()
     {
         //验证表单
         $input = Input::all();

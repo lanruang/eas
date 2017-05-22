@@ -775,7 +775,7 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('node.createNode')}}/{{ $page }}/{{ $pid }}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('node.createNode')}}" >
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 父级名称 </label>
 					<label class="col-sm-2">
@@ -943,7 +943,7 @@
 
 		//返回
 		function goBack(){
-			window.location.href = "{{route('node.index')}}/{{ $page }}/{{ $pid }}";
+			window.location.href = "{{route('node.index')}}";
 		}
 
 		//清除选项

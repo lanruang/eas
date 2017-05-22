@@ -21,7 +21,6 @@ class SubjectsController extends Common\CommonController
         //获取参数
         $input = Input::all();
         $pid = isset($input['pid']) ? intval($input['pid']) : 0;
-        $page = isset($input['page']) ? intval($input['page']) : 0;
         //获取当前权限
         if($pid > 0){
             $node = subjectDb::select('sub_id AS id', 'sub_name AS name', 'sub_pid AS pid')
@@ -33,7 +32,7 @@ class SubjectsController extends Common\CommonController
 
         //分页
         $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
-        $skip = !empty($input['start']) ? intval($input['start']) : $page * $take;//从多少开始
+        $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
 
         //获取记录总数
         $total = subjectDb::where('sub_pid', $pid)

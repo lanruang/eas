@@ -49,7 +49,6 @@
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
-		var page = 0;
 		$(function($) {
 			var html;
 			subTable = $('#subTable')
@@ -118,7 +117,7 @@
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 										'</a>';
 								if(row.status != "-1") {
-									html +='<a class="red" href="#" onclick="delNode(' + row.id + ', '+ f +')">' +
+									html +='<a class="red" deleted href="#" onclick="delNode(' + row.id + ', '+ f +')">' +
 											'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 											'</a>';
 								}
@@ -138,7 +137,7 @@
 										'</li>';
 								if(row.status != "-1") {
 									html += '<li>' +
-											'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delNode(' +row.id + ')">' +
+											'<a href="#" id="test" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delNode(' +row.id + ', this)">' +
 											'<span class="red">' +
 											'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 											'</span>' +
@@ -158,7 +157,6 @@
 		})
 
 		function getParameter(i) {
-			page = subTable.page.info().page;
 			subTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
 			subTable.ajax.reload(function (e) {
 				if (e.subject){
@@ -177,7 +175,7 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
-			subTable.settings()[0].ajax.data = {"page": page, "pid": per_pid, "_token": '{{csrf_token()}}'};
+			subTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			subTable.ajax.reload(function(e){
 				if(e.subject){
 					per_pid = e.subject.pid;
@@ -211,9 +209,8 @@
 		}
 
 		function delNode(e, ti){
-			writeObj(ti);return;
-			subTable.row($(ti).parents('tr')).remove().draw();
-
+			subTable.row("#subId1000").remove().draw();
+			return;
 
 			return;
 			bootbox.confirm({

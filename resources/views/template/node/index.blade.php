@@ -47,10 +47,9 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var nodeTable;
-		var per_pid = {{ $pid }};
+		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
-		var page = {{ $page }};
 		$(function($) {
 			var html;
 			nodeTable = $('#nodeTable')
@@ -58,8 +57,6 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
-								"lengthMenu": [2],
-								"displayStart" : page,
 								"language": {
 									"sProcessing":   "处理中...",
 									"sLengthMenu":   "显示 _MENU_ 项结果",
@@ -164,7 +161,6 @@
 		})
 
 		function getParameter(i) {
-			page = nodeTable.page.info().page;
 			nodeTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function (e) {
 				if (e.node){
@@ -183,7 +179,7 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
-			nodeTable.settings()[0].ajax.data = {"page":page, "pid": per_pid, "_token": '{{csrf_token()}}'};
+			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function(e){
 				if(e.node){
 					per_pid = e.node.pid;
@@ -255,7 +251,7 @@
 		}
 
 		function addNode(){
-			window.location.href = "{{route('node.addNode')}}/" + page + "/" + per_id;
+			window.location.href = "{{route('node.addNode')}}";
 		}
 
 		function editNode(e){

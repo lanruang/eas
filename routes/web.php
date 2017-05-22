@@ -26,10 +26,10 @@ Route::group(['middleware' => ['permission']], function () {
     /*-----------------------------系统管理-----------------------------*/
     //权限列表
     Route::group(['prefix' => 'node'], function () {
-        Route::get('index/{page?}/{pid?}', ['as' => 'node.index', 'uses' => 'NodeController@index']);//权限列表
+        Route::get('index/', ['as' => 'node.index', 'uses' => 'NodeController@index']);//权限列表
         Route::post('getNode', ['as' => 'node.getNode', 'uses' => 'NodeController@getNode']);//获取权限列表
-        Route::get('addNode/{page?}/{pid?}', ['as' => 'node.addNode', 'uses' => 'NodeController@addNode']);//添加权限视图
-        Route::post('createNode/{page?}/{pid?}', ['as' => 'node.createNode', 'uses' => 'NodeController@createNode']);//添加权限
+        Route::get('addNode/', ['as' => 'node.addNode', 'uses' => 'NodeController@addNode']);//添加权限视图
+        Route::post('createNode/', ['as' => 'node.createNode', 'uses' => 'NodeController@createNode']);//添加权限
         Route::get('editNode/{id?}', ['as' => 'node.editNode', 'uses' => 'NodeController@editNode']);//编辑权限视图
         Route::post('updateNode', ['as' => 'node.updateNode', 'uses' => 'NodeController@updateNode']);//更新权限
         Route::post('delNode', ['as' => 'node.delNode', 'uses' => 'NodeController@delNode']);//删除权限
