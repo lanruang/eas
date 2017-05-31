@@ -19,14 +19,14 @@
 				<div class="widget-body">
 					<div class="widget-main">
 						<div>
-							<label for="form-field-select-3">选择分类</label>
+							<label for="form-field-select-3">选择回收内容分类</label>
 							<br/>
 							<select class="chosen-select form-control" id="recycle_type" data-placeholder="请选择">
 								<option value=""></option>
-								<option value="AL">Alabama</option>
-								<option value="AR">Arkansas</option>
-								<option value="CA">California</option>
-								<option value="CO">Colorado</option>
+								<option value="http://www.baidu.com">baidu</option>
+								<option value="http://www.feng.com">feng</option>
+								<option value="http://www.17173.com">17173</option>
+								<option value="http://www.qq.com">qq</option>
 
 							</select>
 						</div>
@@ -52,8 +52,7 @@
 			}
 
 			$('#recycle_type').change(function(){
-				var recycleType = $('#recycle_type').val();
-
+				window.location.href = $('#recycle_type').val();
 			});
 		});
 	</script>

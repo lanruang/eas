@@ -75,6 +75,7 @@ class LoginController extends Common\CommonController
         //存储菜单、权限数据
         session(['userInfo.menu' => json_encode($menu['menu'])]);
         session(['userInfo.permission' => $menu['permission']]);
+        session(['userInfo.recycle' => $menu['recycle']]);
 
         return redirect(route('main.index'));
     }
@@ -95,8 +96,7 @@ class LoginController extends Common\CommonController
         //是否超级管理员
         if($sAdmin){
             //获取数据
-            $result = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid', 'is_menu')
-                ->orderBy('sort', 'asc')
+            $result = nodeDb::orderBy('sort', 'asc')
                 ->get()
                 ->toArray();
         }else{
@@ -123,6 +123,12 @@ class LoginController extends Common\CommonController
                 $arr['menu'][$k]['is_menu'] = $v['is_menu'];
                 //格式化权限
                 if($v['alias'] != "#") $arr['permission'][] = $v['alias'];
+                //回收站权限配置
+                if($v['is_recycle'] == 1){
+                    $arr['recycle'][$k]['selectName'] = $v['recycle_name'];
+                    $arr['recycle'][$k]['dbName'] = $v['recycle_db'];
+                    $arr['recycle'][$k]['url'] = route($v['alias']);
+                }
             }
         }
 

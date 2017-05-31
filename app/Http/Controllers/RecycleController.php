@@ -10,6 +10,7 @@ class RecycleController extends Common\CommonController
 {
     public function index()
     {
+        p(session('userInfo.recycle'));
         return view('recycle.index');
     }
 }
