@@ -111,21 +111,14 @@
 		</script>
 		<div class="sidebar-shortcuts" id="sidebar-shortcuts">
 			<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
-				<button class="btn btn-success" onclick="alert('未开放');">
-					<i class="ace-icon fa  fa-folder-o"></i>
-				</button>
-
-				<button class="btn btn-info" onclick="alert('未开放');">
-					<i class="ace-icon fa fa-pencil"></i>
-				</button>
-
-				<button class="btn btn-warning" onclick="alert('未开放');">
+				<button class="btn btn-warning" onclick="window.location.href = '{{route('user.userInfo')}}';">
 					<i class="ace-icon fa fa-user"></i>
 				</button>
 
-				<button class="btn btn-danger" onclick="alert('未开放');">
-					<i class="ace-icon fa fa-cogs"></i>
+				<button class="btn btn-danger"  onclick="window.location.href = '{{route('recycle.index')}}';">
+					<i class="ace-icon fa fa-trash-o bigger-120"></i>
 				</button>
+
 			</div>
 
 			<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">

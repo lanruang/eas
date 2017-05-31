@@ -38,7 +38,7 @@ class SubjectsController extends Common\CommonController
         $total = subjectDb::where('sub_pid', $pid)
             ->count();
         //获取数据
-        $result = subjectDb::select('sub_id AS id', 'sub_ip AS sub_ip', 'sub_type AS type', 'sub_name AS name', 'status', 'sub_pid AS pid', 'is_del')
+        $result = subjectDb::select('sub_id AS id', 'sub_ip AS sub_ip', 'sub_type AS type', 'sub_name AS name', 'sort', 'status', 'sub_pid AS pid', 'is_del')
             ->where('sub_pid', $pid)
             ->skip($skip)
             ->take($take)
@@ -205,7 +205,7 @@ class SubjectsController extends Common\CommonController
     }
 
     //删除权限
-    public function delNode(Request $request){
+    public function delSub(Request $request){
         //验证传输方式
         if(!$request->ajax())
         {
@@ -228,19 +228,74 @@ class SubjectsController extends Common\CommonController
         }
         $id = $input['id'];
         //查看是否存在子项
-        $children = nodeDb::where('pid', $id)
+        $children = subjectDb::where('sub_pid', $id)
             ->where('status', '1')
             ->get()
             ->toArray();
         if($children){
             echoAjaxJson('-1', '存在子项无法删除');
         }
-        $rel = nodeDb::where('id', $id)
-            ->delete();
-        if($rel){
+        //$rel = subjectDb::where('sub_id', $id)
+            //->delete();
+
+        $data['is_del'] = $input['act'] == '1' ? 1 :0;
+        //更改状态
+        $result = DepartmentDb::where('sub_id', $input['id'])
+            ->update($data);
+
+        if($result){
             echoAjaxJson('1', '删除成功');
         }else{
             echoAjaxJson('-1', '删除失败');
+        }
+    }
+
+    //更新排序
+    public function updateSort(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            ajaxJsonRes(array("error"=>"非法请求"));
+        }
+
+        $input = Input::all();
+
+        //格式化参数
+        foreach($input['data'] as $k => $v){
+            foreach($v as $vk => $vv){
+                $input['id'] = $k;
+                $input['sort'] = $vv;
+            }
+        }
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+            'sort' => 'required|integer|digits_between:1,4',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误',
+            'sort.required' => '必填项',
+            'sort.integer' => '必须为数字',
+            'sort.digits_between' => '超出最大值'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            ajaxJsonRes(array("error"=>$validator->errors()->first()));
+        }
+
+        //更新权限
+        $result = subjectDb::where('sub_id', $input['id'])
+            ->update(array('sort'=>$input['sort']));
+
+        $json['data']['sort'] = $input['sort'];
+        if($result){
+            ajaxJsonRes($json);
+        }else{
+            ajaxJsonRes(array("error"=>"更新失败"));
         }
     }
 }

@@ -45,18 +45,6 @@
 											</div>
 										</div>
 
-										<div class="profile-info-row">
-											<div class="profile-info-name"> 已删除</div>
-											<div class="profile-info-value form-group">
-												<label class="col-xs-3">
-													<select name="s_deleted" class="form-control" id="s_deleted">
-														<option value="0">否</option>
-														<option value="1">是</option>
-													</select>
-												</label>
-											</div>
-										</div>
-
 									</div>
 								</div>
 							</div>
@@ -77,6 +65,7 @@
 				<tr>
 					<th>姓名</th>
 					<th>邮箱</th>
+					<th>系统状态</th>
 					<th>操作</th>
 				</tr>
 				</thead>
@@ -87,9 +76,9 @@
 
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/Bootbox.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -98,11 +87,6 @@
 		var userTable;
 		$(function($) {
 			var html;
-			var data = {
-				"s_u_name": '',
-				"s_deleted": '0',
-				"_token": '{{csrf_token()}}'
-			}
 			userTable = $('#userTable')
 							.DataTable({
 								"lengthChange": false,
@@ -138,7 +122,7 @@
 									"async": false,
 									"dataType": "json",
 									"url": '{{route('user.getUser')}}',
-									"data": data,
+									"data": {"_token": '{{csrf_token()}}'},
 									"dataSrc": function ( res ) {
 										if(res.status == true){
 											return res.data;
@@ -152,10 +136,13 @@
 										return '<a style="cursor:pointer" onclick="userInfo(' + row.id + ')">' + row.name + '</a>';
 									}},
 									{ "data": "email" },
+									{ "data": "status", render: function(data, type, row) {
+										return formatStatus(row.status);
+									}},
 									{ "data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 2,
+									"targets": 3,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editUser(' + row.id + ')">' +
@@ -246,7 +233,6 @@
 
 		function searchUser() {
 			var data = {"s_u_name": $('#s_u_name').val(),
-				"s_deleted": $('#s_deleted').val(),
 				"_token": '{{csrf_token()}}'};
 			userTable.settings()[0].ajax.data = data;
 			userTable.ajax.reload(function () {

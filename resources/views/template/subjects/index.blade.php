@@ -3,8 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-
-
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/editor.dataTables.min.css" />
 @endsection()
 
 {{--面包削导航--}}
@@ -18,13 +17,17 @@
 		<div>
 			<button type="button" id="btn_goBack" class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<button type="button" class="btn btn-sm btn-primary" onclick="addSub();">添加</button>
-
+			<button class="btn btn-white" onclick="getDeleted(1);">
+				<i class="ace-icon fa fa-trash-o"></i>
+				回收站
+			</button>
 			<table id="subTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
 					<th>科目地址</th>
 					<th>科目名称</th>
 					<th>科目类型</th>
+					<th>排序</th>
 					<th>状态</th>
 					<th>操作</th>
 				</tr>
@@ -39,6 +42,7 @@
 @section('pageSpecificPluginScripts')
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.editor.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 @endsection()
 
@@ -46,6 +50,7 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var subTable;
+		var editor;
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
@@ -56,7 +61,6 @@
 						"lengthChange": false,
 						"ordering": false,
 						"searching": false,
-						"lengthMenu": [2],
 						"language": {
 							"sProcessing":   "处理中...",
 							"sLengthMenu":   "显示 _MENU_ 项结果",
@@ -103,13 +107,14 @@
 							{"data": "type", render: function(data, type, row) {
 								return formatStatus("sub_"+row.type);
 							}},
+							{"data": "sort", className: 'editable' },
 							{"data": "status", render: function(data, type, row) {
 								return formatStatus(row.status);
 							}},
 							{"data": "null"},
 						],
 						"columnDefs": [{
-							"targets": 4,
+							"targets": 5,
 							"render": function(data, type, row) {
 								var f = "subId"+row.sub_ip;
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
@@ -154,6 +159,29 @@
 							$(row).attr("subRowId","subId"+data.sub_ip);
 						}
 					});
+
+			editor = new $.fn.dataTable.Editor( {
+				"ajax": {
+					"url": '{{route('subjects.updateSort')}}',
+					"data": {"_token": '{{csrf_token()}}'},
+				},
+				"table": "#subTable",
+				"idSrc": "id",
+				"fields": [
+					{"name": "sort"}
+				],
+				"i18n": {
+					"error": {
+						"system": "系统错误"
+					},
+				}
+			} );
+
+			$('#subTable').on( 'click', 'tbody td.editable', function (e) {
+				editor.inline( this, {
+					buttons: { label: '&gt;', fn: function () { this.submit(); } }
+				} );
+			} );
 		})
 
 		function getParameter(i) {
@@ -208,11 +236,7 @@
 			$('#alertFrame').addClass('hide');
 		}
 
-		function delNode(e, ti){
-			subTable.row("#subId1000").remove().draw();
-			return;
-
-			return;
+		function delNode(e){
 			bootbox.confirm({
 				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
 				buttons: {
@@ -231,7 +255,7 @@
 							type: "post",
 							async:false,
 							dataType: "json",
-							url: '{{route('node.delNode')}}',
+							url: '{{route('subjects.delSub')}}',
 							data: {
 								"id": e,
 								"_token": '{{csrf_token()}}',
@@ -250,6 +274,33 @@
 			});
 		}
 
+		function getDeleted(e){
+			if(e == '1'){
+				for(var i=0; i<$('#subTable tbody tr').length; i++){
+					if($('#subTable tbody tr:eq('+i+')').attr('deleted') == 'false'){
+						$('#subTable tbody tr:eq('+i+')').addClass('hide');
+					}else{
+						$('#subTable tbody tr:eq('+i+')').removeClass('hide');
+					}
+				}
+				deleted = 1;
+				$('#btnList').addClass('hide');
+				$('#delGoBack').removeClass('hide');
+			}else{
+				for(var i=0; i<$('#subTable tbody tr').length; i++){
+					if($('#subTable tbody tr:eq('+i+')').attr('deleted') == 'true'){
+						$('#subTable tbody tr:eq('+i+')').addClass('hide')
+					}else{
+						$('#subTable tbody tr:eq('+i+')').removeClass('hide');
+					}
+				}
+				deleted = 0;
+				$('#btnList').removeClass('hide');
+				$('#delGoBack').addClass('hide');
+			}
+
+		}
+
 		function addSub(){
 			//window.location.href = "{{route('subjects.addSubjects')}}";
 		}
@@ -257,6 +308,8 @@
 		function editNode(e){
 			//window.location.href = "{{route('subjects.editSubjects')}}/" + e;
 		}
+
+
 
 	</script>
 @endsection()

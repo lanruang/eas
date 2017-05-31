@@ -26,9 +26,10 @@ class PositionsController extends Common\CommonController
         }
 
         //获取记录总数
-        $total = PositionsDb::count();
+        $total = PositionsDb::where('recycle', 0)->count();
         //获取数据
-        $result = PositionsDb::select('pos_id AS id', 'pos_name AS name', 'pos_pid AS pid', 'is_del AS deleted')
+        $result = PositionsDb::select('pos_id AS id', 'pos_name AS name', 'pos_pid AS pid')
+            ->where('recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
@@ -49,7 +50,7 @@ class PositionsController extends Common\CommonController
     {
         //获取下拉菜单
         $result = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
@@ -98,7 +99,7 @@ class PositionsController extends Common\CommonController
         $PositionsDb->pos_name = $input['pos_name'];
         $PositionsDb->pos_pid = $input['pos_pid'];
         $PositionsDb->sort = $input['pos_sort'];
-        $PositionsDb->is_del = 0;
+        $PositionsDb->recycle = 0;
         $result = $PositionsDb->save();
 
         if($result){
@@ -139,7 +140,7 @@ class PositionsController extends Common\CommonController
 
         //获取下拉菜单
         $result = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
@@ -225,7 +226,7 @@ class PositionsController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $data['is_del'] = $input['act'] == '1' ? 1 :0;
+        $data['recycle'] = 1;
         //更改状态
         $result = PositionsDb::where('pos_id', $input['id'])
             ->update($data);

@@ -26,10 +26,11 @@ class DepartmentController extends Common\CommonController
         }
 
         //获取记录总数
-        $total = DepartmentDb::count();
+        $total = DepartmentDb::where('recycle',0)->count();
         //获取数据
         $result = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
-            ->select('dep_id AS id', 'dep_name AS name', 'dep_pid AS pid',  'user_name AS u_name', 'department.is_del AS deleted')
+            ->select('dep_id AS id', 'dep_name AS name', 'dep_pid AS pid',  'user_name AS u_name')
+            ->where('department.recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
@@ -50,7 +51,7 @@ class DepartmentController extends Common\CommonController
     {
         //获取下拉菜单
         $result = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
@@ -103,7 +104,7 @@ class DepartmentController extends Common\CommonController
         $departmentDb->dep_leader = $input['dep_leader'];
         $departmentDb->dep_pid = $input['dep_pid'];
         $departmentDb->sort = $input['dep_sort'];
-        $departmentDb->is_del = 0;
+        $departmentDb->recycle = 0;
         $result = $departmentDb->save();
 
         if($result){
@@ -145,7 +146,7 @@ class DepartmentController extends Common\CommonController
 
         //获取下拉菜单
         $result = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'asc')
             ->get()
             ->toArray();
@@ -235,7 +236,7 @@ class DepartmentController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $data['is_del'] = $input['act'] == '1' ? 1 :0;
+        $data['recycle'] = 1;
         //更改状态
         $result = DepartmentDb::where('dep_id', $input['id'])
             ->update($data);

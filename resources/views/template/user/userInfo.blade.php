@@ -143,6 +143,13 @@
 											<span>{{ $userInfo->updated_at }}</span>
 										</div>
 									</div>
+
+									<div class="profile-info-row">
+										<div class="profile-info-name"> 允许登录 </div>
+										<div class="profile-info-value">
+											<span>{{ $userInfo->status }}</span>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>

@@ -32,13 +32,13 @@ class UserController extends Common\CommonController
 
         //获取参数
         $input = Input::all();
+
         //搜索参数
         $searchSql[] = array('supper_admin', '=', '0');
-        if($input['s_u_name'] != null){
+        $searchSql[] = array('recycle', '=', 0);
+        if(array_key_exists('s_u_name', $input)){
             $searchSql[] = array('user_name', 'like', '%'.$input['s_u_name'].'%');
         }
-      
-        $searchSql[] = array('is_del', '=', $input['s_deleted']);
         $data['searchSql'] = $searchSql;
 
         //分页
@@ -48,7 +48,7 @@ class UserController extends Common\CommonController
         //获取记录总数
         $total = UserDb::where($searchSql)->count();
         //获取数据
-        $result = UserDb::select('user_id AS id', 'user_name AS name', 'user_email AS email')
+        $result = UserDb::select('user_id AS id', 'user_name AS name', 'user_email AS email', 'status')
             ->where($searchSql)
             ->skip($skip)
             ->take($take)
@@ -104,6 +104,7 @@ class UserController extends Common\CommonController
         }
 
         $data['isSession'] = $isSession;
+        $data['userInfo']['status'] = $data['userInfo']['status'] == 1 ? "使用中" : "已禁用";
         return view('user.userInfo', $data);
     }
     
@@ -160,13 +161,13 @@ class UserController extends Common\CommonController
         //获取部门下拉菜单
         $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
             ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
-            ->where('department.is_del', 0)
+            ->where('department.recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
         //获取岗位菜单
         $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
@@ -280,13 +281,13 @@ class UserController extends Common\CommonController
         //获取部门下拉菜单
         $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
             ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
-            ->where('department.is_del', 0)
+            ->where('department.recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
         //获取岗位菜单
         $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('is_del', 0)
+            ->where('recycle', 0)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
@@ -312,7 +313,7 @@ class UserController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-        //检测id类型是否整数
+        //检测id是否存在
         if(!array_key_exists('user_id', $input)){
             redirectPageMsg('-1', '参数错误', route('user.index'));
         };
@@ -389,7 +390,7 @@ class UserController extends Common\CommonController
         }
 
         //删除员工
-        $data['is_del'] = 1;
+        $data['recycle'] = 1;
         $result = UserDb::where('user_id', $input['id'])
             ->update($data);
             //->delete();

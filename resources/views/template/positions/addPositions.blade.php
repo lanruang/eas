@@ -4,7 +4,6 @@
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
 @endsection()
 
 {{--面包削导航--}}

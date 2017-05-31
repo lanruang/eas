@@ -33,6 +33,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('editNode/{id?}', ['as' => 'node.editNode', 'uses' => 'NodeController@editNode']);//编辑权限视图
         Route::post('updateNode', ['as' => 'node.updateNode', 'uses' => 'NodeController@updateNode']);//更新权限
         Route::post('delNode', ['as' => 'node.delNode', 'uses' => 'NodeController@delNode']);//删除权限
+        Route::post('updateSort', ['as' => 'node.updateSort', 'uses' => 'NodeController@updateSort']);//更新排序
     });
     //角色列表
     Route::group(['prefix' => 'role'], function () {
@@ -45,6 +46,11 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('delRole', ['as' => 'role.delRole', 'uses' => 'RoleController@delRole']);//删除角色
         Route::get('roleInfo/{id?}', ['as' => 'role.roleInfo', 'uses' => 'RoleController@roleInfo']);//角色详情
     });
+    /*-----------------------------我的工作-----------------------------*/
+    //回收站
+    Route::group(['prefix' => 'recycle'], function () {
+        Route::get('index', ['as' => 'recycle.index', 'uses' => 'RecycleController@index']);//回收站主视图
+    });
 
     /*-----------------------------公司信息-----------------------------*/
     //科目管理
@@ -56,6 +62,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('editSubjects/{id?}', ['as' => 'subjects.editSubjects', 'uses' => 'SubjectsController@editSubjects']);//修改部门视图
         Route::post('updateSubjects', ['as' => 'subjects.updateSubjects', 'uses' => 'SubjectsController@updateSubjects']);//更新部门
         Route::post('delSubjects', ['as' => 'subjects.delSubjects', 'uses' => 'SubjectsController@delSubjects']);//删除部门
+        Route::post('updateSort', ['as' => 'subjects.updateSort', 'uses' => 'SubjectsController@updateSort']);//更新排序
     });
     //部门列表
     Route::group(['prefix' => 'department'], function () {

@@ -3,8 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-
-
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/editor.dataTables.min.css" />
 @endsection()
 
 {{--面包削导航--}}
@@ -40,6 +39,7 @@
 @section('pageSpecificPluginScripts')
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.editor.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 @endsection()
 
@@ -47,6 +47,7 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var nodeTable;
+		var editor;
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
@@ -57,6 +58,7 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
+								"deferRender": true,
 								"language": {
 									"sProcessing":   "处理中...",
 									"sLengthMenu":   "显示 _MENU_ 项结果",
@@ -96,11 +98,11 @@
 									}
 								},
 								"columns": [
-									{"data": "name" , render: function(data, type, row, meta) {
+									{"data": "name" , render: function(data, type, row) {
 										return '<a style="cursor:pointer" onclick="getParameter(' + row.id + ')">' + row.name + '</a>';
 									}},
 									{"data": "alias" },
-									{"data": "sort" },
+									{"data": "sort", className: 'editable' },
 									{"data": "status", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
@@ -144,7 +146,7 @@
 															'</li>';
 										if(row.status != "-1") {
 										html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delNode(' + row.id + ')">' +
+													'<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete"  onclick="delNode(' + row.id + ')">' +
 													'<span class="red">' +
 													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 													'</span>' +
@@ -158,6 +160,30 @@
 									}
 								}]
 							});
+
+			editor = new $.fn.dataTable.Editor( {
+				"ajax": {
+					"url": '{{route('node.updateSort')}}',
+					"data": {"_token": '{{csrf_token()}}'},
+				},
+				"table": "#nodeTable",
+				"idSrc": "id",
+				"fields": [
+					{"name": "sort"}
+				],
+				"i18n": {
+					"error": {
+						"system": "系统错误"
+					},
+				}
+			} );
+
+			$('#nodeTable').on( 'click', 'tbody td.editable', function (e) {
+				editor.inline( this, {
+					buttons: { label: '&gt;', fn: function () { this.submit(); } }
+				} );
+			} );
+
 		})
 
 		function getParameter(i) {
@@ -238,7 +264,7 @@
 							},
 							success: function(res){
 								if(res.status == true){
-									nodeTable.ajax.reload(null, true);
+									nodeTable.ajax.reload(null, false);
 									alertDialog(res.status, res.msg);
 								}else{
 									alertDialog(res.status, res.msg);

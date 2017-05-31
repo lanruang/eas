@@ -155,7 +155,7 @@ class NodeController extends Common\CommonController
         //验证表单
         $input = Input::all();
 
-        //检测id类型是否整数
+        //检测参数是否存在
         if(!array_key_exists('node_id', $input)){
             redirectPageMsg('-1', '缺少必要参数', route('node.index'));
         };
@@ -213,7 +213,7 @@ class NodeController extends Common\CommonController
             echoAjaxJson(0, '非法请求');
         }
         $input = Input::all();
-
+        
         //过滤信息
         $rules = [
             'id' => 'required|integer|digits_between:1,11',
@@ -242,6 +242,65 @@ class NodeController extends Common\CommonController
             echoAjaxJson('1', '删除成功');
         }else{
             echoAjaxJson('-1', '删除失败');
+        }
+    }
+
+    //更新排序
+    public function updateSort(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            ajaxJsonRes(array("error"=>"非法请求"));
+        }
+
+        $input = Input::all();
+
+        //格式化参数
+        foreach($input['data'] as $k => $v){
+            foreach($v as $vk => $vv){
+                $input['id'] = $k;
+                $input['sort'] = $vv;
+            }
+        }
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+            'sort' => 'required|integer|digits_between:1,4',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误',
+            'sort.required' => '必填项',
+            'sort.integer' => '必须为数字',
+            'sort.digits_between' => '超出最大值'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            ajaxJsonRes(array("error"=>$validator->errors()->first()));
+        }
+
+        $data = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid', 'is_menu')
+            ->where('id', $input['id'])
+            ->get()
+            ->toArray();
+
+        if(!$data){
+            ajaxJsonRes(array("error"=>"更新失败"));
+        }
+
+        //更新权限
+        $result = nodeDb::where('id', $input['id'])
+            ->update(array('sort'=>$input['sort']));
+        $data[0]['sort'] = $input['sort'];
+        $json['data']['sort'] = $input['sort'];
+
+        if($result){
+            ajaxJsonRes($json);
+        }else{
+            ajaxJsonRes(array("error"=>"更新失败"));
         }
     }
 }

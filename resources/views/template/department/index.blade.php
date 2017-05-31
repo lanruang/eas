@@ -9,23 +9,14 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li>员工列表</li>
+	<li>部门列表</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-9">
-			<div id="btnList">
 			<button class="btn btn-sm btn-primary" onclick="addDepartment();">添加</button>
-			<button class="btn btn-white" onclick="getDeleted(1);">
-				<i class="ace-icon fa fa-trash-o"></i>
-				回收站
-			</button>
-			</div>
-			<div id="delGoBack" class="hide">
-				<button class="btn btn-sm btn-success" onclick="getDeleted(0);"><i class="ace-icon fa fa-reply icon-only"></i></button>
-			</div>
 			<table id="departmentTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
@@ -50,7 +41,6 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var departmentTable;
-		var deleted = 0;
 		$(function($) {
 			var html;
 			departmentTable = $('#departmentTable')
@@ -98,12 +88,11 @@
 								"columnDefs": [{
 									"targets": 2,
 									"render": function(data, type, row) {
-										if (row.deleted == '0') {
 											html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editDepartment(' + row.id + ')">' +
 													'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>';
-											html += '<a class="red" href="#" onclick="updateStatus(' + row.id + ', 1)">' +
+											html += '<a class="red" href="#" onclick="delDepartment(' + row.id + ', 1)">' +
 													'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 													'</a>';
 											html += '</div>' +
@@ -121,7 +110,7 @@
 													'</a>' +
 													'</li>';
 											html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="updateStatus(' + row.id + ', 1)">' +
+													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delDepartment(' + row.id + ', 1)">' +
 													'<span class="red">' +
 													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
 													'</span>' +
@@ -130,40 +119,9 @@
 											html += '</ul>' +
 													'</div>' +
 													'</div>';
-										} else {
-											html = '<div class="hidden-sm hidden-xs action-buttons">' +
-													'<a class="orange" href="#" onclick="updateStatus(' + row.id + ', 0)">' +
-													'<i class="ace-icon fa fa-undo bigger-130"></i>' +
-													'</a>';
-											html += '</div>' +
-													'<div class="hidden-md hidden-lg">' +
-													'<div class="inline pos-rel">' +
-													'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-													'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-													'</button>' +
-													'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-													'<li>' +
-													'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-													'<span class="orange" onclick="updateStatus(' + row.id + ', 0)">' +
-													'<i class="ace-icon fa fa-undo bigger-130"></i>' +
-													'</span>' +
-													'</a>' +
-													'</li>';
-											html += '</ul>' +
-													'</div>' +
-													'</div>';
-										}
 										return html;
 									}
 								}],
-								"createdRow": function( row, data, dataIndex ) {
-									if ( data['deleted'] == '1' ) {
-										$(row).addClass( 'hide' );
-										$(row).attr("deleted","true")
-									}else{
-										$(row).attr("deleted","false")
-									}
-								}
 							});
 		})
 
@@ -175,8 +133,7 @@
 			window.location.href = "{{route('department.editDepartment')}}" + "/" + e;
 		}
 
-		function updateStatus(e,act){
-			deleted = act == '1' ? 0 : 1;
+		function delDepartment(e){
 			bootbox.confirm({
 				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　请确认操作?',
 				buttons: {
@@ -198,13 +155,11 @@
 							url: '{{route('department.delDepartment')}}',
 							data: {
 								"id": e,
-								"act": act,
 								"_token": '{{csrf_token()}}',
 							},
 							success: function(res){
 								if(res.status == true){
 									departmentTable.ajax.reload(null, true);
-									getDeleted(deleted);
 									alertDialog(res.status, res.msg);
 								}else{
 									alertDialog(res.status, res.msg);
@@ -214,33 +169,6 @@
 					}
 				}
 			});
-		}
-
-		function getDeleted(e){
-			if(e == '1'){
-				for(var i=0; i<$('#departmentTable tbody tr').length; i++){
-					if($('#departmentTable tbody tr:eq('+i+')').attr('deleted') == 'false'){
-						$('#departmentTable tbody tr:eq('+i+')').addClass('hide');
-					}else{
-						$('#departmentTable tbody tr:eq('+i+')').removeClass('hide');
-					}
-				}
-				deleted = 1;
-				$('#btnList').addClass('hide');
-				$('#delGoBack').removeClass('hide');
-			}else{
-				for(var i=0; i<$('#departmentTable tbody tr').length; i++){
-					if($('#departmentTable tbody tr:eq('+i+')').attr('deleted') == 'true'){
-						$('#departmentTable tbody tr:eq('+i+')').addClass('hide')
-					}else{
-						$('#departmentTable tbody tr:eq('+i+')').removeClass('hide');
-					}
-				}
-				deleted = 0;
-				$('#btnList').removeClass('hide');
-				$('#delGoBack').addClass('hide');
-			}
-
 		}
 
 	</script>

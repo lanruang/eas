@@ -4,7 +4,6 @@
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
 @endsection()
 
 {{--面包削导航--}}
@@ -332,7 +331,11 @@
 		}
 
 		function searchUser() {
-			var data = {"s_u_name": $('#s_u_name').val(), "_token": '{{csrf_token()}}'};
+			var data = {
+				"s_u_name": $('#s_u_name').val(),
+				"s_deleted": '0',
+				"_token": '{{csrf_token()}}'
+			};
 			userTable.settings()[0].ajax.data = data;
 			userTable.ajax.reload(function () {
 				$('#searchCollapse').click();

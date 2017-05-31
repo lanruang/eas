@@ -38,10 +38,10 @@
 				status = "使用中";
 				break;
 			case "0":
-				status = "已停用";
+				status = '<span style="color:red;">已停用</span>';
 				break;
 			case "-1":
-				status = "已删除";
+				status = '<span style="color:red;">已删除</span>';
 				break;
 			case "sub_1":
 				status = "借";
