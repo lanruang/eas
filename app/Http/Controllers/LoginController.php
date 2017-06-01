@@ -38,8 +38,9 @@ class LoginController extends Common\CommonController
                 ->withErrors($validator);
         }
 
-        $userInfo = loginDb::where('user_email', $input['userName'])
+        $userInfo = loginDb::where('user_email', $input["userName"])
                             ->first();
+
         //判断用户
         if(empty($userInfo)){
             return redirect(route('login.index'))
@@ -126,7 +127,7 @@ class LoginController extends Common\CommonController
                 //回收站权限配置
                 if($v['is_recycle'] == 1){
                     $arr['recycle'][$k]['selectName'] = $v['recycle_name'];
-                    $arr['recycle'][$k]['dbName'] = $v['recycle_db'];
+                    $arr['recycle'][$k]['typeName'] = $v['recycle_type'];
                     $arr['recycle'][$k]['url'] = route($v['alias']);
                 }
             }

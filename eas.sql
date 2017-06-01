@@ -1,22 +1,24 @@
 /*
-Navicat MySQL Data Transfer
+ Navicat Premium Data Transfer
 
-Source Server         : localhost3310
-Source Server Version : 50505
-Source Host           : localhost:3310
-Source Database       : eas
+ Source Server         : localhost
+ Source Server Type    : MySQL
+ Source Server Version : 50505
+ Source Host           : localhost
+ Source Database       : eas
 
-Target Server Type    : MYSQL
-Target Server Version : 50505
-File Encoding         : 65001
+ Target Server Type    : MySQL
+ Target Server Version : 50505
+ File Encoding         : utf-8
 
-Date: 2017-05-31 17:39:49
+ Date: 06/01/2017 16:52:14 PM
 */
 
-SET FOREIGN_KEY_CHECKS=0;
+SET NAMES utf8;
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for `department`
+--  Table structure for `department`
 -- ----------------------------
 DROP TABLE IF EXISTS `department`;
 CREATE TABLE `department` (
@@ -32,16 +34,14 @@ CREATE TABLE `department` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of department
+--  Records of `department`
 -- ----------------------------
-INSERT INTO `department` VALUES ('1', '总经办', '1', '0', '1', '0', '2017-05-09 09:50:37', null);
-INSERT INTO `department` VALUES ('2', 'IT部', '2', '0', '2', '0', null, null);
-INSERT INTO `department` VALUES ('3', 'java开发', '0', '2', '2', '0', '2017-05-10 05:27:35', null);
-INSERT INTO `department` VALUES ('4', '.net开发', '0', '3', '2', '0', '2017-05-31 03:34:35', null);
-INSERT INTO `department` VALUES ('5', 'php开发', '0', '3', '1', '0', '2017-05-10 05:27:37', null);
+BEGIN;
+INSERT INTO `department` VALUES ('1', '总经办', '1', '0', '1', '0', '2017-05-09 09:50:37', null), ('2', 'IT部', '2', '0', '2', '0', null, null), ('3', 'java开发', '0', '2', '2', '0', '2017-05-10 05:27:35', null), ('4', '.net开发', '0', '3', '2', '0', '2017-05-31 03:34:35', null), ('5', 'php开发', '0', '3', '1', '0', '2017-05-10 05:27:37', null);
+COMMIT;
 
 -- ----------------------------
--- Table structure for `node`
+--  Table structure for `node`
 -- ----------------------------
 DROP TABLE IF EXISTS `node`;
 CREATE TABLE `node` (
@@ -54,60 +54,22 @@ CREATE TABLE `node` (
   `is_menu` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `is_recycle` tinyint(1) unsigned DEFAULT '0',
-  `recycle_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `recycle_db` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `recycle_name` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `recycle_type` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
--- Records of node
+--  Records of `node`
 -- ----------------------------
-INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa fa-home', '1', '1', '0', null, null, '2016-08-31 15:02:05', '2017-05-24 07:26:06');
-INSERT INTO `node` VALUES ('2', '0', '系统管理', '#', '11', 'fa fa-cogs', '1', '1', '0', null, null, '2016-08-31 15:12:51', '2017-05-24 07:16:33');
-INSERT INTO `node` VALUES ('3', '2', '角色列表', 'role.index', '2', 'fa fa-caret-right', '1', '1', '0', null, null, '2016-08-31 15:22:26', '2016-11-25 08:03:06');
-INSERT INTO `node` VALUES ('4', '32', '员工列表', 'user.index', '5', 'fa fa-caret-right', '1', '1', '1', '员工分类', null, '2016-08-31 15:22:34', '2017-05-12 08:56:04');
-INSERT INTO `node` VALUES ('5', '2', '权限列表', 'node.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2016-08-31 15:50:18', '2016-08-31 15:43:45');
-INSERT INTO `node` VALUES ('7', '5', '添加权限视图', 'node.addNode', '2', '', '0', '1', '0', null, null, '2016-10-28 08:51:08', '2016-10-28 08:51:08');
-INSERT INTO `node` VALUES ('8', '5', '添加权限', 'node.createNode', '3', '', '0', '1', '0', null, null, '2016-10-28 08:52:00', '2016-10-28 08:52:00');
-INSERT INTO `node` VALUES ('9', '5', '编辑权限视图', 'node.editNode', '4', '', '0', '1', '0', null, null, '2016-10-31 07:35:30', '2016-10-31 07:35:30');
-INSERT INTO `node` VALUES ('10', '5', '编辑权限', 'node.updateNode', '5', '', '0', '1', '0', null, null, '2016-10-31 07:35:46', '2016-10-31 07:35:46');
-INSERT INTO `node` VALUES ('11', '5', '权限列表', 'node.getNode', '1', '', '0', '1', '0', null, null, '2016-11-02 15:18:50', '2016-11-02 15:18:53');
-INSERT INTO `node` VALUES ('12', '3', '角色列表', 'role.getRole', '1', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('13', '3', '添加角色列表', 'role.addRole', '2', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('14', '3', '添加角色', 'role.createRole', '3', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('15', '3', '编辑角色视图', 'role.editRole', '4', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('16', '3', '编辑角色', 'role.updateRole', '5', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('17', '3', '角色详情', 'role.roleInfo', '7', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('18', '5', '删除权限', 'node.delNode', '6', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('19', '3', '删除角色', 'role.delRole', '6', '', '0', '1', '0', null, null, null, null);
-INSERT INTO `node` VALUES ('23', '4', '员工列表', 'user.getUser', '1', '', '0', '1', '0', null, null, '2016-12-01 09:42:22', '2016-12-01 09:42:22');
-INSERT INTO `node` VALUES ('24', '4', '添加员工视图', 'user.addUser', '2', '', '0', '1', '0', null, null, '2016-12-01 09:42:39', '2016-12-01 09:44:09');
-INSERT INTO `node` VALUES ('25', '4', '添加角色', 'user.createUser', '3', '', '0', '1', '0', null, null, '2016-12-06 05:57:30', '2016-12-06 05:59:56');
-INSERT INTO `node` VALUES ('26', '4', '编辑角色视图', 'user.editUser', '4', '', '0', '1', '0', null, null, '2016-12-06 05:57:53', '2016-12-06 05:59:40');
-INSERT INTO `node` VALUES ('27', '4', '编辑员工', 'user.updateUser', '5', '', '0', '1', '0', null, null, '2016-12-06 05:58:31', '2016-12-06 05:58:31');
-INSERT INTO `node` VALUES ('28', '4', '删除员工', 'user.delUser', '6', '', '0', '1', '0', null, null, '2016-12-06 05:58:58', '2016-12-06 05:58:58');
-INSERT INTO `node` VALUES ('29', '4', '员工详情', 'user.userInfo', '6', '', '0', '1', '0', null, null, '2016-12-06 05:59:21', '2016-12-06 05:59:21');
-INSERT INTO `node` VALUES ('30', '4', '修改密码', 'user.editPwd', '7', '', '0', '1', '0', null, null, '2016-12-06 06:00:22', '2016-12-06 06:00:22');
-INSERT INTO `node` VALUES ('31', '4', '重置密码', 'user.resetPwd', '8', '', '0', '1', '0', null, null, '2016-12-06 06:00:43', '2016-12-06 06:00:55');
-INSERT INTO `node` VALUES ('32', '0', '公司信息', '#', '4', 'fa fa-cog', '1', '1', '0', null, null, '2017-02-20 08:11:24', '2017-05-24 07:33:29');
-INSERT INTO `node` VALUES ('33', '32', '公司信息', 'company.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-02-20 08:45:03', '2017-04-27 02:07:48');
-INSERT INTO `node` VALUES ('34', '32', '部门列表', 'department.index', '3', 'fa fa-caret-right', '1', '1', '1', '部门分类', null, '2017-04-27 03:17:44', '2017-05-12 07:58:00');
-INSERT INTO `node` VALUES ('35', '32', '岗位列表', 'positions.index', '4', 'fa fa-caret-right', '1', '1', '1', '岗位分类', null, '2017-05-10 06:39:18', '2017-05-12 08:55:52');
-INSERT INTO `node` VALUES ('37', '0', '合同管理', '#', '7', 'fa fa-briefcase', '1', '1', '0', null, null, '2017-05-12 03:08:13', '2017-05-24 07:34:17');
-INSERT INTO `node` VALUES ('38', '0', '预算管理', '#', '5', 'fa  fa-bar-chart-o', '1', '1', '0', null, null, '2017-05-12 03:09:42', '2017-05-24 07:33:37');
-INSERT INTO `node` VALUES ('39', '0', '我的工作', '#', '2', 'fa fa-briefcase', '1', '1', '0', null, null, '2017-05-12 03:18:54', '2017-05-31 02:39:08');
-INSERT INTO `node` VALUES ('40', '0', '流程控制', '#', '3', 'glyphicon glyphicon-refresh', '1', '1', '0', null, null, '2017-05-12 03:39:57', '2017-05-24 07:33:32');
-INSERT INTO `node` VALUES ('41', '0', '库存管理', '#', '8', 'fa fa-hdd-o', '1', '1', '0', null, null, '2017-05-12 03:55:23', '2017-05-24 07:32:10');
-INSERT INTO `node` VALUES ('42', '0', '报表管理', '#', '10', 'glyphicon glyphicon-indent-left', '1', '1', '0', null, null, '2017-05-12 03:57:44', '2017-05-31 02:43:23');
-INSERT INTO `node` VALUES ('46', '32', '科目管理', 'subjects.index', '2', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-05-12 08:55:00', '2017-05-12 08:55:00');
-INSERT INTO `node` VALUES ('47', '0', '费用管理', '#', '9', 'glyphicon glyphicon-list-alt', '1', '1', '0', null, null, '2017-05-16 02:36:36', '2017-05-24 07:34:45');
-INSERT INTO `node` VALUES ('49', '0', '客户管理', '#', '6', 'fa fa-users', '1', '1', '0', null, null, '2017-05-16 02:38:43', '2017-05-24 07:34:32');
-INSERT INTO `node` VALUES ('50', '39', '回收站', 'recycle.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-05-31 02:46:48', '2017-05-31 02:50:39');
+BEGIN;
+INSERT INTO `node` VALUES ('1', '0', '主页', 'main.index', '1', 'fa fa-home', '1', '1', '0', null, null, '2016-08-31 15:02:05', '2017-05-24 07:26:06'), ('2', '0', '系统管理', '#', '11', 'fa fa-cogs', '1', '1', '0', null, null, '2016-08-31 15:12:51', '2017-05-24 07:16:33'), ('3', '2', '角色列表', 'role.index', '2', 'fa fa-caret-right', '1', '1', '0', null, null, '2016-08-31 15:22:26', '2016-11-25 08:03:06'), ('4', '32', '员工列表', 'user.index', '5', 'fa fa-caret-right', '1', '1', '1', '员工类', 'user', '2016-08-31 15:22:34', '2017-06-01 07:06:29'), ('5', '2', '权限列表', 'node.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2016-08-31 15:50:18', '2016-08-31 15:43:45'), ('7', '5', '添加权限视图', 'node.addNode', '2', '', '0', '1', '0', null, null, '2016-10-28 08:51:08', '2016-10-28 08:51:08'), ('8', '5', '添加权限', 'node.createNode', '3', '', '0', '1', '0', null, null, '2016-10-28 08:52:00', '2016-10-28 08:52:00'), ('9', '5', '编辑权限视图', 'node.editNode', '4', '', '0', '1', '0', null, null, '2016-10-31 07:35:30', '2016-10-31 07:35:30'), ('10', '5', '编辑权限', 'node.updateNode', '5', '', '0', '1', '0', null, null, '2016-10-31 07:35:46', '2016-10-31 07:35:46'), ('11', '5', '权限列表', 'node.getNode', '1', '', '0', '1', '0', null, null, '2016-11-02 15:18:50', '2016-11-02 15:18:53'), ('12', '3', '角色列表', 'role.getRole', '1', '', '0', '1', '0', null, null, null, null), ('13', '3', '添加角色列表', 'role.addRole', '2', '', '0', '1', '0', null, null, null, null), ('14', '3', '添加角色', 'role.createRole', '3', '', '0', '1', '0', null, null, null, null), ('15', '3', '编辑角色视图', 'role.editRole', '4', '', '0', '1', '0', null, null, null, null), ('16', '3', '编辑角色', 'role.updateRole', '5', '', '0', '1', '0', null, null, null, null), ('17', '3', '角色详情', 'role.roleInfo', '7', '', '0', '1', '0', null, null, null, null), ('18', '5', '删除权限', 'node.delNode', '6', '', '0', '1', '0', null, null, null, null), ('19', '3', '删除角色', 'role.delRole', '6', '', '0', '1', '0', null, null, null, null), ('23', '4', '员工列表', 'user.getUser', '1', '', '0', '1', '0', null, null, '2016-12-01 09:42:22', '2016-12-01 09:42:22'), ('24', '4', '添加员工视图', 'user.addUser', '2', '', '0', '1', '0', null, null, '2016-12-01 09:42:39', '2016-12-01 09:44:09'), ('25', '4', '添加角色', 'user.createUser', '3', '', '0', '1', '0', null, null, '2016-12-06 05:57:30', '2016-12-06 05:59:56'), ('26', '4', '编辑角色视图', 'user.editUser', '4', '', '0', '1', '0', null, null, '2016-12-06 05:57:53', '2016-12-06 05:59:40'), ('27', '4', '编辑员工', 'user.updateUser', '5', '', '0', '1', '0', null, null, '2016-12-06 05:58:31', '2016-12-06 05:58:31'), ('28', '4', '删除员工', 'user.delUser', '6', '', '0', '1', '0', null, null, '2016-12-06 05:58:58', '2016-12-06 05:58:58'), ('29', '4', '员工详情', 'user.userInfo', '6', '', '0', '1', '0', null, null, '2016-12-06 05:59:21', '2016-12-06 05:59:21'), ('30', '4', '修改密码', 'user.editPwd', '7', '', '0', '1', '0', null, null, '2016-12-06 06:00:22', '2016-12-06 06:00:22'), ('31', '4', '重置密码', 'user.resetPwd', '8', '', '0', '1', '0', null, null, '2016-12-06 06:00:43', '2016-12-06 06:00:55'), ('32', '0', '公司信息', '#', '4', 'fa fa-cog', '1', '1', '0', null, null, '2017-02-20 08:11:24', '2017-05-24 07:33:29'), ('33', '32', '公司信息', 'company.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-02-20 08:45:03', '2017-04-27 02:07:48'), ('34', '32', '部门列表', 'department.index', '3', 'fa fa-caret-right', '1', '1', '1', '部门类', 'department', '2017-04-27 03:17:44', '2017-06-01 06:58:53'), ('35', '32', '岗位列表', 'positions.index', '4', 'fa fa-caret-right', '1', '1', '1', '岗位类', 'positions', '2017-05-10 06:39:18', '2017-06-01 06:59:11'), ('37', '0', '合同管理', '#', '7', 'fa fa-briefcase', '1', '1', '0', null, null, '2017-05-12 03:08:13', '2017-05-24 07:34:17'), ('38', '0', '预算管理', '#', '5', 'fa  fa-bar-chart-o', '1', '1', '0', null, null, '2017-05-12 03:09:42', '2017-05-24 07:33:37'), ('39', '0', '我的工作', '#', '2', 'fa fa-briefcase', '1', '1', '0', null, null, '2017-05-12 03:18:54', '2017-05-31 02:39:08'), ('40', '0', '流程控制', '#', '3', 'glyphicon glyphicon-refresh', '1', '1', '0', null, null, '2017-05-12 03:39:57', '2017-05-24 07:33:32'), ('41', '0', '库存管理', '#', '8', 'fa fa-hdd-o', '1', '1', '0', null, null, '2017-05-12 03:55:23', '2017-05-24 07:32:10'), ('42', '0', '报表管理', '#', '10', 'glyphicon glyphicon-indent-left', '1', '1', '0', null, null, '2017-05-12 03:57:44', '2017-05-31 02:43:23'), ('46', '32', '科目管理', 'subjects.index', '2', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-05-12 08:55:00', '2017-05-12 08:55:00'), ('47', '0', '费用管理', '#', '9', 'glyphicon glyphicon-list-alt', '1', '1', '0', null, null, '2017-05-16 02:36:36', '2017-05-24 07:34:45'), ('49', '0', '客户管理', '#', '6', 'fa fa-users', '1', '1', '0', null, null, '2017-05-16 02:38:43', '2017-05-24 07:34:32'), ('50', '39', '回收站', 'recycle.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-05-31 02:46:48', '2017-05-31 02:50:39');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `positions`
+--  Table structure for `positions`
 -- ----------------------------
 DROP TABLE IF EXISTS `positions`;
 CREATE TABLE `positions` (
@@ -122,14 +84,14 @@ CREATE TABLE `positions` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of positions
+--  Records of `positions`
 -- ----------------------------
-INSERT INTO `positions` VALUES ('1', '总经理', '0', '1', '0', '2017-05-10 07:26:20', '2017-05-10 07:26:20');
-INSERT INTO `positions` VALUES ('2', 'IT部经理', '0', '1', '0', '2017-05-31 03:36:05', '2017-05-10 07:26:34');
-INSERT INTO `positions` VALUES ('3', 'php工程师', '2', '1', '0', '2017-05-31 03:12:13', '2017-05-10 07:26:42');
+BEGIN;
+INSERT INTO `positions` VALUES ('1', '总经理', '0', '1', '0', '2017-05-10 07:26:20', '2017-05-10 07:26:20'), ('2', 'IT部经理', '0', '1', '0', '2017-05-31 03:36:05', '2017-05-10 07:26:34'), ('3', 'php工程师', '2', '1', '0', '2017-05-31 03:12:13', '2017-05-10 07:26:42');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `role`
+--  Table structure for `role`
 -- ----------------------------
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
@@ -143,13 +105,14 @@ CREATE TABLE `role` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
--- Records of role
+--  Records of `role`
 -- ----------------------------
-INSERT INTO `role` VALUES ('5', '管理员', '1', '1', '2017-01-17 08:36:37', '2017-01-17 08:36:37');
-INSERT INTO `role` VALUES ('6', 'test', '2', '1', '2017-03-07 05:53:27', '2017-04-26 09:55:41');
+BEGIN;
+INSERT INTO `role` VALUES ('5', '管理员', '1', '1', '2017-01-17 08:36:37', '2017-01-17 08:36:37'), ('6', 'test', '2', '1', '2017-03-07 05:53:27', '2017-04-26 09:55:41');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `role_node`
+--  Table structure for `role_node`
 -- ----------------------------
 DROP TABLE IF EXISTS `role_node`;
 CREATE TABLE `role_node` (
@@ -158,50 +121,14 @@ CREATE TABLE `role_node` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of role_node
+--  Records of `role_node`
 -- ----------------------------
-INSERT INTO `role_node` VALUES ('5', '1');
-INSERT INTO `role_node` VALUES ('5', '2');
-INSERT INTO `role_node` VALUES ('5', '5');
-INSERT INTO `role_node` VALUES ('5', '11');
-INSERT INTO `role_node` VALUES ('5', '7');
-INSERT INTO `role_node` VALUES ('5', '8');
-INSERT INTO `role_node` VALUES ('5', '9');
-INSERT INTO `role_node` VALUES ('5', '10');
-INSERT INTO `role_node` VALUES ('5', '18');
-INSERT INTO `role_node` VALUES ('5', '3');
-INSERT INTO `role_node` VALUES ('5', '12');
-INSERT INTO `role_node` VALUES ('5', '13');
-INSERT INTO `role_node` VALUES ('5', '14');
-INSERT INTO `role_node` VALUES ('5', '15');
-INSERT INTO `role_node` VALUES ('5', '16');
-INSERT INTO `role_node` VALUES ('5', '19');
-INSERT INTO `role_node` VALUES ('5', '17');
-INSERT INTO `role_node` VALUES ('5', '4');
-INSERT INTO `role_node` VALUES ('5', '23');
-INSERT INTO `role_node` VALUES ('5', '24');
-INSERT INTO `role_node` VALUES ('5', '25');
-INSERT INTO `role_node` VALUES ('5', '26');
-INSERT INTO `role_node` VALUES ('5', '27');
-INSERT INTO `role_node` VALUES ('5', '28');
-INSERT INTO `role_node` VALUES ('5', '29');
-INSERT INTO `role_node` VALUES ('5', '30');
-INSERT INTO `role_node` VALUES ('5', '31');
-INSERT INTO `role_node` VALUES ('6', '1');
-INSERT INTO `role_node` VALUES ('6', '32');
-INSERT INTO `role_node` VALUES ('6', '4');
-INSERT INTO `role_node` VALUES ('6', '23');
-INSERT INTO `role_node` VALUES ('6', '24');
-INSERT INTO `role_node` VALUES ('6', '25');
-INSERT INTO `role_node` VALUES ('6', '26');
-INSERT INTO `role_node` VALUES ('6', '27');
-INSERT INTO `role_node` VALUES ('6', '28');
-INSERT INTO `role_node` VALUES ('6', '29');
-INSERT INTO `role_node` VALUES ('6', '30');
-INSERT INTO `role_node` VALUES ('6', '31');
+BEGIN;
+INSERT INTO `role_node` VALUES ('5', '1'), ('5', '2'), ('5', '5'), ('5', '11'), ('5', '7'), ('5', '8'), ('5', '9'), ('5', '10'), ('5', '18'), ('5', '3'), ('5', '12'), ('5', '13'), ('5', '14'), ('5', '15'), ('5', '16'), ('5', '19'), ('5', '17'), ('5', '4'), ('5', '23'), ('5', '24'), ('5', '25'), ('5', '26'), ('5', '27'), ('5', '28'), ('5', '29'), ('5', '30'), ('5', '31'), ('6', '1'), ('6', '32'), ('6', '4'), ('6', '23'), ('6', '24'), ('6', '25'), ('6', '26'), ('6', '27'), ('6', '28'), ('6', '29'), ('6', '30'), ('6', '31');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `subjects`
+--  Table structure for `subjects`
 -- ----------------------------
 DROP TABLE IF EXISTS `subjects`;
 CREATE TABLE `subjects` (
@@ -219,16 +146,14 @@ CREATE TABLE `subjects` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of subjects
+--  Records of `subjects`
 -- ----------------------------
-INSERT INTO `subjects` VALUES ('1', '0', '1000', '资产', '0', '1', '0', '2017-05-24 15:58:46', '1', '2017-05-24 07:58:46');
-INSERT INTO `subjects` VALUES ('2', '0', '2000', '负债', '0', '1', '0', '2017-05-24 15:58:48', '2', '2017-05-24 07:58:48');
-INSERT INTO `subjects` VALUES ('3', '0', '4000', '权益类', '0', '1', '0', '2017-05-24 15:59:07', '3', '2017-05-24 07:59:07');
-INSERT INTO `subjects` VALUES ('4', '0', '6000', '损益', '0', '1', '0', '2017-05-24 15:59:09', '4', '2017-05-24 07:59:09');
-INSERT INTO `subjects` VALUES ('5', '0', '7000', 'test', '0', '1', '0', null, '0', null);
+BEGIN;
+INSERT INTO `subjects` VALUES ('1', '0', '1000', '资产', '0', '1', '0', '2017-05-24 15:58:46', '1', '2017-05-24 07:58:46'), ('2', '0', '2000', '负债', '0', '1', '0', '2017-05-24 15:58:48', '2', '2017-05-24 07:58:48'), ('3', '0', '4000', '权益类', '0', '1', '0', '2017-05-24 15:59:07', '3', '2017-05-24 07:59:07'), ('4', '0', '6000', '损益', '0', '1', '0', '2017-05-24 15:59:09', '4', '2017-05-24 07:59:09'), ('5', '0', '7000', 'test', '0', '1', '0', null, '0', null);
+COMMIT;
 
 -- ----------------------------
--- Table structure for `users`
+--  Table structure for `users`
 -- ----------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -249,14 +174,14 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
--- Records of users
+--  Records of `users`
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-05-31 09:05:01', '1', '0', '2016-05-25 05:56:33', '2017-05-31 09:05:01');
-INSERT INTO `users` VALUES ('2', '名IT经理', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-05-31 11:47:16', '1', '0', '2016-11-01 15:07:59', '2017-04-27 02:01:45');
-INSERT INTO `users` VALUES ('3', '名it员工', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-05-31 12:58:37', '0', '0', '2017-05-10 08:56:06', '2017-05-31 04:58:37');
+BEGIN;
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-01 07:07:23', '1', '0', '2016-05-25 05:56:33', '2017-06-01 07:07:23'), ('2', '名IT经理', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-05-31 11:47:16', '1', '0', '2016-11-01 15:07:59', '2017-04-27 02:01:45'), ('3', '名it员工', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-05-31 12:58:37', '0', '0', '2017-05-10 08:56:06', '2017-05-31 04:58:37');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `users_base`
+--  Table structure for `users_base`
 -- ----------------------------
 DROP TABLE IF EXISTS `users_base`;
 CREATE TABLE `users_base` (
@@ -269,14 +194,14 @@ CREATE TABLE `users_base` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of users_base
+--  Records of `users_base`
 -- ----------------------------
-INSERT INTO `users_base` VALUES ('0000000001', '1', '1', '2017-05-10 17:13:29', '2017-05-10 17:13:29');
-INSERT INTO `users_base` VALUES ('0000000002', '2', '2', '2017-05-10 17:28:01', '2017-05-10 17:28:01');
-INSERT INTO `users_base` VALUES ('0000000003', '2', '3', '2017-05-31 12:58:37', '2017-05-31 04:58:37');
+BEGIN;
+INSERT INTO `users_base` VALUES ('1', '1', '1', '2017-05-10 17:13:29', '2017-05-10 17:13:29'), ('2', '2', '2', '2017-05-10 17:28:01', '2017-05-10 17:28:01'), ('3', '2', '3', '2017-05-31 12:58:37', '2017-05-31 04:58:37');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `users_info`
+--  Table structure for `users_info`
 -- ----------------------------
 DROP TABLE IF EXISTS `users_info`;
 CREATE TABLE `users_info` (
@@ -287,8 +212,10 @@ CREATE TABLE `users_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of users_info
+--  Records of `users_info`
 -- ----------------------------
-INSERT INTO `users_info` VALUES ('1', null, null);
-INSERT INTO `users_info` VALUES ('2', null, null);
-INSERT INTO `users_info` VALUES ('3', '2017-05-10 17:26:50', '2017-05-10 17:26:50');
+BEGIN;
+INSERT INTO `users_info` VALUES ('1', null, null), ('2', null, null), ('3', '2017-05-10 17:26:50', '2017-05-10 17:26:50');
+COMMIT;
+
+SET FOREIGN_KEY_CHECKS = 1;

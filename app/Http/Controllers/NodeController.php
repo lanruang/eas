@@ -39,8 +39,7 @@ class NodeController extends Common\CommonController
         $total = nodeDb::where('pid', $pid)
                                 ->count();
         //获取数据
-        $result = nodeDb::select('id', 'name', 'alias', 'sort', 'status', 'icon', 'pid', 'is_menu')
-                                ->where('pid', $pid)
+        $result = nodeDb::where('pid', $pid)
                                 ->skip($skip)
                                 ->take($take)
                                 ->orderBy('sort', 'asc')
@@ -81,7 +80,9 @@ class NodeController extends Common\CommonController
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|digits_between:1,4',
-            'node_pid' => 'digits_between:1,11'
+            'node_pid' => 'digits_between:1,11',
+            'recycle_name' => 'required_with:recycle|max:50',
+            'recycle_type' => 'required_with:recycle|max:40'
         ];
         $message = [
             'node_name.required' => '权限名称未填写',
@@ -91,16 +92,22 @@ class NodeController extends Common\CommonController
             'node_sort.required' => '排序未填写',
             'node_sort.digits_between' => '排序字符数过多',
             'node_icon.max' => '图标字符数过多',
-            'node_pid.digits_between' => '父级权限参数错误'
+            'node_pid.digits_between' => '父级权限参数错误',
+            'recycle_name.required_with' => '回收站名称必须填写',
+            'recycle_name.max' => '回收站名称字符数过多',
+            'recycle_type.required_with' => '回收站分类必须填写',
+            'recycle_type.max' => '回收站分类字符数过多'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
             redirectPageMsg('-1', $validator->errors()->first(), route('node.addNode'));
         }
 
+
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
+        $input['is_recycle'] = array_key_exists('recycle', $input) ? 1 : 0;
 
         //添加数据
         $nodeDb = new nodeDb;
@@ -111,6 +118,9 @@ class NodeController extends Common\CommonController
         $nodeDb->icon = $input['node_icon'];
         $nodeDb->status = $input['node_status'];
         $nodeDb->is_menu = $input['node_is_menu'];
+        $nodeDb->is_recycle = $input['is_recycle'];
+        $nodeDb->recycle_name = $input['recycle_name'];
+        $nodeDb->recycle_type = $input['recycle_type'];
         $result = $nodeDb->save();
 
         if($result){
@@ -130,7 +140,10 @@ class NodeController extends Common\CommonController
 
         //获取权限信息
         $node = nodeDb::leftjoin('node AS nd', 'node.pid','=','nd.id')
-                            ->select('node.id', 'node.name', 'node.alias', 'node.pid', 'node.sort', 'node.icon', 'node.status', 'node.is_menu', 'nd.name AS ndName', 'nd.alias AS ndAlias')
+                            ->select('node.id', 'node.name', 'node.alias', 'node.pid',
+                                'node.sort', 'node.icon', 'node.status', 'node.is_menu',
+                                'nd.name AS ndName', 'nd.alias AS ndAlias', 'node.is_recycle',
+                                'node.recycle_type', 'node.recycle_name')
                             ->where('node.id', $id)
                             ->first()
                             ->toArray();
@@ -166,6 +179,8 @@ class NodeController extends Common\CommonController
             'node_sort' => 'required|digits_between:1,4',
             'node_pid' => 'digits_between:1,11',
             'node_id' => 'required|digits_between:1,11',
+            'recycle_name' => 'required_with:recycle|max:50',
+            'recycle_type' => 'required_with:recycle|max:40'
         ];
         $message = [
             'node_name.required' => '权限名称未填写',
@@ -178,6 +193,10 @@ class NodeController extends Common\CommonController
             'node_pid.digits_between' => '父级权限参数错误',
             'node_id.required' => '缺少必要参数',
             'node_id.digits_between' => '参数错误',
+            'recycle_name.required_with' => '回收站名称必须填写',
+            'recycle_name.max' => '回收站名称字符数过多',
+            'recycle_type.required_with' => '回收站分类必须填写',
+            'recycle_type.max' => '回收站分类字符数过多'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -186,6 +205,7 @@ class NodeController extends Common\CommonController
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
+        $input['is_recycle'] = array_key_exists('recycle', $input) ? 1 : 0;
 
         //格式化数据
         $data['pid'] = $input['node_pid'];
@@ -195,6 +215,9 @@ class NodeController extends Common\CommonController
         $data['icon'] = $input['node_icon'];
         $data['status'] = $input['node_status'];
         $data['is_menu'] = $input['node_is_menu'];
+        $data['is_recycle'] = $input['is_recycle'];
+        $data['recycle_name'] = $input['recycle_name'];
+        $data['recycle_type'] = $input['recycle_type'];
         //更新权限
         $result = nodeDb::where('id', $input['node_id'])
                                 ->update($data);

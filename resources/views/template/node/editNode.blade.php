@@ -840,6 +840,35 @@
 						</label>
 					</div>
 				</div>
+
+				<h3 class="header smaller lighter">
+					回收站选项
+				</h3>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 回收站项 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="recycle" id="recycle" class="ace ace-switch ace-switch-6" type="checkbox" @if($is_recycle == '1')checked="checked"@endif>
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 回收站名称 </label>
+					<div class="col-sm-2">
+						<input type="text" name="recycle_name" id="recycle_name" placeholder="回收站名称" class="form-control" value="{{$recycle_name}}"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 回收站分类 </label>
+					<div class="col-sm-2">
+						<input type="text" name="recycle_type" id="recycle_type" placeholder="回收站分类" class="form-control" value="{{$recycle_type}}"/>
+					</div>
+				</div>
+
 				{{csrf_field()}}
 				<input type="hidden" id="node_id" name="node_id" value="{{$id}}"/>
 				<input type="hidden" id="node_pid" name="node_pid" value="{{$pid}}"/>
@@ -877,13 +906,17 @@
 					node_name: {required: true, maxlength:40},
 					node_alias: {required: true, maxlength:90},
 					node_icon: {maxlength:40},
-					node_sort: {required: true, number: true, maxlength:3}
+					node_sort: {required: true, number: true, maxlength:3},
+					recycle_name: {required: "#recycle:checked", maxlength:50},
+					recycle_type: {required: "#recycle:checked", maxlength:40}
 				},
 				messages: {
 					node_name: {required: "请填写权限名称.", maxlength: "字符数超出范围."},
 					node_alias: {required: "请填写别名/地址.", maxlength: "字符数超出范围."},
 					node_icon: {maxlength: "字符数超出范围."},
-					node_sort: {required: "请填写排序.", number: "必须未数字.", maxlength: "字符数超出范围."}
+					node_sort: {required: "请填写排序.", number: "必须未数字.", maxlength: "字符数超出范围."},
+					recycle_name: {required: "请填写回收站名称.", maxlength: "字符数超出范围."},
+					recycle_type: {required: "请填写回收站分类.", maxlength: "字符数超出范围."}
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
