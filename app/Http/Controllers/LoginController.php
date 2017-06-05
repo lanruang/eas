@@ -128,7 +128,6 @@ class LoginController extends Common\CommonController
                 if($v['is_recycle'] == 1){
                     $arr['recycle'][$k]['selectName'] = $v['recycle_name'];
                     $arr['recycle'][$k]['typeName'] = $v['recycle_type'];
-                    $arr['recycle'][$k]['url'] = route($v['alias']);
                 }
             }
         }

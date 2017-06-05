@@ -234,6 +234,7 @@
 		function searchUser() {
 			var data = {"s_u_name": $('#s_u_name').val(),
 				"_token": '{{csrf_token()}}'};
+			userTable.settings()[0].ajax.async = false;
 			userTable.settings()[0].ajax.data = data;
 			userTable.ajax.reload(function () {
 				$('#searchClose').click();

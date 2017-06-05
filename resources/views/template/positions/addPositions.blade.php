@@ -8,7 +8,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('role.index')}}">岗位列表</a></li>
+	<li><a href="{{route('positions.index')}}">岗位列表</a></li>
 	<li>添加岗位</li>
 @endsection()
 
@@ -38,6 +38,16 @@
 					<label class="col-sm-3 control-label no-padding-right"> 排序 </label>
 					<div class="col-sm-2">
 						<input type="text" name="pos_sort" id="pos_sort" placeholder="排序" value="1"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="pos_status" id="pos_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
+							<span class="lbl"></span>
+						</label>
 					</div>
 				</div>
 
@@ -126,12 +136,13 @@
 				'itemSelect' : true,
 				'folderSelect': true,
 				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
 				'folder-open-icon' : 'ace-icon tree-plus',
 				'folder-close-icon' : 'ace-icon tree-minus',
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-
 				$('#pos_pid_list').html(item.target.text);
 				$('#pos_pid').val(item.target.id);
 				$('#close_tree').click();
@@ -141,7 +152,7 @@
 		function initiateDemoData(){
 			var tree_data = JSON.parse('{!!$select!!}');
 			var dataSource1 = function(options, callback){
-				var $data = null
+				var $data = null;
 				if(!("text" in options) && !("type" in options)){
 					$data = tree_data;//the root tree
 					callback({ data: $data });
@@ -156,6 +167,7 @@
 				if($data != null)//this setTimeout is only for mimicking some random delay
 					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
 			}
+
 			return {'dataSource1': dataSource1}
 		}
 		//清除选项

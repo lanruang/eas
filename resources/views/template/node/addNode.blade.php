@@ -938,6 +938,8 @@
 				'itemSelect' : true,
 				'folderSelect': true,
 				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
 				'folder-open-icon' : 'ace-icon tree-plus',
 				'folder-close-icon' : 'ace-icon tree-minus',
 				'selected-icon' : 'null',

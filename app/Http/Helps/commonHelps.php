@@ -63,11 +63,11 @@ function echoAjaxJson($status = '0', $msg = '')
 function redirectPageMsg($status = '1', $msg = '', $url = '')
 {
     //1-正常，0-提示，-1-错误
-    $status = base64_encode($status);
-    $msg = base64_encode($msg);
-    $url = base64_encode($url);
-    
-    header('Location: '.route('sysMessage')."/".$status."/".$msg."/".$url);
+    $result['status'] = $status;
+    $result['msg'] = $msg;
+    $result['url'] = $url;
+
+    return view('layouts.pageMsg', $result);
     exit();
 }
 

@@ -22,15 +22,15 @@
 				<div class="well">
 					<h1 class="grey lighter smaller">
 						@if ($status == "1")
-							<span class="green bigger-125">
+						<span class="green bigger-125">
 							<i class="ace-icon fa fa-check"></i>
 						</span>
 						@elseif ($status == "0")
-							<span class="blue bigger-125">
+						<span class="blue bigger-125">
 							<i class="ace-icon fa fa-exclamation-circle"></i>
 						</span>
 						@else
-							<span class="red bigger-125">
+						<span class="red bigger-125">
 							<i class="ace-icon fa fa-times"></i>
 						</span>
 						@endif

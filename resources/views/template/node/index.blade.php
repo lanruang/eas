@@ -90,6 +90,7 @@
 								"ajax": {
 									"type": "post",
 									"dataType": "json",
+									"async":false,
 									"url": '{{route('node.getNode')}}',
 									"data": {"pid": per_pid, "_token": '{{csrf_token()}}'},
 									"dataSrc": function ( res ) {
@@ -200,6 +201,7 @@
 		})
 
 		function getParameter(i) {
+			nodeTable.settings()[0].ajax.async = false;
 			nodeTable.settings()[0].ajax.data =  {"pid": i, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function (e) {
 				if (e.node){
@@ -218,6 +220,7 @@
 			var lastText;
 			var del = 0;
 			if(e >= 0) per_pid = e;
+			nodeTable.settings()[0].ajax.async = false;
 			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function(e){
 				if(e.node){

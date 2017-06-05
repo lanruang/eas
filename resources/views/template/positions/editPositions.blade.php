@@ -8,8 +8,8 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('role.index')}}">岗位列表</a></li>
-	<li>添加岗位</li>
+	<li><a href="{{route('positions.index')}}">岗位列表</a></li>
+	<li>编辑岗位</li>
 @endsection()
 
 {{--页面内容--}}
@@ -40,6 +40,17 @@
 						<input type="text" name="pos_sort" id="pos_sort" placeholder="排序" value="{{ $pos['sort'] }}"/>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="pos_status" id="pos_status" class="ace ace-switch ace-switch-6" type="checkbox" @if($pos['status'] == '1')checked="checked"@endif>
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
+
 				<input type="hidden" name="pos_id" id="pos_id" value="{{ $pos['id'] }}"/>
 				{{csrf_field()}}
 				<div class="clearfix">
@@ -128,12 +139,13 @@
 				'itemSelect' : true,
 				'folderSelect': true,
 				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
 				'folder-open-icon' : 'ace-icon tree-plus',
 				'folder-close-icon' : 'ace-icon tree-minus',
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-
 				$('#pos_pid_list').html(item.target.text);
 				$('#pos_pid').val(item.target.id);
 				$('#close_tree').click();

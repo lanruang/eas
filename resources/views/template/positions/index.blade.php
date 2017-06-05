@@ -22,6 +22,7 @@
 				<thead>
 				<tr>
 					<th>岗位名称</th>
+					<th>状态</th>
 					<th>操作</th>
 				</tr>
 				</thead>
@@ -82,19 +83,19 @@
 									{ "data": "name" , render: function(data, type, row) {
 										return '<span style="padding-left: '+ row.level +'em;">' + row.name + '</span>';
 									}},
+									{ "data": "status", render: function(data, type, row) {
+										return formatStatus(row.status);
+									}},
 									{ "data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 1,
+									"targets": 2,
 									"render": function(data, type, row) {
 											html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editPositions(' + row.id + ')">' +
 													'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-													'</a>';
-											html += '<a class="red" href="#" onclick="delPositions(' + row.id + ', 1)">' +
-													'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
-													'</a>';
-											html += '</div>' +
+													'</a>'+
+													'</div>' +
 													'<div class="hidden-md hidden-lg">' +
 													'<div class="inline pos-rel">' +
 													'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
@@ -107,15 +108,8 @@
 													'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 													'</span>' +
 													'</a>' +
-													'</li>';
-											html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delPositions(' + row.id + ', 1)">' +
-													'<span class="red">' +
-													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
-													'</span>' +
-													'</a>' +
-													'</li>';
-											html += '</ul>' +
+													'</li>'+
+													'</ul>' +
 													'</div>' +
 													'</div>';
 										return html;
@@ -130,44 +124,6 @@
 
 		function editPositions(e){
 			window.location.href = "{{route('positions.editPositions')}}" + "/" + e;
-		}
-
-		function delPositions(e){
-			bootbox.confirm({
-				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　请确认操作?',
-				buttons: {
-					confirm: {
-						label: "确定",
-						className: "btn-primary btn-sm",
-					},
-					cancel: {
-						label: "取消",
-						className: "btn-sm",
-					}
-				},
-				callback: function(result) {
-					if(result) {
-						$.ajax({
-							type: "post",
-							async:false,
-							dataType: "json",
-							url: '{{route('positions.delPositions')}}',
-							data: {
-								"id": e,
-								"_token": '{{csrf_token()}}',
-							},
-							success: function(res){
-								if(res.status == true){
-									positionsTable.ajax.reload(null, true);
-									alertDialog(res.status, res.msg);
-								}else{
-									alertDialog(res.status, res.msg);
-								}
-							}
-						});
-					}
-				}
-			});
 		}
 
 	</script>

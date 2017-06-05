@@ -15,8 +15,6 @@
 Route::get('login', ['as' => 'login.index', 'uses' => 'LoginController@index']);//后台登录
 Route::post('login', ['as' => 'login.checkLogin', 'uses' => 'LoginController@checkLogin']);//登录验证
 Route::get('logout', ['as' => 'login.logout', 'uses' => 'LoginController@logout']);//退出登录
-//页面跳转提示
-Route::get('sysMessage/{status?}/{msg?}/{url?}', ['as' => 'sysMessage', 'uses' => 'Common\SysMsgController@sysMessage']);
 
 //验证登录中间件
 Route::group(['middleware' => ['permission']], function () {
@@ -50,6 +48,7 @@ Route::group(['middleware' => ['permission']], function () {
     //回收站
     Route::group(['prefix' => 'recycle'], function () {
         Route::get('index', ['as' => 'recycle.index', 'uses' => 'RecycleController@index']);//回收站主视图
+        Route::get('getRecycle', ['as' => 'recycle.getRecycle', 'uses' => 'RecycleController@getRecycle']);//回收站列表
     });
 
     /*-----------------------------公司信息-----------------------------*/
@@ -61,8 +60,6 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createSubjects', ['as' => 'subjects.createSubjects', 'uses' => 'SubjectsController@createSubjects']);//添加部门
         Route::get('editSubjects/{id?}', ['as' => 'subjects.editSubjects', 'uses' => 'SubjectsController@editSubjects']);//修改部门视图
         Route::post('updateSubjects', ['as' => 'subjects.updateSubjects', 'uses' => 'SubjectsController@updateSubjects']);//更新部门
-        Route::post('delSubjects', ['as' => 'subjects.delSubjects', 'uses' => 'SubjectsController@delSubjects']);//删除部门
-        Route::post('updateSort', ['as' => 'subjects.updateSort', 'uses' => 'SubjectsController@updateSort']);//更新排序
     });
     //部门列表
     Route::group(['prefix' => 'department'], function () {
@@ -72,7 +69,6 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createDepartment', ['as' => 'department.createDepartment', 'uses' => 'DepartmentController@createDepartment']);//添加部门
         Route::get('editDepartment/{id?}', ['as' => 'department.editDepartment', 'uses' => 'DepartmentController@editDepartment']);//修改部门视图
         Route::post('updateDepartment', ['as' => 'department.updateDepartment', 'uses' => 'DepartmentController@updateDepartment']);//更新部门
-        Route::post('delDepartment', ['as' => 'department.delDepartment', 'uses' => 'DepartmentController@delDepartment']);//删除部门
     });
     //岗位列表
     Route::group(['prefix' => 'positions'], function () {
@@ -82,8 +78,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createPositions', ['as' => 'positions.createPositions', 'uses' => 'PositionsController@createPositions']);//添加部门
         Route::get('editPositions/{id?}', ['as' => 'positions.editPositions', 'uses' => 'PositionsController@editPositions']);//修改部门视图
         Route::post('updatePositions', ['as' => 'positions.updatePositions', 'uses' => 'PositionsController@updatePositions']);//更新部门
-        Route::post('delPositions', ['as' => 'positions.delPositions', 'uses' => 'PositionsController@delPositions']);//删除部门
-    });
+     });
     //公司信息
     Route::group(['prefix' => 'company'], function () {
         Route::get('index', ['as' => 'company.index', 'uses' => 'CompanyController@index']);//员工列表

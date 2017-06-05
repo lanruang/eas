@@ -73,7 +73,7 @@ class UserController extends Common\CommonController
         $isSession = 0;
         //检测id类型是否整数
         if(!validateParam($id, "nullInt")){
-            redirectPageMsg('-1', '参数错误', route('user.index'));
+            return redirectPageMsg('-1', '参数错误', route('user.index'));
         };
 
         if($id == '0'){
@@ -100,7 +100,7 @@ class UserController extends Common\CommonController
         $data['userInfo']->dep_leader = $dep_leader->dep_leader;
         
         if(!$data['userInfo'] || ($data['userInfo']['supper_admin'] == '1' && session('userInfo.user_id') != $data['userInfo']['user_id'])){
-            redirectPageMsg('-1', "员工不存在", route('user.index'));
+            return redirectPageMsg('-1', "员工不存在", route('user.index'));
         }
 
         $data['isSession'] = $isSession;
@@ -162,18 +162,27 @@ class UserController extends Common\CommonController
         $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
             ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
             ->where('department.recycle', 0)
+            ->where('department.status', 1)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
+        //获取下拉菜单最小pid
+        $selectPid = DepartmentDb::where('status', 1)
+            ->min('dep_pid');
+        $dep = !getTreeT($dep, $selectPid) ? $dep = array() : getTreeT($dep, $selectPid);
+
         //获取岗位菜单
         $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
             ->where('recycle', 0)
+            ->where('status', 1)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
+        //获取下拉菜单最小pid
+        $selectPid = PositionsDb::where('status', 1)
+            ->min('pos_pid');
+        $pos = !getTreeT($pos, $selectPid) ? $pos = array() : getTreeT($pos, $selectPid);
 
-        $dep = !$dep ? $dep = array() : getTreeT($dep);
-        $pos = !$pos ? $pos = array() : getTreeT($pos);
         $data['dep'] = json_encode($dep);
         $data['pos'] = json_encode($pos);
 
@@ -204,13 +213,13 @@ class UserController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('user.addUser'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.addUser'));
         }
 
         //姓名是否存在
         $result = UserDb::where('user_email', $input['user_email'])->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，邮箱已存在", route('user.addUser'));
+            return redirectPageMsg('-1', "添加失败，邮箱已存在", route('user.addUser'));
         }
 
         //格式化数据
@@ -227,7 +236,7 @@ class UserController extends Common\CommonController
             $userDb->password = md5('123456');
             $userDb->role_id = $input['role_id'];
             $userDb->supper_admin = 0;
-            $userDb->status = 0;
+            $userDb->status = array_key_exists('status', $input) ? 1 : 0;
             $userDb->save();
             //创建用户基础信息表数据
             $userBsDb = new UsersBaseDb();
@@ -243,9 +252,9 @@ class UserController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('user.addUser'));
+            return redirectPageMsg('1', "添加成功", route('user.addUser'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('user.addUser'));
+            return redirectPageMsg('-1', "添加失败", route('user.addUser'));
         }
     }
 
@@ -254,7 +263,7 @@ class UserController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('user.index'));
+            return redirectPageMsg('-1', '参数错误', route('user.index'));
         };
 
         //获取员工信息
@@ -275,25 +284,34 @@ class UserController extends Common\CommonController
         $user->dep_leader = $dep_leader->dep_leader;
 
         if(!$user){
-            redirectPageMsg('-1', "参数错误", route('user.index'));
+            return redirectPageMsg('-1', "参数错误", route('user.index'));
         }
 
         //获取部门下拉菜单
         $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
             ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
             ->where('department.recycle', 0)
+            ->where('department.status', 1)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
+        //获取下拉菜单最小pid
+        $selectPid = DepartmentDb::where('status', 1)
+            ->min('dep_pid');
+        $dep = !getTreeT($dep, $selectPid) ? $dep = array() : getTreeT($dep, $selectPid);
+
         //获取岗位菜单
         $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
             ->where('recycle', 0)
+            ->where('status', 1)
             ->orderBy('sort', 'ASC')
             ->get()
             ->toArray();
+        //获取下拉菜单最小pid
+        $selectPid = PositionsDb::where('status', 1)
+            ->min('pos_pid');
+        $pos = !getTreeT($pos, $selectPid) ? $pos = array() : getTreeT($pos, $selectPid);
 
-        $dep = !$dep ? $dep = array() : getTreeT($dep);
-        $pos = !$pos ? $pos = array() : getTreeT($pos);
         $data['dep'] = json_encode($dep);
         $data['pos'] = json_encode($pos);
 
@@ -315,7 +333,7 @@ class UserController extends Common\CommonController
         $input = Input::all();
         //检测id是否存在
         if(!array_key_exists('user_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('user.index'));
+            return redirectPageMsg('-1', '参数错误', route('user.index'));
         };
         $rules = [
             'user_name' => 'required|between:1,255',
@@ -332,7 +350,7 @@ class UserController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."/".$input['user_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."/".$input['user_id']);
         }
 
         //格式化数据
@@ -340,7 +358,7 @@ class UserController extends Common\CommonController
         //登录表
         $data['user_name'] = $input['user_name'];
         $data['role_id'] = $input['role_id'];
-        $data['status'] = $input['status'];
+        $data['status'] = array_key_exists('status', $input) ? 1 : 0;;
         //基础信息表
         $dataB['department'] = !$input['department'] ? 0 : $input['department'];
         $dataB['positions'] = !$input['positions'] ? 0 : $input['positions'];
@@ -360,9 +378,9 @@ class UserController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('user.index'));
+            return redirectPageMsg('1', "编辑成功", route('user.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('user.editUser')."/".$uid);
+            return redirectPageMsg('-1', "编辑失败", route('user.editUser')."/".$uid);
         }
     }
 

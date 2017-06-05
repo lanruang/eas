@@ -51,6 +51,16 @@
 					</div>
 				</div>
 
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="dep_status" id="dep_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
+
 				{{csrf_field()}}
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
@@ -273,6 +283,8 @@
 				'itemSelect' : true,
 				'folderSelect': true,
 				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
 				'folder-open-icon' : 'ace-icon tree-plus',
 				'folder-close-icon' : 'ace-icon tree-minus',
 				'selected-icon' : 'null',

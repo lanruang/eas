@@ -50,6 +50,17 @@
 						<input type="text" name="dep_sort" id="dep_sort" placeholder="排序" value="{{ $dep['sort'] }}"/>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="dep_status" id="dep_status" class="ace ace-switch ace-switch-6" type="checkbox" @if($dep['status'] == '1')checked="checked"@endif>
+							<span class="lbl"></span>
+						</label>
+					</div>
+				</div>
+
 				<input type="hidden" name="dep_id" id="dep_id" value="{{ $dep['id'] }}"/>
 				{{csrf_field()}}
 				<div class="clearfix">
@@ -273,6 +284,8 @@
 				'itemSelect' : true,
 				'folderSelect': true,
 				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
 				'folder-open-icon' : 'ace-icon tree-plus',
 				'folder-close-icon' : 'ace-icon tree-minus',
 				'selected-icon' : 'null',
