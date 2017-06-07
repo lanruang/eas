@@ -223,6 +223,7 @@
 			nodeTable.settings()[0].ajax.async = false;
 			nodeTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			nodeTable.ajax.reload(function(e){
+				if(per_pid == '0') $('#btn_goBack').addClass('hide');
 				if(e.node){
 					per_pid = e.node.pid;
 					per_id = e.node.id;
@@ -249,9 +250,8 @@
 					$('.breadcrumb li').last().remove();
 					$('.breadcrumb').append('<li>' + lastText + '</li>');
 				}
+				$('#alertFrame').addClass('hide');
 			});
-			if(per_pid == '0') $('#btn_goBack').addClass('hide');
-			$('#alertFrame').addClass('hide');
 		}
 
 		function delNode(e){

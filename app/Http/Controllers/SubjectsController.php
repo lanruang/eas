@@ -96,15 +96,15 @@ class SubjectsController extends Common\CommonController
         }
 
         //科目是否存在
-        $result = subjectDb::where('sub_name', $input['subject_name'])
-            ->orWhere('sub_ip', $input['subject_ip'])
+        $result = subjectDb::Where('sub_ip', $input['subject_ip'])
             ->first();
         if($result){
-            return redirectPageMsg('-1', "添加失败，科目名称或地址重复", route('subjects.addSubjects'));
+            return redirectPageMsg('-1', "添加失败，科目地址重复", route('subjects.addSubjects'));
         }
 
         //格式化状态
         $input['subject_status'] = array_key_exists('subject_status', $input) ? 1 : 0;
+        $input['subject_budget'] = array_key_exists('subject_budget', $input) ? 1 : 0;
 
         //添加数据
         $subjectDb = new subjectDb;
@@ -113,6 +113,7 @@ class SubjectsController extends Common\CommonController
         $subjectDb->sub_name = $input['subject_name'];
         $subjectDb->sub_pid = $input['subject_pid'];
         $subjectDb->status = $input['subject_status'];
+        $subjectDb->sub_budget = $input['subject_budget'];
         $subjectDb->sort = 0;
         $result = $subjectDb->save();
 
@@ -135,7 +136,7 @@ class SubjectsController extends Common\CommonController
         $subject = subjectDb::leftjoin('subjects AS sub', 'sub.sub_id','=','subjects.sub_pid')
             ->select('sub.sub_name AS subject_Fname', 'sub.sub_ip AS subject_Fip',
                 'subjects.sub_name', 'subjects.sub_type', 'subjects.status', 'subjects.sub_ip',
-                'subjects.sub_pid', 'subjects.sub_id')
+                'subjects.sub_pid', 'subjects.sub_id', 'subjects.sub_budget')
             ->where('subjects.sub_id', $id)
             ->first()
             ->toArray();
@@ -187,10 +188,7 @@ class SubjectsController extends Common\CommonController
 
         //科目是否存在
         $result = subjectDb::Where('sub_id', '<>', $input['subject_id'])
-            ->Where(function ($query) use ($input) {
-                $query->Where('sub_name', $input['subject_name'])
-                    ->orWhere('sub_ip', $input['subject_ip']);
-            })
+            ->Where('sub_ip', $input['subject_ip'])
             ->first();
 
         if($result){
@@ -199,6 +197,7 @@ class SubjectsController extends Common\CommonController
 
         //格式化状态
         $input['subject_status'] = array_key_exists('subject_status', $input) ? 1 : 0;
+        $input['subject_budget'] = array_key_exists('subject_budget', $input) ? 1 : 0;
 
         //格式化数据
         $data['sub_pid'] = $input['subject_pid'];
@@ -206,6 +205,8 @@ class SubjectsController extends Common\CommonController
         $data['sub_ip'] = $input['subject_ip'];
         $data['sub_type'] = $input['subject_type'];
         $data['status'] = $input['subject_status'];
+        $data['sub_budget'] = $input['subject_status'];
+
         //更新权限
         $result = subjectDb::where('sub_id', $input['subject_id'])
             ->update($data);

@@ -3,7 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/editor.dataTables.min.css" />
+
 @endsection()
 
 {{--面包削导航--}}
@@ -14,7 +14,7 @@
 {{--页面内容--}}
 @section('content')
 	<div class="row">
-		<div>
+		<div class="col-xs-12">
 			<button type="button" id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<button type="button" class="btn btn-sm btn-primary" onclick="addSub();">添加</button>
 			<table id="subTable" class="table table-striped table-bordered table-hover">
@@ -109,9 +109,8 @@
 						"columnDefs": [{
 							"targets": 4,
 							"render": function(data, type, row) {
-								var f = "subId"+row.sub_ip;
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
-										'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +
+										'<a class="green" href="#" onclick="editPositions(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 										'</a>'+
 										'</div>' +
@@ -123,7 +122,7 @@
 										'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
 										'<li>' +
 										'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-										'<span class="green" onclick="editNode(' + row.id + ')">' +
+										'<span class="green" onclick="editPositions(' + row.id + ',1)">' +
 										'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 										'</span>' +
 										'</a>' +
@@ -133,7 +132,7 @@
 										'</div>';
 								return html;
 							}
-						}]
+						}],
 					});
 		})
 
@@ -160,6 +159,7 @@
 			subTable.settings()[0].ajax.async = false;
 			subTable.settings()[0].ajax.data = {"pid": per_pid, "_token": '{{csrf_token()}}'};
 			subTable.ajax.reload(function(e){
+				if(per_pid == '0') $('#btn_goBack').addClass('hide');
 				if(e.subject){
 					per_pid = e.subject.pid;
 					per_id = e.subject.id;
@@ -186,7 +186,6 @@
 					$('.breadcrumb li').last().remove();
 					$('.breadcrumb').append('<li>' + lastText + '</li>');
 				}
-				if(per_pid == '0') $('#btn_goBack').addClass('hide');
 				$('#alertFrame').addClass('hide');
 			});
 		}

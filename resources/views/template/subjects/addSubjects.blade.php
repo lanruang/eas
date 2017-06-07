@@ -74,9 +74,20 @@
 					<div class="col-sm-3">
 						<label>
 							<select class="form-control" id="subject_type" name="subject_type">
+								<option value="0"></option>
 								<option value="1">借</option>
 								<option value="-1">贷</option>
 							</select>
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 预算科目 </label>
+					<div class="col-xs-3 output">
+						<label>
+							<input name="subject_budget" id="subject_budget" class="ace ace-switch ace-switch-6" type="checkbox">
+							<span class="lbl"></span>
 						</label>
 					</div>
 				</div>

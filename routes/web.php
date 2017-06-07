@@ -50,7 +50,13 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('index', ['as' => 'recycle.index', 'uses' => 'RecycleController@index']);//回收站主视图
         Route::get('getRecycle', ['as' => 'recycle.getRecycle', 'uses' => 'RecycleController@getRecycle']);//回收站列表
     });
-
+    /*-----------------------------流程控制-----------------------------*/
+    //审核流程
+    Route::group(['prefix' => 'processAudit'], function () {
+        Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
+        Route::post('getProcessAudit', ['as' => 'processAudit.getProcessAudit', 'uses' => 'ProcessAuditController@getProcessAudit']);//获取审核流程列表
+        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加部门视图
+    });
     /*-----------------------------公司信息-----------------------------*/
     //科目管理
     Route::group(['prefix' => 'subjects'], function () {

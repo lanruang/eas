@@ -302,7 +302,6 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-				writeObj(item.selected[0]);
 				$('#positions').val(item.target.id);
 				$('#pos_list').html(item.target.text);
 				$('#close_pos').click();
