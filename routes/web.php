@@ -106,4 +106,10 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('resetPwd', ['as' => 'user.resetPwd', 'uses' => 'UserController@resetPwd']);//重置密码
     });
 
+    //系统组件
+    Route::group(['prefix' => 'component'], function () {
+        Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
+        Route::post('getProcessAudit', ['as' => 'processAudit.getProcessAudit', 'uses' => 'ProcessAuditController@getProcessAudit']);//获取审核流程列表
+        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加部门视图
+    });
 });

@@ -19,7 +19,7 @@
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
 			<form class="form-horizontal" role="form" id="validation-form" method="post" action="#" >
-
+				<input type="text"  id="audit_user" name="audit_user" readonly="true" class="form-control" />
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 审核分组 </label>
 					<div class="col-sm-3">
@@ -28,18 +28,6 @@
 								<option value="yusuan">预算管理类</option>
 								<option value="hetong">合同类</option>
 								<option value="baoxiao">日常报销</option>
-							</select>
-						</label>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 审核人员 </label>
-					<div class="col-sm-3">
-						<label>
-							<select class="form-control" id="audit_class" name="audit_class">
-								<option value="0">部门负责人</option>
-								<option value="1">自选用户</option>
 							</select>
 						</label>
 					</div>
@@ -65,57 +53,63 @@
 				<h4 class="header smaller lighter">
 					创建流程
 				</h4>
-				<button type="button" class="btn btn-warning btn-xs">
-					<i class="ace-icon glyphicon glyphicon-plus  bigger-110 icon-only"></i>
-				</button>
-				<button type="button" class="btn btn-danger btn-xs">
-					<i class="ace-icon glyphicon glyphicon-minus  bigger-110 icon-only"></i>
-				</button>
 
-				<div class="form-group">
-					<div class="col-xs-6 col-sm-3 pricing-box" style="margin: 0 auto;">
-						<div class="widget-box widget-color-dark">
-							<div class="widget-header">
-								<h5 class="widget-title bigger lighter">Basic Package</h5>
-							</div>
-							<div class="widget-body">
-								<div class="widget-main">
-									<ul class="list-unstyled spaced2">
-										<li>
-											<i class="ace-icon fa fa-check green"></i>
-											10 GB Disk Space
-										</li>
-
-										<li>
-											<i class="ace-icon fa fa-check green"></i>
-											200 GB Bandwidth
-										</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-				<div class="form-group">
+				<div class="from-group">
 					<label class="col-sm-3 control-label no-padding-right"> 选择用户 </label>
 					<label class="col-sm-2">
 						<input type="text"  id="auditUser" name="auditUser" readonly="true" class="form-control" />
-						<input type="text"  id="audit_user" name="audit_user" readonly="true" class="form-control" />
 					</label>
 					<button type="button" href="#user-table" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
-					<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser();">清除</button>
+					<button type="button" href="#user-table" data-toggle="modal"  class="btn btn-white btn-sm btn-success">添加</button>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 选择部门 </label>
-					<label class="col-sm-2">
-						<input type="text"  id="auditDep" name="auditDep" readonly="true" class="form-control" />
-						<input type="text"  id="audit_dep	" name="audit_dep" readonly="true" class="form-control" />
-					</label>
-					<button type="button" href="#dep-tree" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
-					<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delDep();">清除</button>
+					<div class="col-xs-6 col-sm-5 pricing-box col-sm-offset-2">
+						<div class="widget-box widget-color-dark">
+							<div class="widget-header">
+								<h5 class="widget-title bigger lighter">预览审核流程</h5>
+							</div>
+							<div class="widget-body">
+								<table class="table" style="margin-bottom: 0;">
+									<tbody id="auditTable">
+										<tr>
+											<td colspan="3" class="center">
+												审批开始
+											</td>
+										</tr>
+										<tr>
+											<td class="center">第2审核</td>
+											<td>
+												潘潘潘【IT部—it部经理】
+											</td>
+											<td class="center">
+												<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser();">删除</button>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="3" class="center">
+												<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>
+											</td>
+										</tr>
+										<tr>
+											<td class="center">第4审核</td>
+											<td>
+												服服服【总经办—总经理】
+											</td>
+											<td class="center">
+												<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser();">删除</button>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="3" class="center">
+												审批结束
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				{{csrf_field()}}
@@ -134,55 +128,6 @@
 					</div>
 				</div>
 			</form>
-		</div>
-	</div>
-
-
-
-			<div class="profile-user-info">
-
-				<div class="col-xs-6 col-sm-3 pricing-box">
-					<div class="widget-box widget-color-dark">
-						<div class="widget-header">
-							<h5 class="widget-title bigger lighter">Basic Package</h5>
-						</div>
-						<div class="widget-body">
-							<div class="widget-main">
-								<ul class="list-unstyled spaced2">
-									<li>
-										<i class="ace-icon fa fa-check green"></i>
-										10 GB Disk Space
-									</li>
-
-									<li>
-										<i class="ace-icon fa fa-check green"></i>
-										200 GB Bandwidth
-									</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-
-
-	<div id="dep-tree" class="modal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="widget-box widget-color-blue2">
-				<div class="widget-header">
-					<h4 class="widget-title lighter smaller">选择上级部门</h4>
-					<span class="widget-toolbar">
-						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
-					</span>
-				</div>
-
-				<div class="widget-body">
-					<div class="widget-main padding-8">
-						<ul id="depTree"></ul>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 
@@ -340,49 +285,9 @@
 						}]
 					});
 
-			//选择部门
-			var sampleData = initiateDemoData();//see below
-			$('#depTree').ace_tree({
-				dataSource: sampleData['dataSource1'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': true,
-				'multiSelect': false,
-				'open-icon' : 'tree_null_icon_open',
-				'close-icon' : 'tree_null_icon_close',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				$('#dep_pid_list').html(item.target.text);
-				$('#dep_pid').val(item.target.id);
-				$('#close_tree').click();
-			})
-
+			resetSort();
 			$('[data-rel=popover]').popover({container:'body'});
 		});
-		//部门菜单数据
-		function initiateDemoData(){
-			var tree_data = JSON.parse('{!!$select!!}');
-			var dataSource1 = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = tree_data;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource1': dataSource1}
-		}
 
 		//返回
 		function goBack(){
@@ -396,8 +301,23 @@
 			};
 		}
 
+		//选择员工
+		function selectUser(id, name){
+			$('#dep_leader').val(id);
+			$('#dep_name_list label').html(name);
+			$('#selectClose').click();
+		}
+
 		//审核人员对应选项
-		function getAuditType() {
+		function resetSort() {
+			var sort = 1;
+			var trList = $('#auditTable').children("tr");
+			alert(trList.eq(1).find("td").eq(0).text());
+			for (var i=1;i<trList.length-1;i = i+2) {
+				var tdArr = trList.eq(i).find("td");
+				//tdArr.eq(0).text('第'+sort+'审核');
+				//sort++;
+			}
 
 		}
 	</script>
