@@ -75,4 +75,50 @@ class ProcessAuditController extends Common\CommonController
 
         return view('processAudit.addProcessAudit', $data);
     }
+
+    //添加岗位
+    public function createProcessAudit()
+    {
+        //验证表单
+        $input = Input::all();
+
+        $rules = [
+            'audit_name' => 'required|between:1,100',
+            'audit_user' => 'required',
+        ];
+        $message = [
+            'audit_name.required' => '请填写审核流程名称',
+            'audit_name.between' => '审核流程名称字符数过多',
+            'audit_user.required' => '请添加审核流程人员',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            return redirectPageMsg('-1', $validator->errors()->first(), route('processAudit.addProcessAudit'));
+        }
+
+        //岗位是否存在
+        $result = PositionsDb::where('pos_name', $input['pos_name'])->first();
+        if($result){
+            return redirectPageMsg('-1', "添加失败，岗位名称重复", route('positions.addPositions'));
+        }
+
+        //格式化数据
+        $input['pos_pid'] = !$input['pos_pid'] ? 0 : $input['pos_pid'];
+        $input['pos_status'] = array_key_exists('pos_status', $input) ? 1 : 0;
+
+        //创建员工
+        $PositionsDb = new PositionsDb();
+        $PositionsDb->pos_name = $input['pos_name'];
+        $PositionsDb->pos_pid = $input['pos_pid'];
+        $PositionsDb->sort = $input['pos_sort'];
+        $PositionsDb->status = $input['pos_status'];
+        $PositionsDb->recycle = 0;
+        $result = $PositionsDb->save();
+
+        if($result){
+            return redirectPageMsg('1', "添加成功", route('positions.addPositions'));
+        }else{
+            return redirectPageMsg('-1', "添加失败", route('positions.addPositions'));
+        }
+    }
 }

@@ -3,7 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css"/>
 @endsection()
 
 {{--面包削导航--}}
@@ -18,8 +18,7 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="#" >
-				<input type="text"  id="audit_user" name="audit_user" readonly="true" class="form-control" />
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('processAudit.createProcessAudit') }}" >
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 审核分组 </label>
 					<div class="col-sm-3">
@@ -36,7 +35,7 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 审核流程名称 </label>
 					<div class="col-sm-3">
-						<input type="text" name="node_name" id="node_name" placeholder="审核流程名称" class="form-control" />
+						<input type="text" name="audit_name" id="audit_name" placeholder="审核流程名称" class="form-control" />
 					</div>
 				</div>
 
@@ -53,67 +52,42 @@
 				<h4 class="header smaller lighter">
 					创建流程
 				</h4>
-
-				<div class="from-group">
-					<label class="col-sm-3 control-label no-padding-right"> 选择用户 </label>
-					<label class="col-sm-2">
-						<input type="text"  id="auditUser" name="auditUser" readonly="true" class="form-control" />
-					</label>
-					<button type="button" href="#user-table" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
-					<button type="button" href="#user-table" data-toggle="modal"  class="btn btn-white btn-sm btn-success">添加</button>
+				<div class="col-sm-offset-3">
+					<div class="form-group">
+						<input type="hidden" name="audit_user" id="audit_user"/>
+					</div>
+				</div>
+				<div class="col-sm-offset-2">
+					<button type="button" class="btn btn-warning btn-xs" href="#user-table" data-toggle="modal">
+						<i class="ace-icon glyphicon glyphicon-plus  bigger-110 icon-only"></i>
+					</button>
+					<input type="hidden" name="audit_user" id="audit_user"/>
 				</div>
 
 				<div class="form-group">
-					<div class="col-xs-6 col-sm-5 pricing-box col-sm-offset-2">
+					<div class="col-xs-6 col-sm-5 col-sm-offset-2">
 						<div class="widget-box widget-color-dark">
-							<div class="widget-header">
+							<div class="widget-header center">
 								<h5 class="widget-title bigger lighter">预览审核流程</h5>
 							</div>
 							<div class="widget-body">
+								<div id="auditStart" class="center hide" style="padding:8px; border-top:1px solid #ddd;">
+									审批开始
+								</div>
 								<table class="table" style="margin-bottom: 0;">
 									<tbody id="auditTable">
-										<tr>
-											<td colspan="3" class="center">
-												审批开始
-											</td>
-										</tr>
-										<tr>
-											<td class="center">第2审核</td>
-											<td>
-												潘潘潘【IT部—it部经理】
-											</td>
-											<td class="center">
-												<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser();">删除</button>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="3" class="center">
-												<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>
-											</td>
-										</tr>
-										<tr>
-											<td class="center">第4审核</td>
-											<td>
-												服服服【总经办—总经理】
-											</td>
-											<td class="center">
-												<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser();">删除</button>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="3" class="center">
-												审批结束
-											</td>
-										</tr>
 									</tbody>
 								</table>
+								<div id="auditEnd" class="center hide" style="padding:8px; border-top:1px solid #ddd;">
+									审批结束
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				{{csrf_field()}}
-				<input type="hidden" name="node_pid" id="node_pid" value="0">
+
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
@@ -217,6 +191,7 @@
 		var type = $("#audit_class").val();
 		var auditNum = 0;
 		var userTable;
+		var sort = 1;
 		$(function($) {
 			var html;
 			var data = {
@@ -258,7 +233,7 @@
 							"type": "post",
 							"async": false,
 							"dataType": "json",
-							"url": '{{route('user.getUser')}}',
+							"url": '{{route('component.ctGetUser')}}',
 							"data": data,
 							"dataSrc": function ( res ) {
 								if(res.status == true){
@@ -276,8 +251,9 @@
 						"columnDefs": [{
 							"targets": 2,
 							"render": function(data, type, row) {
+								var row = "'"+JSON.stringify(row)+"'";
 								html = '<div class="action-buttons">' +
-										"<a class=\"green\" href=\"#\" onclick=\"selectUser('"+row.id+"', '"+row.name+"')\">" +
+										'<a class="green" href="#" onclick=selectUser('+row+')>' +
 										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
 										'</a></div>';
 								return html;
@@ -285,8 +261,27 @@
 						}]
 					});
 
-			resetSort();
-			$('[data-rel=popover]').popover({container:'body'});
+			$('#validation-form').validate({
+				errorElement: 'div',
+				errorClass: 'help-block',
+				focusInvalid: false,
+				ignore: "",
+				rules: {
+					audit_name: {required: true, maxlength:100},
+					audit_user: {required: true},
+				},
+				messages: {
+					audit_name: {required: "请填写审核流程名称.", maxlength: "字符数超出范围."},
+					audit_user: {required: "请添加审核流程人员."},
+				},
+				highlight: function (e) {
+					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+				},
+				success: function (e) {
+					$(e).closest('.form-group').removeClass('has-error');
+					$(e).remove();
+				},
+			});
 		});
 
 		//返回
@@ -302,23 +297,86 @@
 		}
 
 		//选择员工
-		function selectUser(id, name){
-			$('#dep_leader').val(id);
-			$('#dep_name_list label').html(name);
+		function selectUser(val){
+			var val = JSON.parse(val);
+			var trList = $('#auditTable').children("tr");
+			var trLength = trList.length;
+
+			for (var i=0;i<trLength;i = i+2) {
+				var trId = trList.eq(i)[0].id;
+				if("lAdt"+val.id == trId){
+					bootbox.dialog({
+						message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请不要重复选择！',
+						buttons:
+						{"click" :
+							{
+								"label" : "确定",
+								"className" : "btn-sm btn-primary",
+								"callback": function() {
+									$('#selectClose').click();
+								}
+							}
+						}
+					});
+					return;
+				}
+			}
+
+			var trHtmlTop = '<tr><td colspan="5" class="center">' +
+							'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
+							'</td></tr>';
+			if(trLength > 0){
+				$('#auditTable').append(trHtmlTop);
+				$('#audit_user').val($('#audit_user').val()+",");
+			}
+			var dep_name = val.dep_name != "null" ? val.dep_name : "";
+			var pos_name = val.pos_name != "null" ? val.pos_name : "";
+			var trHtml = '<tr id="lAdt'+ val.id +'"><td class="center">第'+sort+'审核</td>' +
+					'<td>'+dep_name+'</td>' +
+					'<td>'+pos_name+'</td>' +
+					'<td>'+val.name+'</td>' +
+					'<td class="center">' +
+					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+val.id+');">删除</button>' +
+					'</td></tr>';
+			if(trLength == 0){
+				$('#auditStart').removeClass('hide');
+				$('#auditEnd').removeClass('hide');
+			}
+			sort++;
+			$('#audit_user').val($('#audit_user').val()+val.id);
+			$('#auditTable').append(trHtml);
 			$('#selectClose').click();
 		}
 
-		//审核人员对应选项
-		function resetSort() {
-			var sort = 1;
+		function delUser(a_id){
 			var trList = $('#auditTable').children("tr");
-			alert(trList.eq(1).find("td").eq(0).text());
-			for (var i=1;i<trList.length-1;i = i+2) {
+			var trLength = trList.length;
+			var user_val = $('#audit_user').val().split(",");
+				sort = 1;
+			for (var i=0;i<trLength;i = i+2) {
+				var trId = trList.eq(i)[0].id;
 				var tdArr = trList.eq(i).find("td");
-				//tdArr.eq(0).text('第'+sort+'审核');
-				//sort++;
+				if("lAdt"+a_id == trId){
+					trList.eq(i).remove();
+					if(trLength-1 != i){
+						trList.eq(i+1).remove();
+					}
+					if(trLength-1 == i && trLength != 1){
+						trList.eq(i-1).remove();
+					}
+					if(trLength == 1){
+						$('#auditStart').addClass('hide');
+						$('#auditEnd').addClass('hide');
+					}
+					user_val.splice($.inArray(a_id.toString(), user_val), 1);
+					user_val = user_val.join(',');
+					$('#audit_user').val(user_val);
+				}else{
+					tdArr.eq(0).text('第'+sort+'审核');
+					sort++;
+				}
 			}
-
 		}
+
 	</script>
 @endsection()

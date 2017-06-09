@@ -47,19 +47,7 @@ class PositionsController extends Common\CommonController
     //添加岗位视图
     public function addPositions()
     {
-        //获取下拉菜单
-        $result = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid', 'status')
-            ->orderBy('sort', 'asc')
-            ->where('status', 1)
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = PositionsDb::where('status', 1)
-            ->min('pos_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
-
-        $data['select'] = json_encode($result);
-        return view('positions.addPositions', $data);
+        return view('positions.addPositions');
     }
 
     //添加岗位
@@ -141,21 +129,7 @@ class PositionsController extends Common\CommonController
                 $positions['p_name'] = $positionsP->name;
             }
         }
-
-        //获取下拉菜单
-        $result = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid', 'status')
-            ->orderBy('sort', 'asc')
-            ->where('status', 1)
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = PositionsDb::where('status', 1)
-            ->min('pos_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
-
-        $data['select'] = json_encode($result);
         $data['pos'] = $positions;
-
         return view('positions.editPositions', $data);
     }
     

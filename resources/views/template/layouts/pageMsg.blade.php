@@ -26,7 +26,7 @@
 							<i class="ace-icon fa fa-check"></i>
 						</span>
 						@elseif ($status == "0")
-						<span class="blue bigger-125">
+						<span class="orange2 bigger-125">
 							<i class="ace-icon fa fa-exclamation-circle"></i>
 						</span>
 						@else

@@ -150,7 +150,7 @@
 		});
 
 		function initiateDemoData(){
-			var tree_data = JSON.parse('{!!$select!!}');
+			var tree_data = ajaxPost({"_token": '{{csrf_token()}}'}, '{{route('component.ctGetPos')}}');
 			var dataSource1 = function(options, callback){
 				var $data = null;
 				if(!("text" in options) && !("type" in options)){

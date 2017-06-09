@@ -31,7 +31,6 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('editNode/{id?}', ['as' => 'node.editNode', 'uses' => 'NodeController@editNode']);//编辑权限视图
         Route::post('updateNode', ['as' => 'node.updateNode', 'uses' => 'NodeController@updateNode']);//更新权限
         Route::post('delNode', ['as' => 'node.delNode', 'uses' => 'NodeController@delNode']);//删除权限
-        Route::post('updateSort', ['as' => 'node.updateSort', 'uses' => 'NodeController@updateSort']);//更新排序
     });
     //角色列表
     Route::group(['prefix' => 'role'], function () {
@@ -55,7 +54,8 @@ Route::group(['middleware' => ['permission']], function () {
     Route::group(['prefix' => 'processAudit'], function () {
         Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
         Route::post('getProcessAudit', ['as' => 'processAudit.getProcessAudit', 'uses' => 'ProcessAuditController@getProcessAudit']);//获取审核流程列表
-        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加部门视图
+        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加审核流程视图
+        Route::post('createProcessAudit', ['as' => 'processAudit.createProcessAudit', 'uses' => 'ProcessAuditController@createProcessAudit']);//创建审核流程
     });
     /*-----------------------------公司信息-----------------------------*/
     //科目管理
@@ -108,8 +108,8 @@ Route::group(['middleware' => ['permission']], function () {
 
     //系统组件
     Route::group(['prefix' => 'component'], function () {
-        Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
-        Route::post('getProcessAudit', ['as' => 'processAudit.getProcessAudit', 'uses' => 'ProcessAuditController@getProcessAudit']);//获取审核流程列表
-        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加部门视图
+        Route::post('ctGetUser', ['as' => 'component.ctGetUser', 'uses' => 'Common\ComponentController@ctGetUser']);//用户数据
+        Route::post('ctGetDep', ['as' => 'component.ctGetDep', 'uses' => 'Common\ComponentController@ctGetDep']);//部门数据
+        Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//部门数据
     });
 });

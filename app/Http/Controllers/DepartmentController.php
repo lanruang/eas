@@ -48,19 +48,7 @@ class DepartmentController extends Common\CommonController
     //添加部门视图
     public function addDepartment()
     {
-        //获取下拉菜单
-        $result = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
-            ->where('status', 1)
-            ->orderBy('sort', 'asc')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = DepartmentDb::where('status', 1)
-            ->min('dep_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
-
-        $data['select'] = json_encode($result);
-        return view('department.addDepartment', $data);
+        return view('department.addDepartment');
     }
 
     //添加部门
@@ -148,20 +136,7 @@ class DepartmentController extends Common\CommonController
             }
         }
 
-        //获取下拉菜单
-        $result = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
-            ->where('status', 1)
-            ->orderBy('sort', 'asc')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = DepartmentDb::where('status', 1)
-            ->min('dep_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
-
-        $data['select'] = json_encode($result);
         $data['dep'] = $department;
-
         return view('department.editDepartment', $data);
     }
     

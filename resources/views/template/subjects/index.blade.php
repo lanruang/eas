@@ -110,7 +110,7 @@
 							"targets": 4,
 							"render": function(data, type, row) {
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
-										'<a class="green" href="#" onclick="editPositions(' + row.id + ')">' +
+										'<a class="green" href="#" onclick="editSubjects(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 										'</a>'+
 										'</div>' +
@@ -122,7 +122,7 @@
 										'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
 										'<li>' +
 										'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-										'<span class="green" onclick="editPositions(' + row.id + ',1)">' +
+										'<span class="green" onclick="editSubjects(' + row.id + ',1)">' +
 										'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 										'</span>' +
 										'</a>' +
@@ -195,7 +195,7 @@
 			window.location.href = "{{route('subjects.addSubjects')}}";
 		}
 
-		function editNode(e){
+		function editSubjects(e){
 			window.location.href = "{{route('subjects.editSubjects')}}/" + e;
 		}
 

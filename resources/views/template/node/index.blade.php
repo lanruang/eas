@@ -3,7 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/editor.dataTables.min.css" />
+
 @endsection()
 
 {{--面包削导航--}}
@@ -42,7 +42,6 @@
 @section('pageSpecificPluginScripts')
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.editor.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 @endsection()
 
@@ -174,30 +173,6 @@
 									}
 								}]
 							});
-
-			editor = new $.fn.dataTable.Editor( {
-				"ajax": {
-					"url": '{{route('node.updateSort')}}',
-					"data": {"_token": '{{csrf_token()}}'},
-				},
-				"table": "#nodeTable",
-				"idSrc": "id",
-				"fields": [
-					{"name": "sort"}
-				],
-				"i18n": {
-					"error": {
-						"system": "系统错误"
-					},
-				}
-			} );
-
-			$('#nodeTable').on( 'click', 'tbody td.editable', function (e) {
-				editor.inline( this, {
-					buttons: { label: '&gt;', fn: function () { this.submit(); } }
-				} );
-			} );
-
 		})
 
 		function getParameter(i) {
@@ -256,7 +231,7 @@
 
 		function delNode(e){
 			bootbox.confirm({
-				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
 					buttons: {
 						confirm: {
 							label: "确定",

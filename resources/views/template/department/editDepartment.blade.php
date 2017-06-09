@@ -225,7 +225,7 @@
 							"type": "post",
 							"async": false,
 							"dataType": "json",
-							"url": '{{route('user.getUser')}}',
+							"url": '{{route('component.ctGetUser')}}',
 							"data": data,
 							"dataSrc": function ( res ) {
 								if(res.status == true){
@@ -299,7 +299,7 @@
 		});
 
 		function initiateDemoData(){
-			var tree_data = JSON.parse('{!!$select!!}');
+			var tree_data = ajaxPost({"_token": '{{csrf_token()}}'}, '{{route('component.ctGetDep')}}');
 			var dataSource1 = function(options, callback){
 				var $data = null
 				if(!("text" in options) && !("type" in options)){

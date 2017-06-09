@@ -945,8 +945,6 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-
-
 				$('#node_Fname').val(item.target.text);
 				$('#node_Falias').val(item.target.alias);
 				$('#node_pid').val(item.target.id);
