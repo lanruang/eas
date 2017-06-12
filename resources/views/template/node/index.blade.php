@@ -105,7 +105,7 @@
 										return '<a style="cursor:pointer" onclick="getParameter(' + row.id + ')">' + row.name + '</a>';
 									}},
 									{"data": "alias" },
-									{"data": "sort", className: 'editable' },
+									{"data": "sort"},
 									{"data": "status", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},

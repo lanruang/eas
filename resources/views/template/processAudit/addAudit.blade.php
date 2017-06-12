@@ -3,13 +3,13 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css"/>
 @endsection()
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('department.index')}}">部门列表</a></li>
-	<li>添加部门</li>
+	<li><a href="{{route('processAudit.index')}}">审核流程</a></li>
+	<li>添加审核流程</li>
 @endsection()
 
 {{--页面内容--}}
@@ -18,36 +18,32 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('department.createDepartment')}}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('processAudit.createAudit') }}" >
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 上级部门 </label>
-					<label class="col-sm-2 output" id="dep_pid_list"></label>
-					<input type="hidden" name="dep_pid" id="dep_pid" value=""/>
+					<label class="col-sm-2 output" id="dep_list"></label>
+					<input type="hidden" name="dep_id" id="dep_id" value="0"/>
 					<button type="button" href="#modal-tree" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
 					<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree();">清除</button>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 部门名称 </label>
-					<div class="col-sm-2">
-						<input type="text" name="dep_name" id="dep_name" placeholder="部门名称" class="form-control" />
+					<label class="col-sm-3 control-label no-padding-right"> 审核分组 </label>
+					<div class="col-sm-3">
+						<label>
+							<select class="form-control" id="audit_type" name="audit_type">
+								<option value="yusuan">预算管理类</option>
+								<option value="hetong">合同类</option>
+								<option value="baoxiao">日常报销</option>
+							</select>
+						</label>
 					</div>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 部门负责人 </label>
-					<div class="col-sm-2 output" id ="dep_name_list" >
-						<label></label>
-						<input type="hidden" name="dep_leader" id="dep_leader"/>
-					</div>
-					<button type="button" href="#modal-table" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
-					<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delLeader();">清除</button>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 排序 </label>
-					<div class="col-sm-2">
-						<input type="text" name="dep_sort" id="dep_sort" placeholder="排序" value="1"/>
+					<label class="col-sm-3 control-label no-padding-right"> 审核流程名称 </label>
+					<div class="col-sm-3">
+						<input type="text" name="audit_name" id="audit_name" placeholder="审核流程名称" class="form-control" />
 					</div>
 				</div>
 
@@ -55,13 +51,51 @@
 					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
 					<div class="col-xs-3 output">
 						<label>
-							<input name="dep_status" id="dep_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
+							<input name="audit_status" id="audit_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
 							<span class="lbl"></span>
 						</label>
 					</div>
 				</div>
 
+				<h4 class="header smaller lighter">
+					创建流程
+				</h4>
+				<div class="col-sm-offset-3">
+					<div class="form-group">
+						<input type="hidden" name="audit_user" id="audit_user"/>
+					</div>
+				</div>
+				<div class="col-sm-offset-2">
+					<button type="button" class="btn btn-warning btn-xs" href="#user-table" data-toggle="modal">
+						<i class="ace-icon glyphicon glyphicon-plus  bigger-110 icon-only"></i>
+					</button>
+
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-5 col-sm-offset-2">
+						<div class="widget-box widget-color-dark">
+							<div class="widget-header center">
+								<h5 class="widget-title bigger lighter">预览审核流程</h5>
+							</div>
+							<div class="widget-body">
+								<div id="auditStart" class="center hide" style="padding:8px; border-top:1px solid #ddd;">
+									审批开始
+								</div>
+								<table class="table" style="margin-bottom: 0;">
+									<tbody id="auditTable">
+									</tbody>
+								</table>
+								<div id="auditEnd" class="center hide" style="padding:8px; border-top:1px solid #ddd;">
+									审批结束
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				{{csrf_field()}}
+
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
@@ -98,7 +132,7 @@
 		</div>
 	</div>
 
-	<div id="modal-table" class="modal fade" tabindex="-1">
+	<div id="user-table" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header no-padding">
@@ -166,7 +200,6 @@
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div>
-
 @endsection()
 
 {{--页面加载js--}}
@@ -182,7 +215,10 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+		var type = $("#audit_class").val();
+		var auditNum = 0;
 		var userTable;
+		var sort = 1;
 		$(function($) {
 			var html;
 			var data = {
@@ -242,8 +278,9 @@
 						"columnDefs": [{
 							"targets": 2,
 							"render": function(data, type, row) {
+								var row = "'"+JSON.stringify(row)+"'";
 								html = '<div class="action-buttons">' +
-										"<a class=\"green\" href=\"#\" onclick=\"selectUser('"+row.id+"', '"+row.name+"')\">" +
+										'<a class="green" href="#" onclick=selectUser('+row+')>' +
 										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
 										'</a></div>';
 								return html;
@@ -257,14 +294,12 @@
 				focusInvalid: false,
 				ignore: "",
 				rules: {
-					dep_name: {required: true, maxlength:50},
-					dep_leader: {number: true},
-					dep_sort: {required: true, maxlength: 4, number: true}
+					audit_name: {required: true, maxlength:100},
+					audit_user: {required: true},
 				},
 				messages: {
-					dep_name: {required: "请填写部门名称.", maxlength: "字符数超出范围."},
-					dep_leader: {number: "请重新选择部分负责人."},
-					dep_sort: {required: "请填写排序.", number: "必须未数字.", maxlength: "字符数超出范围."}
+					audit_name: {required: "请填写审核流程名称.", maxlength: "字符数超出范围."},
+					audit_user: {required: "请添加审核流程人员."},
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
@@ -290,8 +325,8 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-				$('#dep_pid_list').html(item.target.text);
-				$('#dep_pid').val(item.target.id);
+				$('#dep_list').html(item.target.text);
+				$('#dep_id').val(item.target.id);
 				$('#close_tree').click();
 			})
 		});
@@ -318,13 +353,13 @@
 		}
 		//清除选项
 		function delTree(){
-			$('#dep_pid_list').html('');
-			$('#dep_pid').val('');
+			$('#dep_list').html('');
+			$('#dep_id').val('0');
 		}
 
 		//返回
 		function goBack(){
-			window.location.href = "{{route('department.index')}}";
+			window.location.href = "{{route('processAudit.index')}}";
 		}
 
 		//验证表单
@@ -335,27 +370,86 @@
 		}
 
 		//选择员工
-		function selectUser(id, name){
-			$('#dep_leader').val(id);
-			$('#dep_name_list label').html(name);
+		function selectUser(val){
+			var val = JSON.parse(val);
+			var trList = $('#auditTable').children("tr");
+			var trLength = trList.length;
+
+			for (var i=0;i<trLength;i = i+2) {
+				var trId = trList.eq(i)[0].id;
+				if("lAdt"+val.id == trId){
+					bootbox.dialog({
+						message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请不要重复选择！',
+						buttons:
+						{"click" :
+							{
+								"label" : "确定",
+								"className" : "btn-sm btn-primary",
+								"callback": function() {
+									$('#selectClose').click();
+								}
+							}
+						}
+					});
+					return;
+				}
+			}
+
+			var trHtmlTop = '<tr><td colspan="5" class="center">' +
+							'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
+							'</td></tr>';
+			if(trLength > 0){
+				$('#auditTable').append(trHtmlTop);
+				$('#audit_user').val($('#audit_user').val()+",");
+			}
+			var dep_name = val.dep_name != "null" ? val.dep_name : "";
+			var pos_name = val.pos_name != "null" ? val.pos_name : "";
+			var trHtml = '<tr id="lAdt'+ val.id +'"><td class="center">第'+sort+'审核</td>' +
+					'<td>'+dep_name+'</td>' +
+					'<td>'+pos_name+'</td>' +
+					'<td>'+val.name+'</td>' +
+					'<td class="center">' +
+					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+val.id+');">删除</button>' +
+					'</td></tr>';
+			if(trLength == 0){
+				$('#auditStart').removeClass('hide');
+				$('#auditEnd').removeClass('hide');
+			}
+			sort++;
+			$('#audit_user').val($('#audit_user').val()+val.id);
+			$('#auditTable').append(trHtml);
 			$('#selectClose').click();
 		}
 
-		function searchUser() {
-			var data = {
-				"s_u_name": $('#s_u_name').val(),
-				"s_deleted": '0',
-				"_token": '{{csrf_token()}}'
-			};
-			userTable.settings()[0].ajax.data = data;
-			userTable.ajax.reload(function () {
-				$('#searchCollapse').click();
-			});
+		function delUser(a_id){
+			var trList = $('#auditTable').children("tr");
+			var trLength = trList.length;
+			var user_val = $('#audit_user').val().split(",");
+				sort = 1;
+			for (var i=0;i<trLength;i = i+2) {
+				var trId = trList.eq(i)[0].id;
+				var tdArr = trList.eq(i).find("td");
+				if("lAdt"+a_id == trId){
+					trList.eq(i).remove();
+					if(trLength-1 != i){
+						trList.eq(i+1).remove();
+					}
+					if(trLength-1 == i && trLength != 1){
+						trList.eq(i-1).remove();
+					}
+					if(trLength == 1){
+						$('#auditStart').addClass('hide');
+						$('#auditEnd').addClass('hide');
+					}
+					user_val.splice($.inArray(a_id.toString(), user_val), 1);
+					user_val = user_val.join(',');
+					$('#audit_user').val(user_val);
+				}else{
+					tdArr.eq(0).text('第'+sort+'审核');
+					sort++;
+				}
+			}
 		}
-		//清除负责人
-		function delLeader(){
-			$('#dep_leader').val('');
-			$('#dep_name_list label').html('');
-		}
+
 	</script>
 @endsection()

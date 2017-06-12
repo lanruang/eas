@@ -53,9 +53,12 @@ Route::group(['middleware' => ['permission']], function () {
     //审核流程
     Route::group(['prefix' => 'processAudit'], function () {
         Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
-        Route::post('getProcessAudit', ['as' => 'processAudit.getProcessAudit', 'uses' => 'ProcessAuditController@getProcessAudit']);//获取审核流程列表
-        Route::get('addProcessAudit', ['as' => 'processAudit.addProcessAudit', 'uses' => 'ProcessAuditController@addProcessAudit']);//添加审核流程视图
-        Route::post('createProcessAudit', ['as' => 'processAudit.createProcessAudit', 'uses' => 'ProcessAuditController@createProcessAudit']);//创建审核流程
+        Route::post('getAudit', ['as' => 'processAudit.getAudit', 'uses' => 'ProcessAuditController@getAudit']);//获取审核流程列表
+        Route::get('addAudit', ['as' => 'processAudit.addAudit', 'uses' => 'ProcessAuditController@addAudit']);//添加审核流程视图
+        Route::post('createAudit', ['as' => 'processAudit.createAudit', 'uses' => 'ProcessAuditController@createAudit']);//创建审核流程
+        Route::post('auditInfo', ['as' => 'processAudit.auditInfo', 'uses' => 'ProcessAuditController@auditInfo']);//审核流程详情
+        Route::get('editAudit/{id?}', ['as' => 'processAudit.editAudit', 'uses' => 'ProcessAuditController@editAudit']);//编辑审核流程视图
+        Route::post('updateAudit', ['as' => 'processAudit.updateAudit', 'uses' => 'ProcessAuditController@updateAudit']);//更新审核流程
     });
     /*-----------------------------公司信息-----------------------------*/
     //科目管理

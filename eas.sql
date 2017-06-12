@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-06-09 17:57:27
+Date: 2017-06-12 17:54:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -139,6 +139,7 @@ INSERT INTO `positions` VALUES ('6', '销售员', '3', '1', '1', '0', '2017-06-0
 DROP TABLE IF EXISTS `process_audit`;
 CREATE TABLE `process_audit` (
   `audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `audit_dep` int(10) unsigned NOT NULL,
   `audit_type` varchar(255) NOT NULL DEFAULT '0',
   `audit_name` varchar(255) NOT NULL,
   `audit_process` text,
@@ -146,11 +147,14 @@ CREATE TABLE `process_audit` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`audit_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of process_audit
 -- ----------------------------
+INSERT INTO `process_audit` VALUES ('1', '0', 'yusuan', '预算流程', '3,2', '1', '2017-06-12 03:25:15', '2017-06-12 03:25:15');
+INSERT INTO `process_audit` VALUES ('3', '1', 'yusuan', 'test', '2', '1', '2017-06-12 03:50:17', '2017-06-12 03:50:17');
+INSERT INTO `process_audit` VALUES ('4', '0', 'baoxiao', '预算流程', '3,2', '1', '2017-06-12 09:07:45', '2017-06-12 09:28:04');
 
 -- ----------------------------
 -- Table structure for `role`
@@ -327,7 +331,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-09 05:40:49', '1', '0', '2016-05-25 05:56:33', '2017-06-09 05:40:49');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-12 03:11:43', '1', '0', '2016-05-25 05:56:33', '2017-06-12 03:11:43');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');
