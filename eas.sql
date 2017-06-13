@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-06-12 17:54:14
+Date: 2017-06-13 17:10:17
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -58,7 +58,7 @@ CREATE TABLE `node` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of node
@@ -106,6 +106,7 @@ INSERT INTO `node` VALUES ('49', '0', '客户管理', '#', '6', 'fa fa-users', '
 INSERT INTO `node` VALUES ('50', '39', '回收站', 'recycle.index', '1', 'fa fa-caret-right', '1', '1', '0', null, null, '2017-05-31 02:46:48', '2017-05-31 02:50:39');
 INSERT INTO `node` VALUES ('51', '2', '下拉菜单', '#', '3', 'fa fa-caret-right', '1', '1', '0', '', '', '2017-06-05 04:16:26', '2017-06-05 04:16:26');
 INSERT INTO `node` VALUES ('52', '40', '审核流程', 'processAudit.index', '1', 'fa fa-caret-right', '1', '1', '0', '', '', '2017-06-07 03:53:22', '2017-06-07 03:53:22');
+INSERT INTO `node` VALUES ('53', '38', '预算列表', 'budget.index', '1', 'fa fa-caret-right', '1', '1', '0', '', '', '2017-06-13 05:53:46', '2017-06-13 05:53:46');
 
 -- ----------------------------
 -- Table structure for `positions`
@@ -331,7 +332,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-12 03:11:43', '1', '0', '2016-05-25 05:56:33', '2017-06-12 03:11:43');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-13 08:57:12', '1', '0', '2016-05-25 05:56:33', '2017-06-13 08:57:12');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

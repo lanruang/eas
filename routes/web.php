@@ -109,10 +109,17 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('resetPwd', ['as' => 'user.resetPwd', 'uses' => 'UserController@resetPwd']);//重置密码
     });
 
-    //系统组件
+    /*-----------------------------预算管理-----------------------------*/
+    //预算列表
+    Route::group(['prefix' => 'budget'], function () {
+        Route::get('index', ['as' => 'budget.index', 'uses' => 'BudgetController@index']);//预算列表
+        Route::get('addBudget', ['as' => 'budget.addBudget', 'uses' => 'BudgetController@addBudget']);//添加预算视图
+    });
+
+    /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {
         Route::post('ctGetUser', ['as' => 'component.ctGetUser', 'uses' => 'Common\ComponentController@ctGetUser']);//用户数据
         Route::post('ctGetDep', ['as' => 'component.ctGetDep', 'uses' => 'Common\ComponentController@ctGetDep']);//部门数据
-        Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//部门数据
+        Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//岗位数据
     });
 });
