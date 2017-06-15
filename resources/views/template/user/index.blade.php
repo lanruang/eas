@@ -72,6 +72,7 @@
 			</table>
 		</div>
 	</div>
+
 @endsection()
 
 {{--页面加载js--}}
@@ -179,6 +180,7 @@
 									}
 								}]
 							});
+
 		})
 
 		function delUser(e){

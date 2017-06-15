@@ -4,6 +4,7 @@
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css"/>
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-datepicker3.min.css" />
 @endsection()
 
 {{--面包削导航--}}
@@ -21,25 +22,33 @@
 			<form class="form-horizontal" role="form" id="validation-form" method="post" action="#" >
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 部门 </label>
-					<div class="col-sm-3">
-						<label>
-							<select class="form-control" id="audit_type" name="audit_type">
-								<option value="yusuan">部门</option>
-							</select>
-						</label>
+					<label class="col-sm-3 control-label no-padding-right"> 预算编号 </label>
+					<div class="col-sm-2">
+						<input type="text" name="budget_num" id="budget_num" placeholder="预算编号" class="form-control" />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 预算名称 </label>
 					<div class="col-sm-3">
-						<input type="text" name="audit_name" id="audit_name" placeholder="预算名称" class="form-control" />
+						<input type="text" name="budget_name" id="budget_name" placeholder="预算名称" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 预算名称 </label>
+					<div class="col-sm-4">
+						<div class="input-daterange input-group">
+							<input type="text" class="input-sm form-control" name="start"/>
+							<span class="input-group-addon">
+								<i class="fa fa-exchange"></i>
+								</span>
+							<input type="text" class="input-sm form-control" name="end"/>
+						</div>
 					</div>
 				</div>
 
 				{{csrf_field()}}
-
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
@@ -64,14 +73,16 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.validate.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.bootstrap-duallistbox.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+		$(function(){
+			$('.input-daterange').datepicker({autoclose:true, format: "yyyy-mm-dd"});
+		})
+
 		//返回
 		function goBack(){
 			window.location.href = "{{route('budget.index')}}";

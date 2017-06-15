@@ -10,10 +10,31 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-06-13 17:10:17
+Date: 2017-06-15 17:39:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for `budget`
+-- ----------------------------
+DROP TABLE IF EXISTS `budget`;
+CREATE TABLE `budget` (
+  `budget_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `budget_num` varchar(255) NOT NULL,
+  `budget_name` varchar(255) NOT NULL,
+  `budget_start` varchar(10) NOT NULL,
+  `budget_end` varchar(10) NOT NULL,
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`budget_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of budget
+-- ----------------------------
+INSERT INTO `budget` VALUES ('1', '32123412', '测试预算', '2017-05-01', '2017-05-31', '1', null, null);
 
 -- ----------------------------
 -- Table structure for `department`
@@ -332,7 +353,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-13 08:57:12', '1', '0', '2016-05-25 05:56:33', '2017-06-13 08:57:12');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-15 04:47:10', '1', '0', '2016-05-25 05:56:33', '2017-06-15 04:47:10');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

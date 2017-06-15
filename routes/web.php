@@ -113,6 +113,7 @@ Route::group(['middleware' => ['permission']], function () {
     //预算列表
     Route::group(['prefix' => 'budget'], function () {
         Route::get('index', ['as' => 'budget.index', 'uses' => 'BudgetController@index']);//预算列表
+        Route::post('getBudget', ['as' => 'budget.getBudget', 'uses' => 'BudgetController@getBudget']);//获取预算列表
         Route::get('addBudget', ['as' => 'budget.addBudget', 'uses' => 'BudgetController@addBudget']);//添加预算视图
     });
 
