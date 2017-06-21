@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\ProcessAuditModel AS processAuditDb;
-use App\Http\Models\UserModel AS UserDb;
+use App\Http\Models\ProcessAudit\ProcessAuditModel AS processAuditDb;
+use App\Http\Models\User\UserModel AS UserDb;
 
 class ProcessAuditController extends Common\CommonController
 {

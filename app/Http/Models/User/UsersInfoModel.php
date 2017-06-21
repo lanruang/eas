@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Models;
+namespace App\Http\Models\User;
 
 use App\CustomCollection;
 use Illuminate\Database\Eloquent\Model;
 
-class UserModel extends Model
+class UsersInfoModel extends Model
 {
-    protected $table = 'users';                 //表名称
+    protected $table = 'users_info';            //表名称
     protected $primaryKey = 'user_id';          //主键
 }

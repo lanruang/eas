@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\DepartmentModel AS DepartmentDb;
+use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 

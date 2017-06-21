@@ -124,9 +124,9 @@
 
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.validate.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/Bootbox.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.validate.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -180,7 +180,6 @@
 			})
 
 			function initiateDemoData(){
-
 				var tree_data = JSON.parse('{!!$select!!}');
 				var dataSource1 = function(options, callback){
 					var $data = null

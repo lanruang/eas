@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Common;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Route;
-use App\Http\Models\UserModel AS UserDb;
-use App\Http\Models\DepartmentModel AS DepartmentDb;
-use App\Http\Models\PositionsModel AS PositionsDb;
+use App\Http\Models\User\UserModel AS UserDb;
+use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
+use App\Http\Models\Positions\PositionsModel AS PositionsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 

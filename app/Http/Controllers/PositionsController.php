@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\PositionsModel AS PositionsDb;
+use App\Http\Models\Positions\PositionsModel AS PositionsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 

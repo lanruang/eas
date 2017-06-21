@@ -6,14 +6,25 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\SubjectsModel AS subjectDb;
+use App\Http\Models\Subjects\SubjectsModel AS subjectDb;
 
 
 class SubjectsController extends Common\CommonController
 {
     public function index()
     {
-        return view('subjects.index');
+        //树形科目
+        $result = subjectDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
+            ->orderBy('sub_ip', 'asc')
+            ->get()
+            ->toArray();
+        //获取最小pid
+        $selectPid = subjectDb::where('status', 1)
+            ->min('sub_pid');
+        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+
+        $subject['select'] = json_encode($result);
+        return view('subjects.index', $subject);
     }
 
     public function getSubjects()

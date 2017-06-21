@@ -115,6 +115,11 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('index', ['as' => 'budget.index', 'uses' => 'BudgetController@index']);//预算列表
         Route::post('getBudget', ['as' => 'budget.getBudget', 'uses' => 'BudgetController@getBudget']);//获取预算列表
         Route::get('addBudget', ['as' => 'budget.addBudget', 'uses' => 'BudgetController@addBudget']);//添加预算视图
+        Route::post('createBudget', ['as' => 'budget.createBudget', 'uses' => 'BudgetController@createBudget']);//添加预算
+        Route::get('editBudget/{id?}', ['as' => 'budget.editBudget', 'uses' => 'BudgetController@editBudget']);//添加编辑视图
+        Route::post('updateBudget', ['as' => 'budget.updateBudget', 'uses' => 'BudgetController@updateBudget']);//更新预算
+        Route::get('addBudgetSub/{id?}', ['as' => 'budget.addBudgetSub', 'uses' => 'BudgetController@addBudgetSub']);//添加预算项视图
+        Route::post('getBudgetSub', ['as' => 'budget.getBudgetSub', 'uses' => 'BudgetController@getBudgetSub']);//获取预算项目
     });
 
     /*-----------------------------系统组件-----------------------------*/

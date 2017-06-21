@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\RoleModel AS roleDb;
-use App\Http\Models\NodeModel AS nodeDb;
+use App\Http\Models\Role\RoleModel AS roleDb;
+use App\Http\Models\Node\NodeModel AS nodeDb;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;

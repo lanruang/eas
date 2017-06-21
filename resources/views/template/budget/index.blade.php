@@ -11,7 +11,7 @@
 	<div class="row">
 		<div class="col-xs-12 col-sm-10">
 			<button type="button" class="btn btn-sm btn-primary" onclick="addBudget();">添加预算</button>
-			<button type="button" class="btn btn-sm btn-primary" onclick="addBdInfo();">添加预算项</button>
+			<button type="button" class="btn btn-sm btn-primary" onclick="addBudgetSub();">更新预算项</button>
 
 			<table id="budgetTable" class="table table-striped table-bordered table-hover">
 				<thead>
@@ -102,7 +102,7 @@
 							"targets": 5,
 							"render": function(data, type, row) {
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
-										'<a class="green" href="#" onclick="editUser(' + row.id + ')">' +
+										'<a class="green" href="#" onclick="editBudget(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 										'</a></div>' +
 										'<div class="hidden-md hidden-lg">' +
@@ -113,7 +113,7 @@
 										'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
 										'<li>' +
 										'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-										'<span class="green" onclick="editUser(' + row.id + ')">' +
+										'<span class="green" onclick="editBudget(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
 										'</span></a></li></ul></div></div>';
 								return html;
@@ -135,15 +135,34 @@
 					select_id = this.id
 				}
 			});
-
 		})
 
 		function addBudget(){
 			window.location.href = "{{route('budget.addBudget')}}";
 		}
 
-		function addBdInfo(){
-			if(select_id == '') alert('请选择一个预算');return;
+		function editBudget(e){
+			window.location.href = "{{route('budget.editBudget')}}" + "/" + e;
+		}
+
+		function addBudgetSub(){
+			if(select_id == ''){
+				bootbox.dialog({
+					message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请选择一个预算！',
+					buttons:
+					{"click" :
+					{
+						"label" : "确定",
+						"className" : "btn-sm btn-primary",
+						"callback": function() {
+							$('#selectClose').click();
+						}
+					}
+					}
+				});
+				return false;
+			}
+			window.location.href = "{{route('budget.addBudgetSub')}}" + "/" + select_id;
 		}
 	</script>
 @endsection()

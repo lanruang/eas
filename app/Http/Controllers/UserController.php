@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\UserModel AS UserDb;
-use App\Http\Models\RoleModel AS RoleDb;
-use App\Http\Models\DepartmentModel AS DepartmentDb;
-use App\Http\Models\PositionsModel AS PositionsDb;
-use App\Http\Models\UsersBaseModel AS UsersBaseDb;
-use App\Http\Models\UsersInfoModel AS UsersInfoDb;
+use App\Http\Models\User\UserModel AS UserDb;
+use App\Http\Models\Role\RoleModel AS RoleDb;
+use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
+use App\Http\Models\Positions\PositionsModel AS PositionsDb;
+use App\Http\Models\User\UsersBaseModel AS UsersBaseDb;
+use App\Http\Models\User\UsersInfoModel AS UsersInfoDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 use Illuminate\Support\Facades\DB;

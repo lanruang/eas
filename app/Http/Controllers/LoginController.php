@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\UserModel AS loginDb;
+use App\Http\Models\User\UserModel AS loginDb;
+use App\Http\Models\Node\NodeModel AS nodeDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\NodeModel AS nodeDb;
+
 
 class LoginController extends Common\CommonController
 {

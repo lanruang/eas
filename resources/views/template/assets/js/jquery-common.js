@@ -34,6 +34,9 @@
 		var status = '';
 		switch(String(val))
 		{
+			case "102":
+				status = '<span style="color:green;">更新预算项</span>';
+				break;
 			case "1":
 				status = "使用中";
 				break;

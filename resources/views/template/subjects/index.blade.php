@@ -17,6 +17,7 @@
 		<div class="col-xs-12">
 			<button type="button" id="btn_goBack" class="btn btn-sm btn-success hide" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<button type="button" class="btn btn-sm btn-primary" onclick="addSub();">添加</button>
+			<button type="button" class="btn btn-sm btn-primary" href="#modal-tree" data-toggle="modal">树形排列</button>
 			<table id="subTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
@@ -30,7 +31,26 @@
 			</table>
 		</div>
 	</div>
-	<div id = "pageInfo"></div>
+
+	<div id="modal-tree" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="widget-box widget-color-blue2">
+				<div class="widget-header">
+					<h4 class="widget-title lighter smaller">科目列表</h4>
+					<span class="widget-toolbar">
+						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+					</span>
+				</div>
+
+				<div class="widget-body">
+					<div class="widget-main padding-8">
+						<ul id="tree1"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 @endsection()
 
 {{--页面加载js--}}
@@ -38,6 +58,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -134,6 +155,44 @@
 							}
 						}],
 					});
+
+			var sampleData = initiateDemoData();//see below
+			$('#tree1').ace_tree({
+				dataSource: sampleData['dataSource1'],
+				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+				'itemSelect' : true,
+				'folderSelect': false,
+				'multiSelect': false,
+				'open-icon' : 'ace-icon tree-minus',
+				'close-icon' : 'ace-icon tree-plus',
+				'folder-open-icon' : 'ace-icon tree-plus',
+				'folder-close-icon' : 'ace-icon tree-minus',
+				'selected-icon' : 'null',
+				'unselected-icon' : 'null',
+			})
+
+			function initiateDemoData(){
+				var tree_data = JSON.parse('{!!$select!!}');
+				var dataSource1 = function(options, callback){
+					var $data = null
+					if(!("text" in options) && !("type" in options)){
+						$data = tree_data;//the root tree
+						callback({ data: $data });
+						return;
+					}
+					else if("type" in options && options.type == "folder") {
+						if("additionalParameters" in options && "children" in options.additionalParameters)
+							$data = options.additionalParameters.children || {};
+						else $data = {}
+					}
+
+					if($data != null)//this setTimeout is only for mimicking some random delay
+						setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+				}
+				return {'dataSource1': dataSource1}
+			}
+
+
 		})
 
 		function getParameter(i) {

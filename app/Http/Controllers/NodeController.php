@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\NodeModel AS nodeDb;
+use App\Http\Models\Node\NodeModel AS nodeDb;
 
 
 class NodeController extends Common\CommonController

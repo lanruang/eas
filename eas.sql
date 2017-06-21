@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-06-15 17:39:06
+Date: 2017-06-21 18:00:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,7 +25,7 @@ CREATE TABLE `budget` (
   `budget_name` varchar(255) NOT NULL,
   `budget_start` varchar(10) NOT NULL,
   `budget_end` varchar(10) NOT NULL,
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`budget_id`)
@@ -34,7 +34,44 @@ CREATE TABLE `budget` (
 -- ----------------------------
 -- Records of budget
 -- ----------------------------
-INSERT INTO `budget` VALUES ('1', '32123412', '测试预算', '2017-05-01', '2017-05-31', '1', null, null);
+INSERT INTO `budget` VALUES ('1', '20170619', '预算', '2017-01', '2017-12', '102', '2017-06-20 17:44:33', '2017-06-20 17:44:33');
+
+-- ----------------------------
+-- Table structure for `budget_subject`
+-- ----------------------------
+DROP TABLE IF EXISTS `budget_subject`;
+CREATE TABLE `budget_subject` (
+  `budget_id` int(10) unsigned NOT NULL,
+  `subject_id` int(10) unsigned NOT NULL,
+  `status` tinyint(4) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`budget_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of budget_subject
+-- ----------------------------
+INSERT INTO `budget_subject` VALUES ('1', '36', '102', null, null);
+
+-- ----------------------------
+-- Table structure for `budget_subject_date`
+-- ----------------------------
+DROP TABLE IF EXISTS `budget_subject_date`;
+CREATE TABLE `budget_subject_date` (
+  `budget_id` int(10) unsigned NOT NULL,
+  `subject_id` int(10) unsigned NOT NULL,
+  `budget_date` varchar(10) DEFAULT NULL,
+  `budget_amount` decimal(10,2) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`budget_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of budget_subject_date
+-- ----------------------------
+INSERT INTO `budget_subject_date` VALUES ('1', '36', '2017-01', '1000.00', '2017-06-21 16:11:35', '2017-06-21 16:11:35');
 
 -- ----------------------------
 -- Table structure for `department`
@@ -46,7 +83,7 @@ CREATE TABLE `department` (
   `dep_leader` int(10) unsigned DEFAULT '0',
   `dep_pid` int(10) unsigned DEFAULT '0',
   `sort` tinyint(4) NOT NULL,
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
   `recycle` tinyint(1) NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
@@ -72,7 +109,7 @@ CREATE TABLE `node` (
   `sort` tinyint(4) NOT NULL DEFAULT '0',
   `icon` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `is_menu` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
   `is_recycle` tinyint(1) unsigned DEFAULT '0',
   `recycle_name` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
   `recycle_type` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -138,7 +175,7 @@ CREATE TABLE `positions` (
   `pos_name` varchar(50) NOT NULL,
   `pos_pid` int(10) unsigned DEFAULT '0',
   `sort` tinyint(4) NOT NULL,
-  `status` tinyint(1) unsigned DEFAULT '1',
+  `status` tinyint(4) DEFAULT '1',
   `recycle` tinyint(1) NOT NULL,
   `updated_at` datetime DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
@@ -165,7 +202,7 @@ CREATE TABLE `process_audit` (
   `audit_type` varchar(255) NOT NULL DEFAULT '0',
   `audit_name` varchar(255) NOT NULL,
   `audit_process` text,
-  `status` tinyint(1) unsigned NOT NULL,
+  `status` tinyint(4) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`audit_id`)
@@ -186,7 +223,7 @@ CREATE TABLE `role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `sort` tinyint(4) NOT NULL DEFAULT '0',
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -251,6 +288,26 @@ INSERT INTO `role_node` VALUES ('6', '30');
 INSERT INTO `role_node` VALUES ('6', '31');
 
 -- ----------------------------
+-- Table structure for `status`
+-- ----------------------------
+DROP TABLE IF EXISTS `status`;
+CREATE TABLE `status` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `status` tinyint(4) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `text` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of status
+-- ----------------------------
+INSERT INTO `status` VALUES ('1', '-1', '常规', '已删除');
+INSERT INTO `status` VALUES ('2', '1', '常规', '使用中');
+INSERT INTO `status` VALUES ('3', '0', '常规', '已停用');
+INSERT INTO `status` VALUES ('4', '102', '预算', '更新预算项');
+
+-- ----------------------------
 -- Table structure for `subjects`
 -- ----------------------------
 DROP TABLE IF EXISTS `subjects`;
@@ -260,7 +317,7 @@ CREATE TABLE `subjects` (
   `sub_ip` varchar(255) NOT NULL,
   `sub_name` varchar(255) NOT NULL,
   `sub_pid` int(10) unsigned NOT NULL,
-  `status` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
   `sort` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `sub_budget` tinyint(1) unsigned DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -342,7 +399,7 @@ CREATE TABLE `users` (
   `role_id` int(10) unsigned NOT NULL,
   `supper_admin` tinyint(1) NOT NULL DEFAULT '0',
   `last_login` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `status` tinyint(1) unsigned zerofill NOT NULL,
+  `status` tinyint(4) NOT NULL,
   `recycle` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -353,7 +410,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-15 04:47:10', '1', '0', '2016-05-25 05:56:33', '2017-06-15 04:47:10');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-21 06:46:27', '1', '0', '2016-05-25 05:56:33', '2017-06-21 06:46:27');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

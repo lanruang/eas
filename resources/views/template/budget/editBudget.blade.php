@@ -10,7 +10,7 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
 	<li><a href="{{route('budget.index')}}">预算列表</a></li>
-	<li>添加预算</li>
+	<li>编辑预算</li>
 @endsection()
 
 {{--页面内容--}}
@@ -19,19 +19,19 @@
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budget.createBudget') }}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budget.updateBudget') }}" >
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 预算编号 </label>
 					<div class="col-sm-2">
-						<input type="text" name="budget_num" id="budget_num" placeholder="预算编号" class="form-control" />
+						<input type="text" name="budget_num" id="budget_num" placeholder="预算编号" class="form-control" value="{{ $budget_num }}" />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 预算名称 </label>
 					<div class="col-sm-3">
-						<input type="text" name="budget_name" id="budget_name" placeholder="预算名称" class="form-control" />
+						<input type="text" name="budget_name" id="budget_name" placeholder="预算名称" class="form-control" value="{{ $budget_name }}" />
 					</div>
 				</div>
 
@@ -42,12 +42,13 @@
 							<span class="input-group-addon">
 								<i class="fa fa-calendar bigger-110"></i>
 							</span>
-							<input class="form-control" type="text" name="budget_date" id="budget_date"/>
+							<input class="form-control" type="text" name="budget_date" id="budget_date" value="{{ $budget_start }} 一 {{ $budget_end }}" />
 						</div>
 					</div>
 				</div>
 
 				{{csrf_field()}}
+				<input type="hidden" name="id" id="id" value="{{ $budget_id }}" />
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">

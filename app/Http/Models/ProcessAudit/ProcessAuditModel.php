@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Models;
+namespace App\Http\Models\ProcessAudit;
 
 use Illuminate\Database\Eloquent\Model;
 
