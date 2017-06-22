@@ -101,14 +101,16 @@ function sortTree($array, $pid = 0, $level = 0)
 {
     $arr = array();
 
-    foreach($array as $v){
-        if($v['pid']==$pid){
+    foreach ($array as $v) {
+        if ($v['pid'] == $pid) {
             $v['level'] = $level;
             $arr[] = $v;
             $v['level'] = $level + 1;
-            $arr = array_merge($arr,sortTree($array,$v['id'], $v['level']));
+            $arr = array_merge($arr, sortTree($array, $v['id'], $v['level']));
         }
     }
+
+
     return $arr;
 }
 
@@ -158,6 +160,38 @@ function getTreeT($data, $pid = 0)
         }
     }
     return $tree;
+}
+
+/**
+ * 树形排序预算用
+ * @param	array		$array
+ * @param	int			$pid
+ * @return	array
+ */
+function sortTreeBudget($array, $pid = 0, $level = 0, $budget = 0)
+{
+    $arr = array();
+    if($budget == '1'){
+        foreach($array as $v){
+            if($v['pid']==$pid && $v['sub_budget'] == $budget){
+                $v['level'] = $level;
+                $arr[] = $v;
+                $v['level'] = $level + 1;
+                $arr = array_merge($arr,sortTreeBudget($array,$v['id'], $v['level']));
+            }
+        }
+    }else{
+        foreach($array as $v){
+            if($v['pid']==$pid){
+                $v['level'] = $level;
+                $arr[] = $v;
+                $v['level'] = $level + 1;
+                $arr = array_merge($arr,sortTreeBudget($array,$v['id'], $v['level']));
+            }
+        }
+    }
+
+    return $arr;
 }
 
 /**

@@ -188,7 +188,7 @@
 					'</div>' +
 					'</div>' +
 					'</div>' +
-					'</div>';;
+					'</div>';
 
 			listData.push(d.audit_id);
 			return html;

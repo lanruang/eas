@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-06-21 18:00:14
+Date: 2017-06-22 18:02:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -43,16 +43,17 @@ DROP TABLE IF EXISTS `budget_subject`;
 CREATE TABLE `budget_subject` (
   `budget_id` int(10) unsigned NOT NULL,
   `subject_id` int(10) unsigned NOT NULL,
+  `sum_amount` decimal(10,2) NOT NULL,
   `status` tinyint(4) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`budget_id`)
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of budget_subject
 -- ----------------------------
-INSERT INTO `budget_subject` VALUES ('1', '36', '102', null, null);
+INSERT INTO `budget_subject` VALUES ('1', '36', '3000.00', '102', '2017-06-22 15:39:03', '2017-06-22 15:39:03');
+INSERT INTO `budget_subject` VALUES ('1', '37', '1000.00', '102', '2017-06-22 15:39:06', '2017-06-22 15:39:06');
 
 -- ----------------------------
 -- Table structure for `budget_subject_date`
@@ -64,14 +65,15 @@ CREATE TABLE `budget_subject_date` (
   `budget_date` varchar(10) DEFAULT NULL,
   `budget_amount` decimal(10,2) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`budget_id`)
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of budget_subject_date
 -- ----------------------------
 INSERT INTO `budget_subject_date` VALUES ('1', '36', '2017-01', '1000.00', '2017-06-21 16:11:35', '2017-06-21 16:11:35');
+INSERT INTO `budget_subject_date` VALUES ('1', '36', '2017-02', '2000.00', '2017-06-22 15:06:17', '2017-06-22 15:06:17');
+INSERT INTO `budget_subject_date` VALUES ('1', '37', '2017-01', '1000.00', null, null);
 
 -- ----------------------------
 -- Table structure for `department`
@@ -331,7 +333,7 @@ CREATE TABLE `subjects` (
 INSERT INTO `subjects` VALUES ('1', '0', '1000', '资产', '0', '1', '0', '0', '2017-06-06 11:02:22', '2017-06-06 11:02:22');
 INSERT INTO `subjects` VALUES ('2', '0', '2000', '负债', '0', '1', '0', '0', '2017-06-06 11:02:26', '2017-06-06 11:02:26');
 INSERT INTO `subjects` VALUES ('3', '0', '4000', '权益类', '0', '1', '0', '0', '2017-06-06 16:27:03', '2017-06-06 16:27:03');
-INSERT INTO `subjects` VALUES ('4', '0', '6000', '损益', '0', '1', '0', '0', '2017-06-06 11:02:24', '2017-06-06 11:02:24');
+INSERT INTO `subjects` VALUES ('4', '0', '6000', '损益', '0', '1', '0', '1', '2017-06-22 14:05:45', '2017-06-22 14:05:45');
 INSERT INTO `subjects` VALUES ('5', '1', '1000.1001', '现金', '1', '1', '0', '0', '2017-06-06 03:04:19', '2017-06-06 03:04:19');
 INSERT INTO `subjects` VALUES ('6', '1', '1000.1002', '银行', '1', '1', '0', '0', '2017-06-06 03:04:33', '2017-06-06 03:04:33');
 INSERT INTO `subjects` VALUES ('7', '1', '1000.1122', '应收账款', '1', '1', '0', '0', '2017-06-06 03:04:49', '2017-06-06 03:04:49');
@@ -410,7 +412,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-21 06:46:27', '1', '0', '2016-05-25 05:56:33', '2017-06-21 06:46:27');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-06-22 04:16:07', '1', '0', '2016-05-25 05:56:33', '2017-06-22 04:16:07');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

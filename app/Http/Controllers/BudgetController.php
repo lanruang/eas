@@ -10,6 +10,7 @@ use Validator;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use App\Http\Models\Budget\BudgetSubjectModel AS BudgetSubjectDb;
 use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSubjectDateDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use Illuminate\Support\Facades\DB;
 
 class BudgetController extends Common\CommonController
@@ -248,31 +249,67 @@ class BudgetController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        /*
-         * //获取数据
-        $result = BudgetSubjectDb::leftjoin('subjects AS sj', 'BudgetS.subject_id', '=', 'sj.sub_id')
-                            ->select('BudgetS.budget_id', 'BudgetS.subject_id AS sub_id', 'sj.sub_name AS subject',
-                            'BudgetS.status')
-                            ->where('BudgetS.budget_id', $input['budget_id'])
-                            ->get()
-                            ->toArray();
-         * */
+        $subjects = SubjectsDb::leftjoin('budget_subject AS bs', 'bs.subject_id','=','subjects.sub_id')
+            ->where('subjects.status','1')
+            ->select('subjects.sub_pid AS pid', 'subjects.sub_id AS id', 'subjects.sub_name AS subject',
+                'subjects.sub_ip AS subject_ip', 'subjects.sub_budget', 'bs.sum_amount AS budget_amount',
+                'bs.status AS status')
+            ->get()
+            ->toArray();
+        $result = sortTreeBudget($subjects, 0, 0, 1);
 
+        $result = array_reverse($result);
+        foreach($result as $k => $v){
+            $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
+            foreach($result as $kk => $vv){
+                if($v['id'] == $vv['pid'] && $v['pid'] != 0){
+                    $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $vv['budget_amount']);
+                    $result[$k]['parent'] = 1;
+                }
+            }
+        }
+        $result = array_reverse($result);
 
-        //获取数据
-        $result = BudgetSubjectDb::leftjoin('budget_subject_date AS bsd', function ($join) {
-                                    $join->on('BudgetS.budget_id', '=', 'bsd.budget_id')
-                                    ->on('BudgetS.subject_id', '=', 'bsd.subject_id');})
-                            ->leftjoin('subjects AS sj', 'BudgetS.subject_id', '=', 'sj.sub_id')
-                            ->select('BudgetS.budget_id',
-                                'BudgetS.subject_id AS sub_id',
-                                'BudgetS.status',
-                                'sj.sub_name AS subject',
-                                DB::raw('SUM(bsd.budget_amount) AS budget_amount')
-                            )
-                            ->where('BudgetS.budget_id', $input['budget_id'])
-                            ->get()
-                            ->toArray();
+        //创建结果数据
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+    
+    //获取预算期间
+    public function getBudgetDate(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+        $rules = [
+            'budget_id' => 'required|digits_between:1,11',
+            'subject_id' => 'required|digits_between:1,11',
+        ];
+        $message = [
+            'budget_id.required' => '参数不存在',
+            'budget_id.digits_between' => '参数错误',
+            'subject_id.required' => '科目参数不存在',
+            'subject_id.digits_between' => '科目参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        $result = BudgetSubjectDateDb::where('budget_id', $input['budget_id'])
+            ->where('subject_id', $input['subject_id'])
+            ->select('budget_date', 'budget_amount')
+            ->orderBy('budget_date','ASC')
+            ->get()
+            ->toArray();
 
         //创建结果数据
         $data['data'] = $result;
