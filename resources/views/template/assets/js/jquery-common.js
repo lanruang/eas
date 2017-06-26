@@ -86,26 +86,32 @@
 	}
 
 /**
- * 转成树形结构(特定)
+ * 保留x小数点0补齐
  *
- * @param	array		$data
- * @param	int			$pid
- * @return	array
-
-	function getTreeT($data, $pid = 0)
-	{
-		$tree = '';
-		for(i in data)
-		{
-			if($v['pid'] == $pid)
-			{
-				$v['additionalParameters']['children'] = getTree($data, $v['id']);
-				$tree[] = $v;
-			}
-		}
-		return $tree;
-	}
+ * @param	float		num
+ * @param	int			x
+ * @return	string
+ *
  */
+	function toDecimal(num, x) {
+		var x = 2;
+		var f = parseFloat(num);
+		if (isNaN(f)) {
+			return false;
+		}
+		var f = Math.round(num * 100) / 100;
+		var s = f.toString();
+		var rs = s.indexOf('.');
+		if (rs < 0) {
+			rs = s.length;
+			s += '.';
+		}
+		while (s.length <= rs + x) {
+			s += '0';
+		}
+		return s;
+	}
+
 	function writeObj(obj){ 
 		var description = ""; 
 			for(var i in obj){ 

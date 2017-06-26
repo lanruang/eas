@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Input;
 use Validator;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use App\Http\Models\Budget\BudgetSubjectModel AS BudgetSubjectDb;
 use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSubjectDateDb;
+use App\Http\Models\Budget\BudgetDepartmentModel AS BudgetDepartmentDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use Illuminate\Support\Facades\DB;
 
@@ -62,7 +62,7 @@ class BudgetController extends Common\CommonController
         //查询在编辑状态
         $result = BudgetDb::where('status', '102')->first();
         if($result){
-            return redirectPageMsg('-1', "无法添加预算，已存在编辑状态", route('budget.index'));
+            return redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budget.index'));
         }
 
         return view('budget.addBudget');
@@ -249,15 +249,21 @@ class BudgetController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $subjects = SubjectsDb::leftjoin('budget_subject AS bs', 'bs.subject_id','=','subjects.sub_id')
-            ->where('subjects.status','1')
+        $subjects = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use($input) {
+                $join->on('bs.subject_id','=','subjects.sub_id')
+                    ->where('bs.budget_id', 1);})
+            ->where('subjects.status', $input['budget_id'])
             ->select('subjects.sub_pid AS pid', 'subjects.sub_id AS id', 'subjects.sub_name AS subject',
                 'subjects.sub_ip AS subject_ip', 'subjects.sub_budget', 'bs.sum_amount AS budget_amount',
                 'bs.status AS status')
+            ->orderBy('subjects.sub_ip', 'ASC')
             ->get()
             ->toArray();
+
+        //树形排列科目
         $result = sortTreeBudget($subjects, 0, 0, 1);
 
+        //倒叙科目汇总金额
         $result = array_reverse($result);
         foreach($result as $k => $v){
             $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;

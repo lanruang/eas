@@ -77,7 +77,6 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/chosen.jquery.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/moment.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.daterangepicker.min.js"></script>
-
 @endsection()
 
 {{--底部js--}}

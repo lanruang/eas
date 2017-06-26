@@ -147,19 +147,7 @@
 
 		function addBudgetSub(){
 			if(select_id == ''){
-				bootbox.dialog({
-					message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请选择一个预算！',
-					buttons:
-					{"click" :
-					{
-						"label" : "确定",
-						"className" : "btn-sm btn-primary",
-						"callback": function() {
-							$('#selectClose').click();
-						}
-					}
-					}
-				});
+				alertDialog('1', '请选择一个预算！');
 				return false;
 			}
 			window.location.href = "{{route('budget.addBudgetSub')}}" + "/" + select_id;
