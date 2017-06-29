@@ -20642,3 +20642,8 @@ input.typeahead.scrollable ~ .tt-menu {
 .btn_cp {
     cursor: pointer
 }
+.new_grid2:first-child {
+    border-left: none;
+    margin: 0;
+    padding: 0;
+}

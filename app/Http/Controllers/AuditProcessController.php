@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\ProcessAudit\ProcessAuditModel AS processAuditDb;
+use App\Http\Models\AuditProcess\AuditProcessModel AS auditProcessDb;
 use App\Http\Models\User\UserModel AS UserDb;
 
-class ProcessAuditController extends Common\CommonController
+class AuditProcessController extends Common\CommonController
 {
     public function index()
     {
-        return view('processAudit.index');
+        return view('auditProcess.index');
     }
 
     public function getAudit()
@@ -26,13 +26,13 @@ class ProcessAuditController extends Common\CommonController
         $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
 
         //获取记录总数
-        $total = processAuditDb::count();
+        $total = auditProcessDb::count();
         //获取数据
-        $result = processAuditDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'process_audit.audit_dep')
-            ->select('process_audit.*', 'dep.dep_name AS department')
+        $result = auditProcessDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'audit_process.audit_dep')
+            ->select('audit_process.*', 'dep.dep_name AS department')
             ->skip($skip)
             ->take($take)
-            ->orderBy('process_audit.audit_dep', 'asc')
+            ->orderBy('audit_process.audit_dep', 'asc')
             ->get()
             ->toArray();
 
@@ -50,7 +50,7 @@ class ProcessAuditController extends Common\CommonController
     //添加审核流程视图
     public function addAudit()
     {
-        return view('processAudit.addAudit');
+        return view('auditProcess.addAudit');
     }
 
     //添加岗位
@@ -70,33 +70,33 @@ class ProcessAuditController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('processAudit.addAudit'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.addAudit'));
         }
 
         //判断审核流程是否存在
-        $result = processAuditDb::where('audit_type',$input['audit_type'])
+        $result = auditProcessDb::where('audit_type',$input['audit_type'])
                                 ->where('audit_dep', $input['dep_id'])
                                 ->first();
         if($result){
-            return redirectPageMsg('-1', '审核流程已存在', route('processAudit.addAudit'));
+            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.addAudit'));
         }
 
         //格式化数据
         $input['audit_status'] = array_key_exists('audit_status', $input) ? 1 : 0;
 
         //创建审核流程
-        $ProcessAuditDb = new processAuditDb();
-        $ProcessAuditDb->audit_dep = $input['dep_id'];
-        $ProcessAuditDb->audit_type = $input['audit_type'];
-        $ProcessAuditDb->audit_name = $input['audit_name'];
-        $ProcessAuditDb->audit_process = $input['audit_user'];
-        $ProcessAuditDb->status = $input['audit_status'];
-        $result = $ProcessAuditDb->save();
+        $auditProcessDb = new auditProcessDb();
+        $auditProcessDb->audit_dep = $input['dep_id'];
+        $auditProcessDb->audit_type = $input['audit_type'];
+        $auditProcessDb->audit_name = $input['audit_name'];
+        $auditProcessDb->audit_process = $input['audit_user'];
+        $auditProcessDb->status = $input['audit_status'];
+        $result = $auditProcessDb->save();
 
         if($result){
-            return redirectPageMsg('1', "添加成功", route('processAudit.index'));
+            return redirectPageMsg('1', "添加成功", route('auditProcess.index'));
         }else{
-            return redirectPageMsg('-1', "添加失败", route('processAudit.addAudit'));
+            return redirectPageMsg('-1', "添加失败", route('auditProcess.addAudit'));
         }
     }
 
@@ -105,12 +105,12 @@ class ProcessAuditController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt")){
-            return redirectPageMsg('-1', '参数错误', route('processAudit.index'));
+            return redirectPageMsg('-1', '参数错误', route('auditProcess.index'));
         };
 
         //获取数据
-        $data['audit'] = processAuditDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'process_audit.audit_dep')
-            ->select('process_audit.*', 'dep.dep_name AS department')
+        $data['audit'] = auditProcessDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'audit_process.audit_dep')
+            ->select('audit_process.*', 'dep.dep_name AS department')
             ->where('audit_id', $id)
             ->first()
             ->toArray();
@@ -134,7 +134,7 @@ class ProcessAuditController extends Common\CommonController
             }
         }
         $data['audit_user'] = json_encode($data['audit_user']);
-        return view('processAudit.editAudit', $data);
+        return view('auditProcess.editAudit', $data);
     }
 
     //更新审核流程
@@ -145,7 +145,7 @@ class ProcessAuditController extends Common\CommonController
 
         //检测id类型是否整数
         if(!array_key_exists('audit_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('processAudit.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', '参数错误', route('auditProcess.editAudit')."/".$input['audit_id']);
         };
         $rules = [
             'audit_name' => 'required|between:1,100',
@@ -161,23 +161,23 @@ class ProcessAuditController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('processAudit.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.editAudit')."/".$input['audit_id']);
         }
 
         //判断审核流程是否存在
-        $result = processAuditDb::where('audit_id',$input['audit_id'])
+        $result = auditProcessDb::where('audit_id',$input['audit_id'])
                                 ->first();
         if(!$result){
-            return redirectPageMsg('-1', '审核流程不存在！', route('processAudit.index'));
+            return redirectPageMsg('-1', '审核流程不存在！', route('auditProcess.index'));
         }
 
         //判断审核流程是否重复
-        $result = processAuditDb::where('audit_id','<>', $input['audit_id'])
+        $result = auditProcessDb::where('audit_id','<>', $input['audit_id'])
                                 ->where('audit_type',$input['audit_type'])
                                 ->where('audit_dep', $input['dep_id'])
                                 ->first();
         if($result){
-            return redirectPageMsg('-1', '审核流程已存在', route('processAudit.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.editAudit')."/".$input['audit_id']);
         }
 
         //格式化数据
@@ -191,13 +191,13 @@ class ProcessAuditController extends Common\CommonController
         $data['audit_process'] = $input['audit_user'];
         $data['status'] = $input['audit_status'];
 
-        $result = processAuditDb::where('audit_id', $input['audit_id'])
+        $result = auditProcessDb::where('audit_id', $input['audit_id'])
             ->update($data);
 
         if($result){
-            return redirectPageMsg('1', "编辑成功", route('processAudit.index'));
+            return redirectPageMsg('1', "编辑成功", route('auditProcess.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('processAudit.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', "编辑失败", route('auditProcess.editAudit')."/".$input['audit_id']);
         }
     }
     
@@ -214,8 +214,8 @@ class ProcessAuditController extends Common\CommonController
         $input = Input::all();
 
         //获取数据
-        $result = processAuditDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'process_audit.audit_dep')
-            ->select('process_audit.*', 'dep.dep_name AS department')
+        $result = auditProcessDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'audit_process.audit_dep')
+            ->select('audit_process.*', 'dep.dep_name AS department')
             ->where('audit_id', $input['id'])
             ->first()
             ->toArray();

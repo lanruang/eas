@@ -39,7 +39,11 @@ class LoginController extends Common\CommonController
                 ->withErrors($validator);
         }
 
-        $userInfo = loginDb::where('user_email', $input["userName"])
+        $userInfo = loginDb::leftjoin('users_base AS ub', 'users.user_id','=','ub.user_id')
+                            ->leftjoin('department AS dep', 'ub.department','=','dep.dep_id')
+                            ->leftjoin('positions AS pos', 'ub.positions','=','pos.pos_id')
+                            ->select('users.*','dep.dep_name','dep.dep_id','pos.pos_name','pos.pos_id')
+                            ->where('users.user_email', $input["userName"])
                             ->first();
 
         //判断用户

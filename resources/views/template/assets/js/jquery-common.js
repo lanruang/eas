@@ -52,8 +52,14 @@
 			case "sub_0":
 				status = "";
 				break;
-			case "sub_-1":
-				status = "贷";
+			case "1000":
+				status = "未审核";
+				break;
+			case "1001":
+				status = "已审核";
+				break;
+			case "9":
+				status = "审核中";
 				break;
 		}
 		
@@ -68,7 +74,7 @@
  *
  */
 	function alertDialog(status, msg){
-		var aClass,type;
+		var aClass;
 		aClass = String(status) == "-1" ? "red" : "green";
 		aType = String(status) == "-1" ? "错误提示" : "提示信息";
 

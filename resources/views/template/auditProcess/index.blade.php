@@ -10,8 +10,11 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-10">
-			<button type="button" class="btn btn-sm btn-primary" onclick="addAudit();">添加</button>
-
+			<div class="clearfix">
+				<div class="grid2 new_grid2">
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addAudit();">添加</button>
+				</div>
+			</div>
 			<table id="auditTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
@@ -78,7 +81,7 @@
 							"type": "post",
 							"dataType": "json",
 							"async":false,
-							"url": '{{route('processAudit.getAudit')}}',
+							"url": '{{route('auditProcess.getAudit')}}',
 							"data": {"_token": '{{csrf_token()}}'},
 							"dataSrc": function ( res ) {
 								if(res.status == true){
@@ -155,7 +158,7 @@
 		function auditInfo ( d ) {
 			if($.inArray(d.audit_id, listData) != '-1') return true;
 			var html = '<div class="col-xs-8 col-sm-offset-2">' +
-					'<div class="widget-box widget-color-dark">' +
+					'<div class="widget-box widget-color-blue3">' +
 					'<div class="widget-header center">' +
 					'<h5 class="widget-title bigger lighter">预览审核流程</h5>' +
 					'</div>' +
@@ -166,7 +169,7 @@
 					'<table class="table" style="margin-bottom: 0;">' +
 					'<tbody id="auditTable">';
 			var data = {"id":d.audit_id,"_token": '{{csrf_token()}}'};
-			var result = ajaxPost(data, '{{ route('processAudit.auditInfo') }}');
+			var result = ajaxPost(data, '{{ route('auditProcess.auditInfo') }}');
 				$.each(result, function(i, v){
 					html += '<tr>' +
 							'<td class="center">第'+(i+1)+'审核</td>' +
@@ -195,11 +198,11 @@
 		}
 
 		function addAudit(){
-			window.location.href = "{{route('processAudit.addAudit')}}";
+			window.location.href = "{{route('auditProcess.addAudit')}}";
 		}
 
 		function editAudit(e){
-			window.location.href = "{{route('processAudit.editAudit')}}/" + e;
+			window.location.href = "{{route('auditProcess.editAudit')}}/" + e;
 		}
 	</script>
 @endsection()

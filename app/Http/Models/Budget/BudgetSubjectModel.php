@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class BudgetSubjectModel extends Model
 {
-    protected $table = 'budget_subject AS BudgetS';        //表名称
+    protected $table = 'budget_subject';        //表名称
 }

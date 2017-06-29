@@ -8,7 +8,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('role.index')}}">部门列表</a></li>
+	<li><a href="{{route('deparment.index')}}">部门列表</a></li>
 	<li>添加部门</li>
 @endsection()
 
@@ -16,7 +16,7 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
 			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('department.updateDepartment')}}" >
 				<div class="form-group">

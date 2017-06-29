@@ -17,7 +17,7 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
 			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budget.updateBudget') }}" >
 

@@ -15,8 +15,8 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-6">
-			<button class="btn btn-sm btn-primary" onclick="addCompany();">添加</button>
-			<button class="btn btn-sm btn-success" onclick="editCompany();">编辑</button>
+			<button class="btn btn-white btn-sm btn-round" onclick="addCompany();">添加</button>
+			<button class="btn btn-white btn-sm btn-round" onclick="editCompany();">编辑</button>
 
 			<p>暂不开放</p>
 

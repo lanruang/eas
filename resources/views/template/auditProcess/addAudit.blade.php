@@ -8,21 +8,21 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('processAudit.index')}}">审核流程</a></li>
-	<li>编辑审核流程</li>
+	<li><a href="{{route('auditProcess.index')}}">审核流程</a></li>
+	<li>添加审核流程</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
 	<div class="row">
 		<div class="col-xs-12">
-			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('processAudit.updateAudit') }}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('auditProcess.createAudit') }}" >
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 上级部门 </label>
-					<label class="col-sm-2 output" id="dep_list">{{ $audit['department'] }}</label>
-					<input type="hidden" name="dep_id" id="dep_id" value="{{ $audit['audit_dep'] }}"/>
+					<label class="col-sm-2 output" id="dep_list"></label>
+					<input type="hidden" name="dep_id" id="dep_id" value="0"/>
 					<button type="button" href="#modal-tree" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
 					<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree();">清除</button>
 				</div>
@@ -32,9 +32,9 @@
 					<div class="col-sm-3">
 						<label>
 							<select class="form-control" id="audit_type" name="audit_type">
-								<option value="yusuan" @if($audit['audit_type'] == 'yusuan')selected = "selected" @endif>预算管理类</option>
-								<option value="hetong" @if($audit['audit_type'] == 'hetong')selected = "selected" @endif>合同类</option>
-								<option value="baoxiao" @if($audit['audit_type'] == 'baoxiao')selected = "selected" @endif>日常报销</option>
+								<option value="budget">预算管理类</option>
+								<option value="hetong">合同类</option>
+								<option value="baoxiao">日常报销</option>
 							</select>
 						</label>
 					</div>
@@ -43,7 +43,7 @@
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 审核流程名称 </label>
 					<div class="col-sm-3">
-						<input type="text" name="audit_name" id="audit_name" value="{{ $audit['audit_name'] }}" placeholder="审核流程名称" class="form-control" />
+						<input type="text" name="audit_name" id="audit_name" placeholder="审核流程名称" class="form-control" />
 					</div>
 				</div>
 
@@ -51,7 +51,7 @@
 					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
 					<div class="col-xs-3 output">
 						<label>
-							<input name="audit_status" id="audit_status" class="ace ace-switch ace-switch-6" type="checkbox" @if($audit['status'] == '1')checked="checked"@endif>
+							<input name="audit_status" id="audit_status" class="ace ace-switch ace-switch-6" type="checkbox" checked="checked">
 							<span class="lbl"></span>
 						</label>
 					</div>
@@ -62,7 +62,7 @@
 				</h4>
 				<div class="col-sm-offset-3">
 					<div class="form-group">
-						<input type="hidden" name="audit_user" id="audit_user" value="{{$audit['audit_process']}}"/>
+						<input type="hidden" name="audit_user" id="audit_user"/>
 					</div>
 				</div>
 				<div class="col-sm-offset-2">
@@ -74,7 +74,7 @@
 
 				<div class="form-group">
 					<div class="col-xs-6 col-sm-5 col-sm-offset-2">
-						<div class="widget-box widget-color-dark">
+						<div class="widget-box widget-color-blue3">
 							<div class="widget-header center">
 								<h5 class="widget-title bigger lighter">预览审核流程</h5>
 							</div>
@@ -96,7 +96,6 @@
 
 				{{csrf_field()}}
 
-				<input type="hidden" name="audit_id" id="audit_id" value="{{$audit['audit_id']}}"/>
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
@@ -330,26 +329,6 @@
 				$('#dep_id').val(item.target.id);
 				$('#close_tree').click();
 			})
-
-			var html = '';
-			var audit_data = JSON.parse('{!! $audit_user !!}');
-			$.each(audit_data, function(i, v){
-				html = '<tr id="lAdt'+v.uid+'">' +
-						'<td class="center">第'+(i+1)+'审核</td>' +
-						'<td>'+v.dep_name+'</td>' +
-						'<td>'+v.pos_name+'</td>' +
-						'<td>'+v.user_name+'</td>' +
-						'<td>'+'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+v.uid+');">删除</button>'+'</td>' +
-						'</tr>';
-				if(audit_data.length > sort){
-					html += '<tr><td colspan="5" class="center">' +
-							'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
-							'</td></tr>';
-				}
-				sort++;
-				$('#auditTable').append(html);
-			});
-
 		});
 
 		function initiateDemoData(){
@@ -380,7 +359,7 @@
 
 		//返回
 		function goBack(){
-			window.location.href = "{{route('processAudit.index')}}";
+			window.location.href = "{{route('auditProcess.index')}}";
 		}
 
 		//验证表单
@@ -417,7 +396,7 @@
 			}
 
 			var trHtmlTop = '<tr><td colspan="5" class="center">' +
-							'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
+							'<i class="ace-icon fa fa-long-arrow-down bigger-110 icon-only"></i>' +
 							'</td></tr>';
 			if(trLength > 0){
 				$('#auditTable').append(trHtmlTop);

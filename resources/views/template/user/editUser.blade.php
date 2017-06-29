@@ -16,7 +16,7 @@
 {{--页面内容--}}
 @section('content')
 	<p>
-		<button type="button" class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+		<button type="button" class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 	</p>
 	<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('user.updateUser')}}" >
 		<div class="row">

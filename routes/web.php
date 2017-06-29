@@ -51,14 +51,14 @@ Route::group(['middleware' => ['permission']], function () {
     });
     /*-----------------------------流程控制-----------------------------*/
     //审核流程
-    Route::group(['prefix' => 'processAudit'], function () {
-        Route::get('index', ['as' => 'processAudit.index', 'uses' => 'ProcessAuditController@index']);//审核流程
-        Route::post('getAudit', ['as' => 'processAudit.getAudit', 'uses' => 'ProcessAuditController@getAudit']);//获取审核流程列表
-        Route::get('addAudit', ['as' => 'processAudit.addAudit', 'uses' => 'ProcessAuditController@addAudit']);//添加审核流程视图
-        Route::post('createAudit', ['as' => 'processAudit.createAudit', 'uses' => 'ProcessAuditController@createAudit']);//创建审核流程
-        Route::post('auditInfo', ['as' => 'processAudit.auditInfo', 'uses' => 'ProcessAuditController@auditInfo']);//审核流程详情
-        Route::get('editAudit/{id?}', ['as' => 'processAudit.editAudit', 'uses' => 'ProcessAuditController@editAudit']);//编辑审核流程视图
-        Route::post('updateAudit', ['as' => 'processAudit.updateAudit', 'uses' => 'ProcessAuditController@updateAudit']);//更新审核流程
+    Route::group(['prefix' => 'auditProcess'], function () {
+        Route::get('index', ['as' => 'auditProcess.index', 'uses' => 'AuditProcessController@index']);//审核流程
+        Route::post('getAudit', ['as' => 'auditProcess.getAudit', 'uses' => 'AuditProcessController@getAudit']);//获取审核流程列表
+        Route::get('addAudit', ['as' => 'auditProcess.addAudit', 'uses' => 'AuditProcessController@addAudit']);//添加审核流程视图
+        Route::post('createAudit', ['as' => 'auditProcess.createAudit', 'uses' => 'AuditProcessController@createAudit']);//创建审核流程
+        Route::post('auditInfo', ['as' => 'auditProcess.auditInfo', 'uses' => 'AuditProcessController@auditInfo']);//审核流程详情
+        Route::get('editAudit/{id?}', ['as' => 'auditProcess.editAudit', 'uses' => 'AuditProcessController@editAudit']);//编辑审核流程视图
+        Route::post('updateAudit', ['as' => 'auditProcess.updateAudit', 'uses' => 'AuditProcessController@updateAudit']);//更新审核流程
     });
     /*-----------------------------公司信息-----------------------------*/
     //科目管理
@@ -119,8 +119,13 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('editBudget/{id?}', ['as' => 'budget.editBudget', 'uses' => 'BudgetController@editBudget']);//添加编辑视图
         Route::post('updateBudget', ['as' => 'budget.updateBudget', 'uses' => 'BudgetController@updateBudget']);//更新预算
         Route::get('addBudgetSub/{id?}', ['as' => 'budget.addBudgetSub', 'uses' => 'BudgetController@addBudgetSub']);//添加预算项视图
+        Route::post('createBudgetSub', ['as' => 'budget.createBudgetSub', 'uses' => 'BudgetController@createBudgetSub']);//添加预算项
         Route::post('getBudgetSub', ['as' => 'budget.getBudgetSub', 'uses' => 'BudgetController@getBudgetSub']);//获取预算项目
         Route::post('getBudgetDate', ['as' => 'budget.getBudgetDate', 'uses' => 'BudgetController@getBudgetDate']);//获取预算期间
+        Route::get('listBudget/{id?}', ['as' => 'budget.listBudget', 'uses' => 'BudgetController@listBudget']);//查看预算详情
+        Route::post('delBudget', ['as' => 'budget.delBudget', 'uses' => 'BudgetController@delBudget']);//删除预算
+        Route::post('subBudget', ['as' => 'budget.subBudget', 'uses' => 'BudgetController@subBudget']);//提交预算审核
+        Route::get('listAudit/{id?}', ['as' => 'budget.listAudit', 'uses' => 'BudgetController@listAudit']);//查看审核进度
     });
 
     /*-----------------------------系统组件-----------------------------*/

@@ -10,15 +10,16 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
     <li><a href="{{route('budget.index')}}">预算列表</a></li>
-    <li>添加预算项</li>
+    <li>预算详情</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-11">
             <h4 class="header blue">预算信息</h4>
-            <div class="profile-user-info profile-user-info-striped">
+            <div class="col-sm-5">
+                <div class="profile-user-info profile-user-info-striped">
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算编号</div>
                     <div class="profile-info-value">
@@ -47,6 +48,7 @@
                     </div>
                 </div>
             </div>
+            </div>
             <table id="budgetSub" class="table table-striped table-bordered table-hover">
                 <thead>
                 <tr>
@@ -59,52 +61,6 @@
                 </tr>
                 </thead>
             </table>
-        </div>
-
-        <div class="col-sm-4">
-            <h4 class="header blue">预算项目</h4>
-            <form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budget.createBudgetSub') }}">
-            <div class="profile-user-info profile-user-info-striped">
-                <div class="profile-info-row">
-                    <div class="profile-info-name"> 预算科目地址</div>
-                    <div class="profile-info-value" id="listSubIp">
-                    </div>
-                </div>
-
-                <div class="profile-info-row">
-                    <div class="profile-info-name"> 预算科目</div>
-                    <div class="profile-info-value" id="listSub">
-                    </div>
-                </div>
-
-                <div class="profile-info-row">
-                    <div class="profile-info-name"> 预算总额</div>
-                    <div class="profile-info-value" id="listAmount">
-
-                    </div>
-                </div>
-            </div>
-
-            <h4 class="header blue">预算期间</h4>
-                <div id="budgetSDFarme" style="position: relative; max-height: 40vh; width: 100%; overflow: scroll; overflow-x: hidden;"></div>
-                <p></p>
-                <input type="hidden" name="budget_id" value="{{ $budget_id }}"/>
-                <input type="hidden" name="subject_id" id="subject_id"  value=""/>
-                {{csrf_field()}}
-                <div class="clearfix">
-                    <div class="col-md-offset-3 col-md-9">
-                        <button class="btn btn-info" type="button" onclick="postFrom();">
-                            <i class="ace-icon fa fa-check bigger-110"></i>
-                            提交
-                        </button>
-                        &nbsp; &nbsp; &nbsp;
-                        <button class="btn" type="reset">
-                            <i class="ace-icon fa fa-undo bigger-110"></i>
-                            重置
-                        </button>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -259,140 +215,5 @@
             });
 
         });
-
-        //验证表单
-        function postFrom() {
-            var checkTrue = 1;
-            var inputNum = $('#budgetSDFarme').find('input').length;
-            if(inputNum == 0){
-                alertDialog('-1', '请选择科目，并填写期间对应金额.');
-                checkTrue = 0;
-                return false;
-            }
-            for(var i = 0; i < inputNum; i++){
-                var num = $('#budget_date'+i).val();
-                if(isNaN(num) || num > 999999999){
-                    var textName = $('#budget_date'+i).parent().parent().prev().text();
-                    alertDialog('1', '期间'+textName+'，您输入的不是数字或者数值过大。');
-                    checkTrue = 0;
-                    break;
-                }
-            }
-            if(checkTrue == 1){
-                $('#validation-form').submit();
-            }
-        }
-
-        //编辑期间
-        function editBudgetSD(val){
-            var listAmountHtml = '<div class="col-sm-8"><input type="text" role="budget" name="amountSum" id="amountSum" class="form-control text-right" value="0.00" onBlur="aveAmount(this);"/></div>';
-            var val = JSON.parse(val);
-            $('#listSubIp').html(val.subject_ip);
-            $('#listSub').html(val.subject);
-            $('#listAmount').html(listAmountHtml);
-
-            //日期差额
-            var startTime = '{{ $budget_start }}';
-            var endTime = '{{ $budget_end }}';
-            var startDate=new Date(startTime.replace("-", "/").replace("-", "/"));
-            var endDate=new Date(endTime.replace("-", "/").replace("-", "/"));
-            var number = 0;
-            var yearToMonth = (endDate.getFullYear() - startDate.getFullYear()) * 12;
-                number += yearToMonth;
-                monthToMonth = endDate.getMonth() - startDate.getMonth();
-                number += monthToMonth;
-            var number = parseInt(number  + 1);
-            var html = '<div class="profile-user-info profile-user-info-striped" style="max-height: 430px;">';
-            var data = {"budget_id": '{{ $budget_id }}', "subject_id": val.id, "_token": '{{csrf_token()}}'};
-            var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
-
-            var dataLength = eval(result.data).length
-            var amountNum = 0;
-            for(var i=0 ; i < number; i++){
-                amount = '0.00';
-                if(dataLength > 0){
-                    for(var ii=0; ii < dataLength; ii++){
-                        if(result.data[ii].budget_date == startTime){
-                            amount = result.data[ii].budget_amount;
-                        }
-                    }
-                }
-                amountNum = amountNum + parseFloat(amount);
-                html += '<div class="profile-info-row">' +
-                        '<div class="profile-info-name"> '+startTime+'</div>' +
-                        '<div class="profile-info-value">' +
-                        '<div class="col-sm-8">' +
-                        '<input type="text" role="budget" name="date_'+startTime+'" id="budget_date'+i+'" class="form-control text-right" value="'+amount+'" onBlur="formatNum(this);"/>' +
-                        '</div></div></div>';
-                startTime = getNextMonth(startTime);
-            }
-            html +='</div>';
-            $('#budgetSDFarme').html(html);
-            $("input[role=budget]").focus(function(){
-                this.select();
-            });
-            $('#subject_id').val(val.id);
-            amountNum = toDecimal(amountNum);
-            $('#amountSum').val(amountNum);
-        }
-
-        //总金额
-        function amountSum(){
-            var amount = 0;
-            var inputLength = $('#budgetSDFarme').find('input').length;
-            for(var i=0; i<inputLength; i++){
-                amount = amount + parseFloat($('#budget_date'+i).val());
-            }
-            amount = toDecimal(amount);
-            $('#amountSum').val(amount);
-        }
-
-        //平均分配所有金额
-        function aveAmount(e){
-            var amount = e.value;
-            if(isNaN(amount) || amount > 999999999){
-                alertDialog('1', '您输入的不是数字或者数值过大');
-                $(e).val('0.00');
-                return false;
-            }
-            amount = toDecimal(e.value);
-            var inputLength = $('#budgetSDFarme').find('input').length;
-            amount = amount/inputLength;
-            for(var i=0;i<inputLength;i++){
-                $('#budget_date'+i).val(toDecimal(amount));
-            }
-            amountSum();
-        }
-
-        //格式化金额
-        function formatNum(e){
-            var num = e.value;
-            if(isNaN(num) || num > 999999999){
-                alertDialog('1', '您输入的不是数字或者数值过大');
-                $(e).val('0.00');
-                return false;
-            }
-            $(e).val(toDecimal(e.value));
-            amountSum();
-        }
-
-        //获取下一个月份
-        function getNextMonth(date) {
-            var arr = date.split('-');
-            var year = arr[0]; //获取当前日期的年份
-            var month = arr[1]; //获取当前日期的月份
-
-            var year2 = year;
-            var month2 = parseInt(month) + 1;
-            if (month2 == 13) {
-                year2 = parseInt(year2) + 1;
-                month2 = 1;
-            }
-            if (month2 < 10) {
-                month2 = '0' + month2;
-            }
-            var t2 = year2 + '-' + month2;
-            return t2;
-        }
     </script>
 @endsection()

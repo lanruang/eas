@@ -16,7 +16,12 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-6">
-			<button type="button" class="btn btn-sm btn-primary" onclick="addRole();">添加</button>
+			<div class="clearfix">
+				<div class="grid2 new_grid2">
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addRole();">添加</button>
+				</div>
+			</div>
+
 				<table id="roleTable" class="table table-striped table-bordered table-hover">
 					<thead>
 					<tr>

@@ -10,8 +10,20 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-10">
-			<button type="button" class="btn btn-sm btn-primary" onclick="addBudget();">添加预算</button>
-			<button type="button" class="btn btn-sm btn-primary" onclick="addBudgetSub();">更新预算项</button>
+			<div class="clearfix">
+				<div class="grid2 new_grid2">
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addBudget();">添加预算</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addBudgetSub();">更新预算项</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listBudget();">预算详情</button>
+				</div>
+
+				<div class="grid2 new_grid2">
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listSubBedgetFarm()">提交预算</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listAuditFarm();">审核进度</button>
+					<button id="subBedgetBtn"  href="#subBudget-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
+					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
+				</div>
+			</div>
 
 			<table id="budgetTable" class="table table-striped table-bordered table-hover">
 				<thead>
@@ -26,6 +38,144 @@
 				</thead>
 			</table>
 
+		</div>
+	</div>
+
+	<div id="subBudget-form" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" id="subBudgetClose" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="blue bigger">提交预算</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<form class="form-horizontal">
+								<div class="form-group">
+									<label class="col-sm-3 control-label no-padding-right"> 备注 </label>
+									<div class="col-sm-6">
+										<textarea class="input-xlarge" name="process_text" id="process_text"></textarea>
+										<br>
+										<span class="help-block">提交后在审核过程中将无法修改.</span>
+									</div>
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-primary" onclick="subBudget();">
+						提交
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="listAudit-form" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" id="subBudgetClose" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="blue bigger">审核进度</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-xs-12">
+
+							<div class="profile-user-info profile-user-info-striped">
+								<div class="profile-info-row">
+									<div class="profile-info-name"> 预算编号</div>
+									<div class="profile-info-value">
+										345354
+									</div>
+								</div>
+
+								<div class="profile-info-row">
+									<div class="profile-info-name"> 预算名称</div>
+									<div class="profile-info-value">
+										测试预算
+									</div>
+								</div>
+
+								<div class="profile-info-row">
+									<div class="profile-info-name"> 预算期间</div>
+									<div class="profile-info-value">
+										2017-06 一 2017-06
+									</div>
+								</div>
+
+								<div class="profile-info-row">
+									<div class="profile-info-name"> 状态</div>
+									<div class="profile-info-value">
+										<script type="text/javascript">document.write(formatStatus('9'))</script>审核中
+									</div>
+								</div>
+							</div>
+							<p></p>
+							<div class="widget-box widget-color-blue3">
+								<div class="widget-header center"><h5 class="widget-title bigger lighter">预览审核流程</h5>
+								</div>
+								<div class="widget-body">
+									<div id="auditStart" class="center" style="padding:8px; border-top:1px solid #ddd;">
+										审批开始
+									</div>
+									<table class="table" style="margin-bottom: 0;">
+										<tbody id="auditTable">
+										<tr>
+											<td></td>
+											<td class="center">第1审核</td>
+											<td>销售部</td>
+											<td>销售经理</td>
+											<td>销售经理user</td>
+										</tr>
+										<tr>
+											<td colspan="5" class="center">
+												<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>
+											</td>
+										</tr>
+										<tr style="background-color:#E7E7E7!important;">
+											<td class="center"><i class="fa fa-arrow-right red bigger-120 icon-only" aria-hidden="true"></i></td>
+											<td class="center">第2审核</td>
+											<td>IT部</td>
+											<td>IT部经理</td>
+											<td>IT经理user</td>
+										</tr>
+										<tr>
+											<td colspan="5" class="center"><i
+														class="ace-icon fa fa-long-arrow-down bigger-110 icon-only"></i>
+											</td>
+										</tr>
+										<tr>
+											<td></td>
+											<td class="center">第3审核</td>
+											<td>总经办</td>
+											<td>总经理</td>
+											<td>总经理user</td>
+										</tr>
+										</tbody>
+									</table>
+									<div id="auditEnd" class="center" style="padding:8px; border-top:1px solid #ddd;">
+										审批结束
+									</div>
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">
+						<i class="ace-icon fa fa-times"></i>
+						闭关
+					</button>
+				</div>
+			</div>
 		</div>
 	</div>
 @endsection()
@@ -104,7 +254,13 @@
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
 										'<a class="green" href="#" onclick="editBudget(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-										'</a></div>' +
+										'</a>';
+										if(row.status == "102") {
+											html +='<a class="red" href="#" onclick="delBudget(' + row.id + ')">' +
+													'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
+													'</a>';
+										}
+								html += '</div>' +
 										'<div class="hidden-md hidden-lg">' +
 										'<div class="inline pos-rel">' +
 										'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
@@ -115,7 +271,17 @@
 										'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
 										'<span class="green" onclick="editBudget(' + row.id + ')">' +
 										'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-										'</span></a></li></ul></div></div>';
+										'</span></a></li>';
+										if(row.status == "102") {
+											html += '<li>' +
+													'<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete"  onclick="delBudget(' + row.id + ')">' +
+													'<span class="red">' +
+													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
+													'</span>' +
+													'</a>' +
+													'</li>';
+										}
+								html += '</ul></div></div>';
 								return html;
 							}
 						}],
@@ -151,6 +317,118 @@
 				return false;
 			}
 			window.location.href = "{{route('budget.addBudgetSub')}}" + "/" + select_id;
+		}
+
+		//预算详情
+		function listBudget(){
+			if(select_id == ''){
+				alertDialog('1', '请选择一个预算！');
+				return false;
+			}
+			window.location.href = "{{route('budget.listBudget')}}" + "/" + select_id;
+		}
+
+		//删除预算
+		function delBudget(e){
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('budget.delBudget')}}',
+							data: {
+								"id": e,
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									budgetTable.ajax.reload(null, false);
+									alertDialog(res.status, res.msg);
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+
+		//提交预算视图
+		function listSubBedgetFarm(){
+			if(select_id == ''){
+				alertDialog('1', '请选择一个预算！');
+				return false;
+			}
+			$('#subBedgetBtn').click();
+		}
+
+		//提交预算
+		function subBudget(){
+			if(select_id == ''){
+				alertDialog('1', '请选择一个预算！');
+				return false;
+			}
+			var process_text = $('#process_text').val();
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　提交后在审核过程中将无法修改，请确认操作?',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('budget.subBudget')}}',
+							data: {
+								"id": select_id,
+								"process_text": process_text,
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									budgetTable.ajax.reload(null, false);
+									$('#subBudgetClose').click();
+									alertDialog(res.status, res.msg);
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+
+		//查看审核进度
+		function listAuditFarm(){
+			if(select_id == ''){
+				alertDialog('1', '请选择一个预算！');
+				return false;
+			}
+			$('#listAuditBtn').click();
 		}
 	</script>
 @endsection()

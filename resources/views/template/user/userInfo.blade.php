@@ -19,7 +19,7 @@
 @section('content')
 	@if ($isSession == '0')
 		<p>
-			<button type="button" class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button type="button" class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 		</p>
 	@endif
 

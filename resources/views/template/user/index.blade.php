@@ -16,13 +16,15 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-6">
-
-			<button href="#search-form" data-toggle="modal" class="btn btn-sm dropdown-toggle">
-				<i class="ace-icon fa fa-search icon-on-right"></i>
-				搜索
-			</button>
-
-			<button type="button" class="btn btn-sm btn-primary" onclick="addUser();">添加</button>
+			<div class="clearfix">
+				<div class="grid2 new_grid2">
+					<button href="#search-form" data-toggle="modal" class="btn btn-white btn-sm btn-round">
+						<i class="ace-icon fa fa-search icon-on-right"></i>
+						筛选
+					</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addUser();">添加</button>
+				</div>
+			</div>
 
 			<div id="search-form" class="modal" tabindex="-1">
 				<div class="modal-dialog">
@@ -38,9 +40,9 @@
 
 										<div class="profile-info-row">
 											<div class="profile-info-name"> 姓名</div>
-											<div class="profile-info-value form-group">
-												<label class="col-xs-5">
-													<input type="text" name="s_u_name" id="s_u_name" placeholder="姓名" class="form-control"/>
+											<div>
+												<label class="col-xs-5 output">
+													<input type="text" name="s_u_name" id="s_u_name" placeholder="姓名" class="form-control input-sm"/>
 												</label>
 											</div>
 										</div>

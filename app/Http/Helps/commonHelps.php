@@ -195,6 +195,22 @@ function sortTreeBudget($array, $pid = 0, $level = 0, $budget = 0)
 }
 
 /**
+ * 2个月之间差多少月
+ *
+ * @param	date		$date1
+ * @param	date		$date2
+ * @return	array
+ */
+function getMonToMonNum($date1,$date2){
+    $date1_stamp=strtotime($date1);
+    $date2_stamp=strtotime($date2);
+    list($date_1['y'],$date_1['m'])=explode("-",date('Y-m',$date1_stamp));
+    list($date_2['y'],$date_2['m'])=explode("-",date('Y-m',$date2_stamp));
+    return abs(($date_2['y']-$date_1['y'])*12 +$date_2['m']-$date_1['m']);
+}
+
+
+/**
  * 随机数
  *
  * @param	int			$length

@@ -16,8 +16,7 @@
 @section('content')
 	<div class="row">
 		<div class="col-xs-12 col-sm-6">
-			<button id="btn_goBack" class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-
+			<button id="btn_goBack" class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 
 
 		</div>
