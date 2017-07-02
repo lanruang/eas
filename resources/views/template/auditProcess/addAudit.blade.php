@@ -73,7 +73,7 @@
 				</div>
 
 				<div class="form-group">
-					<div class="col-xs-6 col-sm-5 col-sm-offset-2">
+					<div class="col-xs-6 col-sm-6 col-sm-offset-2">
 						<div class="widget-box widget-color-blue3">
 							<div class="widget-header center">
 								<h5 class="widget-title bigger lighter">预览审核流程</h5>
@@ -83,6 +83,15 @@
 									审批开始
 								</div>
 								<table class="table" style="margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th class="center">序列</th>
+                                            <th class="center">部门</th>
+                                            <th class="center">岗位</th>
+                                            <th class="center">姓名</th>
+                                            <th class="center">操作</th>
+                                        </tr>
+                                    </thead>
 									<tbody id="auditTable">
 									</tbody>
 								</table>
@@ -404,11 +413,11 @@
 			}
 			var dep_name = val.dep_name != "null" ? val.dep_name : "";
 			var pos_name = val.pos_name != "null" ? val.pos_name : "";
-			var trHtml = '<tr id="lAdt'+ val.id +'"><td class="center">第'+sort+'审核</td>' +
-					'<td>'+dep_name+'</td>' +
-					'<td>'+pos_name+'</td>' +
-					'<td>'+val.name+'</td>' +
-					'<td class="center">' +
+			var trHtml = '<tr id="lAdt'+ val.id +'"><td class="center align-middle">第'+sort+'审核</td>' +
+					'<td class="center align-middle">'+dep_name+'</td>' +
+					'<td class="center align-middle">'+pos_name+'</td>' +
+					'<td class="center align-middle">'+val.name+'</td>' +
+					'<td class="center align-middle">' +
 					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+val.id+');">删除</button>' +
 					'</td></tr>';
 			if(trLength == 0){

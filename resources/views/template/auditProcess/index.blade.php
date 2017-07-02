@@ -1,5 +1,5 @@
 {{--引入模板--}}
-@extends(config('sysInfo.templateAdminName').'.layouts.main')
+@extends('layouts.main')
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
@@ -167,15 +167,22 @@
 					'审批开始' +
 					'</div>' +
 					'<table class="table" style="margin-bottom: 0;">' +
+                    '<thead> ' +
+                    '<tr> ' +
+                    '<th class="center">序列</th> ' +
+                    '<th class="center">部门</th> ' +
+                    '<th class="center">岗位</th> ' +
+                    '<th class="center">姓名</th> ' +
+                    '</tr></thead>' +
 					'<tbody id="auditTable">';
 			var data = {"id":d.audit_id,"_token": '{{csrf_token()}}'};
 			var result = ajaxPost(data, '{{ route('auditProcess.auditInfo') }}');
 				$.each(result, function(i, v){
 					html += '<tr>' +
-							'<td class="center">第'+(i+1)+'审核</td>' +
-							'<td>'+v.dep_name+'</td>' +
-							'<td>'+v.pos_name+'</td>' +
-							'<td>'+v.user_name+'</td>' +
+							'<td class="center align-middle">第'+(i+1)+'审核</td>' +
+							'<td class="center align-middle">'+v.dep_name+'</td>' +
+							'<td class="center align-middle">'+v.pos_name+'</td>' +
+							'<td class="center align-middle">'+v.user_name+'</td>' +
 							'</tr>';
 					if(result.length > i+1){
 						html += '<tr><td colspan="5" class="center">' +

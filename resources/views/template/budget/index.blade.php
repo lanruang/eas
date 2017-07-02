@@ -89,29 +89,29 @@
 							<div class="profile-user-info profile-user-info-striped">
 								<div class="profile-info-row">
 									<div class="profile-info-name"> 预算编号</div>
-									<div class="profile-info-value">
-										345354
+									<div class="profile-info-value" id="auditBudget_num">
+
 									</div>
 								</div>
 
 								<div class="profile-info-row">
 									<div class="profile-info-name"> 预算名称</div>
-									<div class="profile-info-value">
-										测试预算
+									<div class="profile-info-value" id="auditBudget_name">
+
 									</div>
 								</div>
 
 								<div class="profile-info-row">
 									<div class="profile-info-name"> 预算期间</div>
-									<div class="profile-info-value">
+									<div class="profile-info-value" id="auditBudget_date">
 										2017-06 一 2017-06
 									</div>
 								</div>
 
 								<div class="profile-info-row">
 									<div class="profile-info-name"> 状态</div>
-									<div class="profile-info-value">
-										<script type="text/javascript">document.write(formatStatus('9'))</script>审核中
+									<div class="profile-info-value" id="auditBudget_status">
+
 									</div>
 								</div>
 							</div>
@@ -124,38 +124,16 @@
 										审批开始
 									</div>
 									<table class="table" style="margin-bottom: 0;">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th class="center">序列</th>
+                                                <th class="center">部门</th>
+                                                <th class="center">岗位</th>
+                                                <th class="center">姓名</th>
+                                            </tr>
+                                        </thead>
 										<tbody id="auditTable">
-										<tr>
-											<td></td>
-											<td class="center">第1审核</td>
-											<td>销售部</td>
-											<td>销售经理</td>
-											<td>销售经理user</td>
-										</tr>
-										<tr>
-											<td colspan="5" class="center">
-												<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>
-											</td>
-										</tr>
-										<tr style="background-color:#E7E7E7!important;">
-											<td class="center"><i class="fa fa-arrow-right red bigger-120 icon-only" aria-hidden="true"></i></td>
-											<td class="center">第2审核</td>
-											<td>IT部</td>
-											<td>IT部经理</td>
-											<td>IT经理user</td>
-										</tr>
-										<tr>
-											<td colspan="5" class="center"><i
-														class="ace-icon fa fa-long-arrow-down bigger-110 icon-only"></i>
-											</td>
-										</tr>
-										<tr>
-											<td></td>
-											<td class="center">第3审核</td>
-											<td>总经办</td>
-											<td>总经理</td>
-											<td>总经理user</td>
-										</tr>
 										</tbody>
 									</table>
 									<div id="auditEnd" class="center" style="padding:8px; border-top:1px solid #ddd;">
@@ -428,7 +406,43 @@
 				alertDialog('1', '请选择一个预算！');
 				return false;
 			}
-			$('#listAuditBtn').click();
+            var data = {
+                "id": select_id,
+                "_token": '{{csrf_token()}}',
+                };
+            var res = ajaxPost(data, '{{ route('budget.listAudit') }}')
+            if(res.status == true){
+                $('#auditBudget_num').text(res.budget.budget_num);
+                $('#auditBudget_name').text(res.budget.budget_name);
+                $('#auditBudget_date').text(res.budget.budget_start+" 一 "+res.budget.budget_end);
+                $('#auditBudget_status').text(formatStatus(res.budget.status));
+                var audit_data = res.auditProcess;
+                var sort = 1;
+                $('#auditTable').html('');
+                $.each(audit_data, function(i, v){
+                    if(v.uid == res.next_user){
+                        html = '<tr style="background-color:#E7E7E7!important;">' +
+                                '<td class="center"><i class="fa fa-arrow-right red bigger-120 icon-only" aria-hidden="true"></i></td>';
+                    }else{
+                        html = '<tr><td></td>';
+                    }
+                    html += '<td class="center align-middle">第'+(i+1)+'审核</td>' +
+                            '<td class="center align-middle">'+v.dep_name+'</td>' +
+                            '<td class="center align-middle">'+v.pos_name+'</td>' +
+                            '<td class="center align-middle">'+v.user_name+'</td>' +
+                            '</tr>';
+                    if(audit_data.length > sort){
+                        html += '<tr><td colspan="5" class="center">' +
+                                '<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
+                                '</td></tr>';
+                    }
+                    sort++;
+                    $('#auditTable').append(html);
+                });
+                $('#listAuditBtn').click();
+            }else{
+                alertDialog(res.status, res.msg);
+            }
 		}
 	</script>
 @endsection()

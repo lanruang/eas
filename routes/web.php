@@ -44,6 +44,10 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('roleInfo/{id?}', ['as' => 'role.roleInfo', 'uses' => 'RoleController@roleInfo']);//角色详情
     });
     /*-----------------------------我的工作-----------------------------*/
+    //流程审核
+    Route::group(['prefix' => 'auditMy'], function () {
+        Route::get('index', ['as' => 'auditMy.index', 'uses' => 'AuditMyController@index']);//流程审核
+    });
     //回收站
     Route::group(['prefix' => 'recycle'], function () {
         Route::get('index', ['as' => 'recycle.index', 'uses' => 'RecycleController@index']);//回收站主视图
@@ -125,7 +129,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('listBudget/{id?}', ['as' => 'budget.listBudget', 'uses' => 'BudgetController@listBudget']);//查看预算详情
         Route::post('delBudget', ['as' => 'budget.delBudget', 'uses' => 'BudgetController@delBudget']);//删除预算
         Route::post('subBudget', ['as' => 'budget.subBudget', 'uses' => 'BudgetController@subBudget']);//提交预算审核
-        Route::get('listAudit/{id?}', ['as' => 'budget.listAudit', 'uses' => 'BudgetController@listAudit']);//查看审核进度
+        Route::post('listAudit', ['as' => 'budget.listAudit', 'uses' => 'BudgetController@listAudit']);//查看审核进度
     });
 
     /*-----------------------------系统组件-----------------------------*/

@@ -14,6 +14,7 @@ use App\Http\Models\Budget\BudgetDepartmentModel AS BudgetDepartmentDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS auditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS auditInfoDb;
+use App\Http\Models\User\UserModel AS UserDb;
 use Illuminate\Support\Facades\DB;
 
 class BudgetController extends Common\CommonController
@@ -583,7 +584,6 @@ class BudgetController extends Common\CommonController
             $result = DB::transaction(function () use($id, $budget, $input, $budgetAudit) {
                 $process_users = explode(',', $budgetAudit['audit_process']);
                 //审核内容参数
-                $data = array();
                 $auditInfoDb = new auditInfoDb();
                 $auditInfoDb->process_type = 'budget';
                 $auditInfoDb->process_app = $budget['budget_id'];
@@ -591,6 +591,7 @@ class BudgetController extends Common\CommonController
                 $auditInfoDb->process_text = $input['process_text'];
                 $auditInfoDb->process_users = $budgetAudit['audit_process'];
                 $auditInfoDb->process_user_next = $process_users[0];
+                $auditInfoDb->created_user = session('userInfo.user_id');
                 $auditInfoDb->status = '1000';
                 $auditInfoDb->save();
 
@@ -638,8 +639,69 @@ class BudgetController extends Common\CommonController
     }
     
     //查看审核进度
-    public function listAudit()
+    public function listAudit(Request $request)
     {
-        
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+        //获取预算
+        $budget = BudgetDb::where('budget_id', $id)
+                            ->get()
+                            ->first();
+        $data['budget']['budget_num'] = $budget['budget_num'];
+        $data['budget']['budget_name'] = $budget['budget_name'];
+        $data['budget']['budget_start'] = $budget['budget_start'];
+        $data['budget']['budget_end'] = $budget['budget_end'];
+        $data['budget']['status'] = $budget['status'];
+
+        //获取审核流程信息
+        $audit = auditInfoDb::where('process_type', 'budget')
+                                    ->where('process_app', $id)
+                                    ->get()
+                                    ->first();
+        if($audit['status'] == '1001'){
+            echoAjaxJson('-1', '该项目已经结束审核!');
+        }
+        $data['next_user'] = $audit['process_user_next'];
+        //格式化流程
+        $audit = explode(',', $audit['process_users']);
+
+        $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
+            ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
+            ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
+            ->whereIn('users.user_id', $audit)
+            ->get()
+            ->toArray();
+
+        //格式化数据
+        $data['auditProcess'] = array();
+        $data['status'] = 1;
+        foreach($audit as $k => $v){
+            foreach($result as $u => $d){
+                if($v == $d['uid']) $data['auditProcess'][] = $d;
+            }
+        }
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 }
