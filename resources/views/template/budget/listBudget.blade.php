@@ -49,6 +49,7 @@
                 </div>
             </div>
             </div>
+            <p></p>
             <table id="budgetSub" class="table table-striped table-bordered table-hover">
                 <thead>
                 <tr>

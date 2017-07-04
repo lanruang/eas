@@ -21,17 +21,17 @@
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addRole();">添加</button>
 				</div>
 			</div>
-
-				<table id="roleTable" class="table table-striped table-bordered table-hover">
-					<thead>
-					<tr>
-						<th>名称</th>
-						<th>排序</th>
-						<th>状态</th>
-						<th>操作</th>
-					</tr>
-					</thead>
-				</table>
+			<p></p>
+			<table id="roleTable" class="table table-striped table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>名称</th>
+					<th>排序</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+				</thead>
+			</table>
 		</div>
 	</div>
 @endsection()
@@ -39,7 +39,7 @@
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
 	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/Bootbox.js"></script>
 @endsection()
 

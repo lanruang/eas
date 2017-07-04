@@ -24,7 +24,7 @@
 					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
 				</div>
 			</div>
-
+			<p></p>
 			<table id="budgetTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
@@ -104,7 +104,7 @@
 								<div class="profile-info-row">
 									<div class="profile-info-name"> 预算期间</div>
 									<div class="profile-info-value" id="auditBudget_date">
-										2017-06 一 2017-06
+
 									</div>
 								</div>
 

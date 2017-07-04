@@ -21,6 +21,7 @@
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addNode();">添加</button>
 				</div>
 			</div>
+			<p></p>
 			<table id="nodeTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>

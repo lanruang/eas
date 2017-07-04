@@ -61,7 +61,7 @@
 					</div>
 				</div>
 			</div>
-
+			<p></p>
 			<table id="userTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
