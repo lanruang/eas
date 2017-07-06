@@ -47,6 +47,9 @@ Route::group(['middleware' => ['permission']], function () {
     //流程审核
     Route::group(['prefix' => 'auditMy'], function () {
         Route::get('index', ['as' => 'auditMy.index', 'uses' => 'AuditMyController@index']);//流程审核
+        Route::post('getAuditList', ['as' => 'auditMy.getAuditList', 'uses' => 'AuditMyController@getAuditList']);//获取审核列表
+        Route::get('getAuditInfo/{id?}', ['as' => 'auditMy.getAuditInfo', 'uses' => 'AuditMyController@getAuditInfo']);//获取审核信息
+
     });
     //回收站
     Route::group(['prefix' => 'recycle'], function () {

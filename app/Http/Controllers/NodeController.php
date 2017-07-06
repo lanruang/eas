@@ -110,6 +110,7 @@ class NodeController extends Common\CommonController
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
+        $input['node_is_permission'] = array_key_exists('node_is_permission', $input) ? 1 : 0;
         $input['is_recycle'] = array_key_exists('recycle', $input) ? 1 : 0;
 
         //添加数据
@@ -121,6 +122,7 @@ class NodeController extends Common\CommonController
         $nodeDb->icon = $input['node_icon'];
         $nodeDb->status = $input['node_status'];
         $nodeDb->is_menu = $input['node_is_menu'];
+        $nodeDb->is_permission = $input['node_is_permission'];
         $nodeDb->is_recycle = $input['is_recycle'];
         $nodeDb->recycle_name = $input['recycle_name'];
         $nodeDb->recycle_type = $input['recycle_type'];
@@ -146,7 +148,7 @@ class NodeController extends Common\CommonController
                             ->select('node.id', 'node.name', 'node.alias', 'node.pid',
                                 'node.sort', 'node.icon', 'node.status', 'node.is_menu',
                                 'nd.name AS ndName', 'nd.alias AS ndAlias', 'node.is_recycle',
-                                'node.recycle_type', 'node.recycle_name')
+                                'node.recycle_type', 'node.recycle_name', 'node.is_permission')
                             ->where('node.id', $id)
                             ->first()
                             ->toArray();
@@ -211,6 +213,7 @@ class NodeController extends Common\CommonController
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
         $input['node_is_menu'] = array_key_exists('node_is_menu', $input) ? 1 : 0;
+        $input['node_is_permission'] = array_key_exists('node_is_permission', $input) ? 1 : 0;
         $input['is_recycle'] = array_key_exists('recycle', $input) ? 1 : 0;
 
         //格式化数据
@@ -221,6 +224,7 @@ class NodeController extends Common\CommonController
         $data['icon'] = $input['node_icon'];
         $data['status'] = $input['node_status'];
         $data['is_menu'] = $input['node_is_menu'];
+        $data['is_permission'] = $input['node_is_permission'];
         $data['is_recycle'] = $input['is_recycle'];
         $data['recycle_name'] = $input['recycle_name'];
         $data['recycle_type'] = $input['recycle_type'];

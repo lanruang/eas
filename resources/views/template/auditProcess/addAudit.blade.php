@@ -33,8 +33,8 @@
 						<label>
 							<select class="form-control" id="audit_type" name="audit_type">
 								<option value="budget">预算管理类</option>
-								<option value="hetong">合同类</option>
-								<option value="baoxiao">日常报销</option>
+								<option value="contract">合同类</option>
+								<option value="finance">日常报销</option>
 							</select>
 						</label>
 					</div>

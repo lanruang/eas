@@ -3,51 +3,46 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-    <link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css"/>
-    <link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/daterangepicker.min.css"/>
+    <link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/ace-skins.min.css" /> <link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/daterangepicker.min.css"/>
 @endsection()
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-    <li><a href="{{route('budget.index')}}">预算列表</a></li>
+    <li><a href="{{route('auditMy.index')}}">流程审核</a></li>
     <li>预算详情</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
     <div class="row">
-        <div class="col-sm-11">
+        <div class="col-sm-8">
             <h4 class="header blue">预算信息</h4>
-            <div class="row">
-                <div class="col-sm-5 row">
-                    <div class="profile-user-info profile-user-info-striped">
-                        <div class="profile-info-row">
-                            <div class="profile-info-name"> 预算编号</div>
-                            <div class="profile-info-value">
-                                {{ $budget_num }}
-                            </div>
-                        </div>
+            <div class="profile-user-info profile-user-info-striped">
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 预算编号</div>
+                    <div class="profile-info-value">
+                        {{ $budget_num }}
+                    </div>
+                </div>
 
-                        <div class="profile-info-row">
-                            <div class="profile-info-name"> 预算名称</div>
-                            <div class="profile-info-value">
-                                {{ $budget_name }}
-                            </div>
-                        </div>
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 预算名称</div>
+                    <div class="profile-info-value">
+                        {{ $budget_name }}
+                    </div>
+                </div>
 
-                        <div class="profile-info-row">
-                            <div class="profile-info-name"> 预算期间</div>
-                            <div class="profile-info-value">
-                                {{ $budget_start }} 一 {{ $budget_end }}
-                            </div>
-                        </div>
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 预算期间</div>
+                    <div class="profile-info-value">
+                        {{ $budget_start }} 一 {{ $budget_end }}
+                    </div>
+                </div>
 
-                        <div class="profile-info-row">
-                            <div class="profile-info-name"> 状态</div>
-                            <div class="profile-info-value">
-                                <script type="text/javascript">document.write(formatStatus('{{ $status }}'))</script>
-                            </div>
-                        </div>
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 状态</div>
+                    <div class="profile-info-value">
+                        <script type="text/javascript">document.write(formatStatus('{{ $status }}'))</script>
                     </div>
                 </div>
             </div>
@@ -59,14 +54,66 @@
                     <th>预算科目地址</th>
                     <th>预算科目</th>
                     <th>预算总额</th>
-                    <th>状态</th>
-                    <th>操作</th>
                 </tr>
                 </thead>
             </table>
         </div>
-    </div>
 
+        <div class="col-sm-4">
+            <h4 class="header blue">审批意见</h4>
+            <div id="profile-frame" class="profile-feed row">
+                <div class="profile-activity clearfix">
+                    <div>
+                        <a> Alex Doe </a>
+                        <div class="muted">
+                            123123213213123213
+                        </div>
+                        <div class="time">
+                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                            an hour ago
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-activity clearfix">
+                    <div>
+                        <a> Alex Doe </a>
+                        <div class="muted">
+                            123123213213123213
+                        </div>
+                        <div class="time">
+                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                            an hour ago
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-activity clearfix">
+                    <div>
+                        <a> Alex Doe </a>
+                        <div class="muted">
+                            123123213213123213
+                        </div>
+                        <div class="time">
+                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                            an hour ago
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-activity clearfix">
+                    <div>
+                        <a> Alex Doe </a>
+                        <div class="muted">
+                            123123213213123213
+                        </div>
+                        <div class="time">
+                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                            an hour ago
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 @endsection()
 
 {{--页面加载js--}}
@@ -75,7 +122,6 @@
     <script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
     <script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
     <script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-
 @endsection()
 
 {{--底部js--}}
@@ -131,38 +177,7 @@
                             }
                             },
                             {"data": "budget_amount"},
-                            {
-                                "data": "status", render: function (data, type, row) {
-                                return formatStatus(row.status);
-                            }
-                            },
-                            {"data": "null"},
                         ],
-                        "columnDefs": [{
-                            "targets": 5,
-                            "render": function (data, type, row) {
-                                html = '';
-                                if (row.parent == '0') {
-                                    var row = "'"+JSON.stringify(row)+"'";
-                                    html = '<div class="hidden-sm hidden-xs action-buttons">' +
-                                            '<a class="green" href="#" onclick=editBudgetSD(' + row + ')>' +
-                                            '<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-                                            '</a></div>' +
-                                            '<div class="hidden-md hidden-lg">' +
-                                            '<div class="inline pos-rel">' +
-                                            '<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-                                            '<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-                                            '</button>' +
-                                            '<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-                                            '<li>' +
-                                            '<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-                                            '<span class="green" onclick=editBudgetSD(' + row + ')>' +
-                                            '<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-                                            '</span></a></li></ul></div></div>';
-                                }
-                                return html;
-                            }
-                        }],
                         "createdRow": function (data, row) {
                             if (row.parent == '0' && row.budget_amount > 0) {
                                 $('td:eq(0)', data).addClass('btn_cp');
@@ -172,7 +187,6 @@
                         }
 
                     });
-            $('#budgetSub').scrollUnique('dataTable');
 
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
@@ -217,6 +231,14 @@
                 }
             });
 
+            $('#profile-frame').ace_scroll({
+                size: 165,
+                mouseWheelLock: true,
+                alwaysVisible : true
+            });
+
+            $('#budgetSub').scrollUnique('dataTable');
         });
+
     </script>
 @endsection()

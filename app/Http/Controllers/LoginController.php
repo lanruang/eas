@@ -70,6 +70,7 @@ class LoginController extends Common\CommonController
             return redirect(route('login.index'))
                 ->withErrors(array('0'=>'没有登录权限，请联系管理员。'));
         }
+
         //更新登录时间
         loginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
@@ -81,6 +82,7 @@ class LoginController extends Common\CommonController
         //存储菜单、权限数据
         session(['userInfo.menu' => json_encode($menu['menu'])]);
         session(['userInfo.permission' => $menu['permission']]);
+        session(['userInfo.not_permission' => $menu['not_permission']]);
         session(['userInfo.recycle' => $menu['recycle']]);
 
         return redirect(route('main.index'));
@@ -106,17 +108,27 @@ class LoginController extends Common\CommonController
                 ->get()
                 ->toArray();
         }else{
-            //获取菜单、菜单
+            //获取菜单、权限
             $result = nodeDb::Join('role_node AS rn', 'rn.node_id', '=', 'node.id')
+                ->where('node.status', '1')
+                ->where('node.is_permission', '1')
                 ->where('rn.role_id', $role_id)
                 ->orderBy('node.sort', 'asc')
-                ->get()
-                ->toArray();
+                ->get();
             if(!$result){
                 return false;
             }
         }
-        
+        $arr['not_permission'] = array();
+        //获取非权限类节点
+        $res = nodeDb::where('status', 1)
+            ->where('is_permission', 0)
+            ->where('alias', '<>', '#')
+            ->select('alias')
+            ->get();
+        foreach ($res as $v) {
+            $arr['not_permission'][] = $v['alias'];
+        }
         //格式化菜单
         if($result){
             foreach ($result as $k => $v) {

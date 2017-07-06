@@ -33,8 +33,8 @@
 						<label>
 							<select class="form-control" id="audit_type" name="audit_type">
 								<option value="budget" @if($audit['audit_type'] == 'budget')selected = "selected" @endif>预算管理类</option>
-								<option value="hetong" @if($audit['audit_type'] == 'hetong')selected = "selected" @endif>合同类</option>
-								<option value="baoxiao" @if($audit['audit_type'] == 'baoxiao')selected = "selected" @endif>日常报销</option>
+								<option value="contract" @if($audit['audit_type'] == 'contract')selected = "selected" @endif>合同类</option>
+								<option value="finance" @if($audit['audit_type'] == 'finance')selected = "selected" @endif>日常报销</option>
 							</select>
 						</label>
 					</div>

@@ -117,8 +117,7 @@
     <script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
     <script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
     <script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-    <script src="{{asset('resources/views/template')}}/assets/js/ace-elements.min.js"></script>
-    <script src="{{asset('resources/views/template')}}/assets/js/ace.min.js"></script>
+
 @endsection()
 
 {{--底部js--}}
@@ -215,14 +214,14 @@
                         }
 
                     });
-
+            $('#budgetSub').scrollUnique('dataTable');
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
                 var data = {"budget_id": '{{ $budget_id }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
                 var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
 
-                html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%; padding-right: 17px;"> ' +
+                html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
                         '<table class="table table-striped table-bordered" style="margin-left: 0px; width: 100%;"> ' +
                         '<thead> ' +
                         '<tr> ' +
@@ -230,7 +229,7 @@
                         '<th class="width-50 center">金额</th> ' +
                         '</tr> ' +
                         '</thead> ' +
-                        '</table></div></div><div class="dataTables_scrollBody" style="position: relative; max-height: 25vh; width: 100%; overflow: scroll; overflow-x: hidden;"> ' +
+                        '</table></div></div><div class="dataTables_scrollBody" style="position: relative; width: 100%;"> ' +
                         '<table class="table table-striped table-bordered" style="width: 100%;"> ' +
                         '<thead> ' +
                         '<tr> ' +

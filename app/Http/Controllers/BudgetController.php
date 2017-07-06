@@ -226,7 +226,9 @@ class BudgetController extends Common\CommonController
         if(!$budget){
             return redirectPageMsg('-1', "参数错误", route('budget.index'));
         }
-
+        if($budget['status'] == '9'){
+            return redirectPageMsg('-1', "该预算已提交审核，无法更新预算项", route('budget.index'));
+        }
         return view('budget.addBudgetSub', $budget);
     }
 
@@ -590,7 +592,7 @@ class BudgetController extends Common\CommonController
                 $auditInfoDb->process_title = '编号('.$budget['budget_num'].')—'.$budget['budget_name'];
                 $auditInfoDb->process_text = $input['process_text'];
                 $auditInfoDb->process_users = $budgetAudit['audit_process'];
-                $auditInfoDb->process_user_next = $process_users[0];
+                $auditInfoDb->process_audit_user = $process_users[0];
                 $auditInfoDb->created_user = session('userInfo.user_id');
                 $auditInfoDb->status = '1000';
                 $auditInfoDb->save();
@@ -680,7 +682,7 @@ class BudgetController extends Common\CommonController
         if($audit['status'] == '1001'){
             echoAjaxJson('-1', '该项目已经结束审核!');
         }
-        $data['next_user'] = $audit['process_user_next'];
+        $data['audit_user'] = $audit['process_audit_user'];
         //格式化流程
         $audit = explode(',', $audit['process_users']);
 

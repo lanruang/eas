@@ -3,39 +3,36 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	{{--<li class="active">主页</li>--}}
+	<li class="active">流程审核</li>
 @endsection()
 
 {{--页面内容--}}
 @section('content')
-
     <div class="row">
-        <div class="clearfix">
-            <div class="grid2 new_grid2">
-                <button type="button" class="btn btn-white btn-sm btn-round" onclick="addAudit();">添加</button>
-            </div>
-        </div>
         <div class="col-xs-12 col-sm-11">
-            <div class="tabbable tabs-left">
-                <ul class="nav nav-tabs" id="myTab3">
+            <div class="tabs-left">
+                <ul class="nav nav-tabs">
                     <li class="active">
                         <a data-toggle="tab" href="#budget">
-                            <i class="pink ace-icon fa fa-tachometer bigger-110"></i>
+                            <i class="pink ace-icon fa fa-bar-chart-o bigger-110"></i>
                             预算类
+                            <span class="badge badge-danger">{{ $budget }}</span>
                         </a>
                     </li>
 
                     <li>
-                        <a data-toggle="tab" href="#profile3">
-                            <i class="blue ace-icon fa fa-user bigger-110"></i>
+                        <a data-toggle="tab" href="#contract">
+                            <i class="blue ace-icon fa fa-briefcase bigger-110"></i>
                             合同类
+                            <span class="badge badge-danger">{{ $contract }}</span>
                         </a>
                     </li>
 
                     <li>
-                        <a data-toggle="tab" href="#dropdown13">
-                            <i class="ace-icon fa fa-rocket"></i>
+                        <a data-toggle="tab" href="#finance">
+                            <i class="ace-icon glyphicon glyphicon-list-alt bigger-110"></i>
                             日常报销
+                            <span class="badge badge-danger">{{ $finance }}</span>
                         </a>
                     </li>
                 </ul>
@@ -43,16 +40,15 @@
                 <div class="tab-content">
                     <div id="budget" class="tab-pane in active">
                         <div class="row">
-                            <div class="col-xs-12 col-sm-10">
-                                <table id="auditTable" class="table table-striped table-bordered table-hover">
+                            <div class="col-xs-12 col-sm-11">
+                                <table id="budgetTable" class="table table-striped table-bordered table-hover">
                                     <thead>
                                     <tr>
-                                        <th>&nbsp;</th>
-                                        <th>部门</th>
-                                        <th>审核分组</th>
-                                        <th>审核流程名称</th>
-                                        <th>状态</th>
-                                        <th>操作</th>
+                                        <th class="center">&nbsp;</th>
+                                        <th class="center">标题</th>
+                                        <th class="center">提交人</th>
+                                        <th class="center">提交时间</th>
+                                        <th class="center">状态</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -60,14 +56,12 @@
                         </div>
                     </div>
 
-                    <div id="profile3" class="tab-pane">
-                        <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid.</p>
-                        <p>Raw denim you probably haven't heard of them jean shorts Austin.</p>
+                    <div id="contract" class="tab-pane">
+
                     </div>
 
-                    <div id="dropdown13" class="tab-pane">
-                        <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade.</p>
-                        <p>Raw denim you probably haven't heard of them jean shorts Austin.</p>
+                    <div id="finance" class="tab-pane">
+
                     </div>
                 </div>
             </div>
@@ -86,12 +80,9 @@
 {{--底部js--}}
 @section('FooterJs')
     <script type="text/javascript">
-        var auditTable;
-        var listData = [];
-        var arr = [1,2,3,4];
+        var budgetTable;
         $(function($) {
-            var html;
-            auditTable = $('#auditTable')
+            budgetTable = $('#budgetTable')
                     .DataTable({
                         "lengthChange": false,
                         "ordering": false,
@@ -115,10 +106,6 @@
                                 "sPrevious": "上页",
                                 "sNext":     "下页",
                                 "sLast":     "末页"
-                            },
-                            "oAria": {
-                                "sSortAscending":  ": 以升序排列此列",
-                                "sSortDescending": ": 以降序排列此列"
                             }
                         },
                         "serverSide": true,
@@ -126,8 +113,8 @@
                             "type": "post",
                             "dataType": "json",
                             "async":false,
-                            "url": '{{route('auditProcess.getAudit')}}',
-                            "data": {"_token": '{{csrf_token()}}'},
+                            "url": '{{route('auditMy.getAuditList')}}',
+                            "data": {"type": 'budget' ,"_token": '{{csrf_token()}}'},
                             "dataSrc": function ( res ) {
                                 if(res.status == true){
                                     return res.data;
@@ -138,52 +125,25 @@
                         },
                         "columns": [
                             {
-                                "class": "btn_cp center",
+                                "class": "center",
                                 "data": null,
-                                "defaultContent": ""
-                            },
-                            {"data": "department"},
-                            {"data": "audit_type" },
-                            {"data": "audit_name"},
+                                "defaultContent": "", render: function(data, type, row) {
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
+                                return html;
+                            }},
+                            {"data": "process_title", "class": "align-middle"},
+                            {"data": "user_name", "class": "center align-middle" },
+                            {"data": "created_at", "class": "center align-middle" },
                             {"data": "status", render: function(data, type, row) {
                                 return formatStatus(row.status);
-                            }},
-                            {"data": "null"},
-                        ],
-                        "columnDefs": [{
-                            "targets": 5,
-                            "render": function(data, type, row) {
-                                html = '<div class="hidden-sm hidden-xs action-buttons">' +
-                                        '<a class="green" href="#" onclick="editAudit(' + row.audit_id + ')">' +
-                                        '<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-                                        '</a>'+
-                                        '</div>' +
-                                        '<div class="hidden-md hidden-lg">' +
-                                        '<div class="inline pos-rel">' +
-                                        '<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-                                        '<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-                                        '</button>' +
-                                        '<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-                                        '<li>' +
-                                        '<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-                                        '<span class="green" onclick="editAudit(' + row.audit_id + ')">' +
-                                        '<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-                                        '</span>' +
-                                        '</a>' +
-                                        '</li>'+
-                                        '</ul>' +
-                                        '</div>' +
-                                        '</div>';
-                                return html;
-                            }
-                        }],
-                        "createdRow": function(row) {
-                            $('td:eq(0)', row).html('<i class="green ace-icon fa fa-angle-double-down bigger-120"></i>' +
-                                    '<span class="sr-only">详细</span>');
-                        }
+                            }, "class": "center align-middle" }
+                        ]
                     });
 
         })
 
+        function auditDoc(e){
+            window.location.href = "{{route('auditMy.getAuditInfo')}}" + "/" + e;
+        }
     </script>
 @endsection()

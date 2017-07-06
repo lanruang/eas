@@ -30,7 +30,8 @@
 					<th>排序</th>
 					<th>状态</th>
 					<th>图标</th>
-					<th>显示菜单</th>
+					<th>权限</th>
+					<th>菜单</th>
 					<th>回收站项</th>
 					<th>回收站名称</th>
 					<th>回收站分类</th>
@@ -116,6 +117,13 @@
 									{"data": "icon" , render: function(data, type, row) {
 										return '<i class="' + row.icon + '"></i>  [' + row.icon + ']';
 									}},
+									{"data": "is_permissioin", render: function(data, type, row) {
+										if(row.is_menu == "1"){
+											return '是';
+										}else{
+											return '否';
+										}
+									}},
 									{"data": "is_menu", render: function(data, type, row) {
 										if(row.is_menu == "1"){
 											return '是';
@@ -136,7 +144,7 @@
 									{"data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 9,
+									"targets": 10,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +

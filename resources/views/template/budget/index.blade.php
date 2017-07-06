@@ -420,7 +420,7 @@
                 var sort = 1;
                 $('#auditTable').html('');
                 $.each(audit_data, function(i, v){
-                    if(v.uid == res.next_user){
+                    if(v.uid == res.audit_user){
                         html = '<tr style="background-color:#E7E7E7!important;">' +
                                 '<td class="center"><i class="fa fa-arrow-right red bigger-120 icon-only" aria-hidden="true"></i></td>';
                     }else{
