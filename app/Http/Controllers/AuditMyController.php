@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Input;
 use Validator;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
-use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
+use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
 use Illuminate\Support\Facades\DB;
 
 class AuditMyController extends Common\CommonController
@@ -91,24 +91,111 @@ class AuditMyController extends Common\CommonController
         if(!$audit){
             return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
+        //获取审批结果
+        $data['auditRes'] = AuditInfoTextDb::leftjoin('users', 'users.user_id', '=', 'audit_info_text.created_user')
+                                    ->select('users.user_name', 'audit_info_text.*')
+                                    ->where('audit_info_text.process_id', $id)
+                                    ->orderBy('audit_sort', 'DESC')
+                                    ->get()
+                                    ->toArray();
 
-        switch ($audit->process_type)
+        switch ($audit->process_app)
         {
             case "budget":
                 $type = "Budget";
-                $data = $this->getBudget($audit->process_app);
+                $data['budget'] = $this->getBudget($audit->process_app);
             break;
             default:
                 $type = "Budget";
-                $data = $this->getBudget($audit->process_app);
+                $data['budget'] = $this->getBudget($audit->process_app);
         }
-        if(!$data){
+        if(!$data['budget']){
             return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
+        $data['process_id'] = $audit->process_id;
 
         return view("auditMy.list$type", $data);
     }
+    
+    //添加审批结果
+    public function createAuditRes()
+    {
+        //验证表单
+        $input = Input::all();
 
+        $rules = [
+            'process_id' => 'required|digits_between:0,11|numeric',
+            'audit_res' => 'required|digits_between:0,11|numeric',
+        ];
+        $message = [
+            'process_id.required' => '参数不存在',
+            'process_id.between' => '参数错误',
+            'process_id.numeric' => '参数错误',
+            'audit_res.required' => '请选择审批结果',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
+        }
+
+        $audit = AuditInfoDb::where('process_id', $input['process_id'])
+                            ->get()
+                            ->first();
+        if(!$audit){
+            return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
+        };
+        if($audit['process_audit_user'] != session('userInfo.user_id')){
+            return redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
+        };
+
+        //格式化状态
+        $input['audit_res'] = array_key_exists('audit_res', $input) ? 1 : 0;
+
+        //事务处理
+        $result = DB::transaction(function () use($input, $audit) {
+            //获取审批记录数
+            $sort = AuditInfoTextDb::where('process_id', $input['process_id'])
+                            ->count();
+            $sort++;
+            $text['process_id'] = $input['process_id'];
+            $text['created_user'] = session('userInfo.user_id');
+            $text['audit_text'] = $input['audit_text'];
+            $text['audit_sort'] = $sort;
+            $text['audit_res'] = $input['audit_res'];
+            $text['created_at'] = date("Y-m-d H:i:s", time());
+            $text['updated_at'] = date("Y-m-d H:i:s", time());
+            //更新下一位审批人
+            $nextUser = explode(',', $audit['process_users']);
+            $userKey = array_search($audit['process_audit_user'], $nextUser);
+            $auditUserNum = count($nextUser)-1;
+            //历史审批人
+            if($audit['process_user_res']){
+                $process_user_res = explode(',', $audit['process_user_res']);
+            }
+            $process_user_res[] = '|'.$audit['process_audit_user'].'|';
+            if($userKey == $auditUserNum){
+                $info['status'] = '1001';
+                $info['process_audit_user'] = 0;
+            }else{
+                $info['process_user_res'] = implode(',', $process_user_res);
+                $info['process_audit_user'] = $nextUser[$userKey+1];
+            }
+
+            //更新审批列表
+            AuditInfoDb::where('process_id', $input['process_id'])
+                    ->update($info);
+            //更新审批结果
+            AuditInfoTextDb::insert($text);
+            return true;
+        });
+
+        if($result){
+            return redirectPageMsg('1', '审批成功', route('auditMy.index'));
+        }else{
+            return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
+        }
+    }
+    
     //预算信息
     private function getBudget($id)
     {

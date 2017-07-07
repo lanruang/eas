@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-07-06 17:46:54
+Date: 2017-07-07 17:53:34
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,20 +26,43 @@ CREATE TABLE `audit_info` (
   `process_title` varchar(255) DEFAULT '0',
   `process_text` text,
   `process_users` text NOT NULL,
+  `process_user_res` text,
   `process_audit_user` int(10) unsigned NOT NULL,
   `created_user` int(10) unsigned NOT NULL,
   `status` char(4) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`process_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of audit_info
 -- ----------------------------
-INSERT INTO `audit_info` VALUES ('1', 'budget', '4', '编号(345354)—测试预算', '请审核', '1,3,2', '1', '1', '1000', '2017-06-29 16:49:31', '2017-07-05 16:54:12');
-INSERT INTO `audit_info` VALUES ('2', 'contract', '4', '编号(345354)—测试预算', '请审核', '1,3,2', '1', '1', '1000', '2017-06-29 16:49:31', '2017-07-05 16:54:12');
-INSERT INTO `audit_info` VALUES ('3', 'budget', '4', '编号(345354)—测试预算', '', '4,3,2', '4', '1', '1000', '2017-07-06 16:04:44', '2017-07-06 16:04:44');
+INSERT INTO `audit_info` VALUES ('1', 'budget', '4', '编号(345354)—测试预算', '请审核', '3,2,1', '|1|,|1|', '1', '1', '1001', '2017-06-29 16:49:31', '2017-07-07 17:49:04');
+INSERT INTO `audit_info` VALUES ('2', 'contract', '4', '编号(345354)—测试预算', '请审核', '1,3,2', null, '1', '1', '1000', '2017-06-29 16:49:31', '2017-07-05 16:54:12');
+
+-- ----------------------------
+-- Table structure for `audit_info_text`
+-- ----------------------------
+DROP TABLE IF EXISTS `audit_info_text`;
+CREATE TABLE `audit_info_text` (
+  `audit_text_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `process_id` int(10) NOT NULL,
+  `created_user` int(10) unsigned NOT NULL,
+  `audit_text` text NOT NULL,
+  `audit_sort` tinyint(4) unsigned NOT NULL,
+  `audit_res` tinyint(1) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`audit_text_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of audit_info_text
+-- ----------------------------
+INSERT INTO `audit_info_text` VALUES ('1', '1', '1', '123123', '1', '1', null, null);
+INSERT INTO `audit_info_text` VALUES ('2', '1', '1', '12312321', '2', '1', '2017-07-07 17:47:26', '2017-07-07 17:47:26');
+INSERT INTO `audit_info_text` VALUES ('3', '1', '1', '21312312', '3', '1', '2017-07-07 17:49:04', '2017-07-07 17:49:04');
 
 -- ----------------------------
 -- Table structure for `audit_process`
@@ -371,8 +394,8 @@ INSERT INTO `status` VALUES ('2', '1', '常规', '使用中');
 INSERT INTO `status` VALUES ('3', '0', '常规', '已停用');
 INSERT INTO `status` VALUES ('4', '9', '常规', '审核中');
 INSERT INTO `status` VALUES ('5', '102', '预算', '更新预算项');
-INSERT INTO `status` VALUES ('6', '1000', '审核流程', '未审核');
-INSERT INTO `status` VALUES ('7', '1001', '审核流程', '已审核');
+INSERT INTO `status` VALUES ('6', '1000', '审核流程', '未审批');
+INSERT INTO `status` VALUES ('7', '1001', '审核流程', '已审批');
 
 -- ----------------------------
 -- Table structure for `subjects`
@@ -477,7 +500,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-07-06 16:11:28', '1', '0', '2016-05-25 05:56:33', '2017-07-06 16:11:28');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-07-07 14:04:40', '1', '0', '2016-05-25 05:56:33', '2017-07-07 14:04:40');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

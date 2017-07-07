@@ -49,7 +49,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('index', ['as' => 'auditMy.index', 'uses' => 'AuditMyController@index']);//流程审核
         Route::post('getAuditList', ['as' => 'auditMy.getAuditList', 'uses' => 'AuditMyController@getAuditList']);//获取审核列表
         Route::get('getAuditInfo/{id?}', ['as' => 'auditMy.getAuditInfo', 'uses' => 'AuditMyController@getAuditInfo']);//获取审核信息
-
+        Route::post('createAuditRes', ['as' => 'auditMy.createAuditRes', 'uses' => 'AuditMyController@createAuditRes']);//添加审核结果
     });
     //回收站
     Route::group(['prefix' => 'recycle'], function () {

@@ -21,28 +21,28 @@
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算编号</div>
                     <div class="profile-info-value">
-                        {{ $budget_num }}
+                        {{ $budget['budget_num'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算名称</div>
                     <div class="profile-info-value">
-                        {{ $budget_name }}
+                        {{ $budget['budget_name'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算期间</div>
                     <div class="profile-info-value">
-                        {{ $budget_start }} 一 {{ $budget_end }}
+                        {{ $budget['budget_start'] }} 一 {{ $budget['budget_end'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 状态</div>
                     <div class="profile-info-value">
-                        <script type="text/javascript">document.write(formatStatus('{{ $status }}'))</script>
+                        <script type="text/javascript">document.write(formatStatus('{{ $budget['status'] }}'))</script>
                     </div>
                 </div>
             </div>
@@ -62,57 +62,62 @@
         <div class="col-sm-4">
             <h4 class="header blue">审批意见</h4>
             <div id="profile-frame" class="profile-feed row">
-                <div class="profile-activity clearfix">
-                    <div>
-                        <a> Alex Doe </a>
-                        <div class="muted">
-                            123123213213123213
-                        </div>
-                        <div class="time">
-                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                            an hour ago
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-activity clearfix">
-                    <div>
-                        <a> Alex Doe </a>
-                        <div class="muted">
-                            123123213213123213
-                        </div>
-                        <div class="time">
-                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                            an hour ago
+                @foreach ($auditRes as $v)
+                    <div class="profile-activity clearfix">
+                        <div>
+                            <a> {{ $v['user_name'] }} </a>
+                            <p></p>
+                            <div class="muted">
+                             　 {{ $v['audit_text'] }}
+                            </div>
+                            <div class="time">
+                                <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                                {{ $v['created_at'] }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="profile-activity clearfix">
-                    <div>
-                        <a> Alex Doe </a>
-                        <div class="muted">
-                            123123213213123213
-                        </div>
-                        <div class="time">
-                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                            an hour ago
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-activity clearfix">
-                    <div>
-                        <a> Alex Doe </a>
-                        <div class="muted">
-                            123123213213123213
-                        </div>
-                        <div class="time">
-                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
-                            an hour ago
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
-        </div>
 
+            <h4 class="header blue">审批意见</h4>
+            <form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('auditMy.createAuditRes') }}">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right"> 审批结果 </label>
+                    <div class="col-sm-6">
+                        <label>
+                            <select class="form-control" id="audit_res" name="audit_res">
+                                <option value="">请选择</option>
+                                <option value="1">批准</option>
+                                <option value="0">不批准</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right"> 审批意见 </label>
+                    <div class="col-sm-8">
+                        <textarea class="input-xlarge" name="audit_text" id="audit_text"></textarea>
+                    </div>
+                </div>
+
+                <input type="hidden" name="process_id" value="{{ $process_id }}"/>
+                {{csrf_field()}}
+                <div class="clearfix">
+                    <div class="col-md-offset-3 col-md-9">
+                        <button class="btn btn-info" type="button" onclick="postFrom();">
+                            <i class="ace-icon fa fa-check bigger-110"></i>
+                            提交
+                        </button>
+                        &nbsp; &nbsp; &nbsp;
+                        <button class="btn" type="reset">
+                            <i class="ace-icon fa fa-undo bigger-110"></i>
+                            重置
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 @endsection()
 
@@ -154,7 +159,7 @@
                             "async": false,
                             "dataType": "json",
                             "url": '{{route('budget.getBudgetSub')}}',
-                            "data": {"budget_id": '{{ $budget_id }}', "_token": '{{csrf_token()}}'},
+                            "data": {"budget_id": '{{ $budget['budget_id'] }}', "_token": '{{csrf_token()}}'},
                             "dataSrc": function (res) {
                                 if (res.status == true) {
                                     return res.data;
@@ -191,7 +196,7 @@
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
-                var data = {"budget_id": '{{ $budget_id }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
+                var data = {"budget_id": '{{ $budget['budget_id'] }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
                 var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
 
                 html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
@@ -232,13 +237,39 @@
             });
 
             $('#profile-frame').ace_scroll({
-                size: 165,
+                size: 185,
                 mouseWheelLock: true,
                 alwaysVisible : true
             });
 
             $('#budgetSub').scrollUnique('dataTable');
+
+            $('#validation-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: "",
+                rules: {
+                    audit_res: {required: true},
+                },
+                messages: {
+                    audit_res: {required: "请选择审批结果."},
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');
+                    $(e).remove();
+                },
+            });
         });
 
+        //验证表单
+        function postFrom(){
+            if($('#validation-form').valid()){
+                $('#validation-form').submit();
+            };
+        }
     </script>
 @endsection()
