@@ -39,7 +39,6 @@ class UserController extends Common\CommonController
         if(array_key_exists('s_u_name', $input)){
             $searchSql[] = array('user_name', 'like', '%'.$input['s_u_name'].'%');
         }
-        $data['searchSql'] = $searchSql;
 
         //分页
         $skip = isset($input['start']) ? intval($input['start']) : 0;//从多少开始
@@ -61,7 +60,6 @@ class UserController extends Common\CommonController
         $data['recordsFiltered'] = $total;//条件过滤后记录数
         $data['data'] = $result;
         $data['status'] = 1;
-
 
         //返回结果
         ajaxJsonRes($data);

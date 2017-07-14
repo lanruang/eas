@@ -209,7 +209,6 @@ function getMonToMonNum($date1,$date2){
     return abs(($date_2['y']-$date_1['y'])*12 +$date_2['m']-$date_1['m']);
 }
 
-
 /**
  * 随机数
  *

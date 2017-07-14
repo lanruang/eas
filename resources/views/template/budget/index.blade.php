@@ -19,7 +19,7 @@
 
 				<div class="grid2 new_grid2">
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listSubBedgetFarm()">提交预算</button>
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listAuditFarm();">审核进度</button>
+					<button type="button" class="btn btn-white btn-sm btn-round"  onclick="listAuditFarm();">审核进度</button>
 					<button id="subBedgetBtn"  href="#subBudget-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
 					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
 				</div>
@@ -80,7 +80,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" id="subBudgetClose" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="blue bigger">审核进度</h4>
+					<h4 class="blue bigger">审批进度</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
@@ -412,10 +412,10 @@
                 };
             var res = ajaxPost(data, '{{ route('budget.listAudit') }}')
             if(res.status == true){
-                $('#auditBudget_num').text(res.budget.budget_num);
-                $('#auditBudget_name').text(res.budget.budget_name);
-                $('#auditBudget_date').text(res.budget.budget_start+" 一 "+res.budget.budget_end);
-                $('#auditBudget_status').text(formatStatus(res.budget.status));
+                $('#auditBudget_num').html(res.budget.budget_num);
+                $('#auditBudget_name').html(res.budget.budget_name);
+                $('#auditBudget_date').html(res.budget.budget_start+" 一 "+res.budget.budget_end);
+                $('#auditBudget_status').html(formatStatus(res.budget.status));
                 var audit_data = res.auditProcess;
                 var sort = 1;
                 $('#auditTable').html('');

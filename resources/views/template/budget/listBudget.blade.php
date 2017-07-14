@@ -60,7 +60,6 @@
                     <th>预算科目</th>
                     <th>预算总额</th>
                     <th>状态</th>
-                    <th>操作</th>
                 </tr>
                 </thead>
             </table>
@@ -90,7 +89,7 @@
                         "ordering": false,
                         "searching": false,
                         "serverSide": true,
-                        "scrollY": '40vh',
+                        "scrollY": '80vh',
                         "scrollCollapse": true,
                         "paging": false,
                         "language": {
@@ -133,36 +132,14 @@
                             {"data": "budget_amount"},
                             {
                                 "data": "status", render: function (data, type, row) {
-                                return formatStatus(row.status);
+                                var status = '';
+                                if (row.parent == '0' && row.status != "false") {
+                                    status = formatStatus(row.status);
+                                }
+                                return status;
                             }
                             },
-                            {"data": "null"},
                         ],
-                        "columnDefs": [{
-                            "targets": 5,
-                            "render": function (data, type, row) {
-                                html = '';
-                                if (row.parent == '0') {
-                                    var row = "'"+JSON.stringify(row)+"'";
-                                    html = '<div class="hidden-sm hidden-xs action-buttons">' +
-                                            '<a class="green" href="#" onclick=editBudgetSD(' + row + ')>' +
-                                            '<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-                                            '</a></div>' +
-                                            '<div class="hidden-md hidden-lg">' +
-                                            '<div class="inline pos-rel">' +
-                                            '<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-                                            '<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-                                            '</button>' +
-                                            '<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-                                            '<li>' +
-                                            '<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-                                            '<span class="green" onclick=editBudgetSD(' + row + ')>' +
-                                            '<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-                                            '</span></a></li></ul></div></div>';
-                                }
-                                return html;
-                            }
-                        }],
                         "createdRow": function (data, row) {
                             if (row.parent == '0' && row.budget_amount > 0) {
                                 $('td:eq(0)', data).addClass('btn_cp');

@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Input;
 use Validator;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
+use App\Http\Models\Budget\BudgetSubjectModel AS BudgetSDb;
+use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSDDb;
 use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
+use App\Http\Models\User\UserModel AS UserDb;
 use Illuminate\Support\Facades\DB;
 
 class AuditMyController extends Common\CommonController
@@ -37,7 +40,6 @@ class AuditMyController extends Common\CommonController
     //获取审核信息
     public function getAuditList(Request $request){
         //验证传输方式
-
         if(!$request->ajax())
         {
             echoAjaxJson('-1', '非法请求');
@@ -85,12 +87,19 @@ class AuditMyController extends Common\CommonController
         };
 
         //获取审核内容信息
-        $audit = AuditInfoDb::where('process_id', $id)
+        $data['audit'] = AuditInfoDb::leftjoin('users', 'users.user_id', '=', 'audit_info.created_user')
+                            ->select('users.user_name', 'audit_info.*')
+                            ->where('audit_info.process_id', $id)
+                            ->where(function ($query) {
+                                $query->where('audit_info.process_audit_user', session('userInfo.user_id'))
+                                        ->orWhereIn('audit_info.process_user_res', array('|'.session('userInfo.user_id').'|'));
+                            })
                             ->get()
                             ->first();
-        if(!$audit){
+        if(!$data['audit']){
             return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
+        $data['audit'] = $data['audit']->toArray();
         //获取审批结果
         $data['auditRes'] = AuditInfoTextDb::leftjoin('users', 'users.user_id', '=', 'audit_info_text.created_user')
                                     ->select('users.user_name', 'audit_info_text.*')
@@ -99,21 +108,21 @@ class AuditMyController extends Common\CommonController
                                     ->get()
                                     ->toArray();
 
-        switch ($audit->process_app)
+        switch ($data['audit']['process_app'])
         {
             case "budget":
                 $type = "Budget";
-                $data['budget'] = $this->getBudget($audit->process_app);
+                $data['budget'] = $this->getBudget($data['audit']['process_app']);
             break;
             default:
                 $type = "Budget";
-                $data['budget'] = $this->getBudget($audit->process_app);
+                $data['budget'] = $this->getBudget($data['audit']['process_app']);
         }
         if(!$data['budget']){
             return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
-        $data['process_id'] = $audit->process_id;
-
+        $data['process_id'] = $data['audit']['process_id'];
+   
         return view("auditMy.list$type", $data);
     }
     
@@ -148,9 +157,6 @@ class AuditMyController extends Common\CommonController
             return redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
         };
 
-        //格式化状态
-        $input['audit_res'] = array_key_exists('audit_res', $input) ? 1 : 0;
-
         //事务处理
         $result = DB::transaction(function () use($input, $audit) {
             //获取审批记录数
@@ -165,17 +171,39 @@ class AuditMyController extends Common\CommonController
             $text['created_at'] = date("Y-m-d H:i:s", time());
             $text['updated_at'] = date("Y-m-d H:i:s", time());
             //更新下一位审批人
+            $oldUser = $audit['process_user_res'] ? explode(',', $audit['process_user_res']) : '';
             $nextUser = explode(',', $audit['process_users']);
+
+            //获取剩余审批人数
+            if($oldUser){
+                foreach($oldUser as $v){
+                    $v = substr($v, 1, (strlen($v)-2));
+                    $k = array_search($v, $nextUser);
+                    array_pull($nextUser, $k);
+                }
+            }
+            $nextUser = array_values($nextUser);
+            //审批人员对应位置
             $userKey = array_search($audit['process_audit_user'], $nextUser);
             $auditUserNum = count($nextUser)-1;
+
             //历史审批人
             if($audit['process_user_res']){
                 $process_user_res = explode(',', $audit['process_user_res']);
             }
             $process_user_res[] = '|'.$audit['process_audit_user'].'|';
-            if($userKey == $auditUserNum){
+            //是否审批结束
+            if($userKey == $auditUserNum || $input['audit_res'] == '1003'){
                 $info['status'] = '1001';
                 $info['process_audit_user'] = 0;
+                $info['process_user_res'] = implode(',', $process_user_res);
+                //更新应用
+                switch ($audit['process_type'])
+                {
+                    case "budget":
+                        $this->updateBudget($audit['process_app'], $input['audit_res']);
+                        break;
+                }
             }else{
                 $info['process_user_res'] = implode(',', $process_user_res);
                 $info['process_audit_user'] = $nextUser[$userKey+1];
@@ -186,6 +214,7 @@ class AuditMyController extends Common\CommonController
                     ->update($info);
             //更新审批结果
             AuditInfoTextDb::insert($text);
+
             return true;
         });
 
@@ -195,7 +224,65 @@ class AuditMyController extends Common\CommonController
             return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
         }
     }
-    
+
+    //获取审批流程名单
+    public function getAuditUsers(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+        //获取审核内容信息
+        $audit = AuditInfoDb::where('process_id', $id)
+                            ->select('process_users', 'process_audit_user')
+                            ->get()
+                            ->first();
+        if(!$audit){
+            return redirectPageMsg('-1', '流程信息获取错误，请刷新页面重试', route('auditMy.index'));
+        };
+        $audit = $audit->toArray();
+        //格式化流程
+        $data['audit_user'] = $audit['process_audit_user'];
+        $audit = explode(',', $audit['process_users']);
+
+        $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
+            ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
+            ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
+            ->whereIn('users.user_id', $audit)
+            ->get()
+            ->toArray();
+
+        //格式化数据
+        $data['auditProcess'] = array();
+        $data['status'] = 1;
+        foreach($audit as $k => $v){
+            foreach($result as $u => $d){
+                if($v == $d['uid']) $data['auditProcess'][] = $d;
+            }
+        }
+            
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
     //预算信息
     private function getBudget($id)
     {
@@ -205,7 +292,21 @@ class AuditMyController extends Common\CommonController
         if(!$result){
             return false;
         }
-
+        $result = $result->toArray();
         return $result;
+    }
+    //更新预算信息
+    private function updateBudget($id, $status){
+        $data['status'] = $status == '1002' ? '1' : $status;
+        //更新预算
+        BudgetDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
+        BudgetSDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
+        BudgetSDDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
     }
 }

@@ -34,6 +34,7 @@
 	<!-- inline styles related to this page -->
 
 	<!-- ace settings handler -->
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery-2.1.4.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/ace-extra.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery-common.js"></script>
 	<!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
@@ -182,11 +183,6 @@
 </div><!-- /.main-container -->
 
 <!-- basic scripts -->
-
-<!--[if !IE]> -->
-<script src="{{asset('resources/views/template')}}/assets/js/jquery-2.1.4.min.js"></script>
-
-<!-- <![endif]-->
 
 <!--[if IE]>
 <script src="{{asset('resources/views/template')}}/assets/js/jquery-1.11.3.min.js"></script>

@@ -22,28 +22,48 @@
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算编号</div>
                     <div class="profile-info-value">
-                        {{ $budget_num }}
+                        {{ $budgetSum['budget_num'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算名称</div>
                     <div class="profile-info-value">
-                        {{ $budget_name }}
+                        {{ $budgetSum['budget_name'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算期间</div>
                     <div class="profile-info-value">
-                        {{ $budget_start }} 一 {{ $budget_end }}
+                        {{ $budgetSum['budget_start'] }} 一 {{ $budgetSum['budget_end'] }}
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 子预算</div>
+                    <div class="profile-info-value">
+                        <a id="listBCBtn" class="btn_cp" onclick="listBudgetChild()">查看</a>
+                        <a id="hideBCBtn" class="btn_cp hide" onclick="hideBudgetChild()">隐藏</a>
+                        <table id="budgetChildTable" class="table table-bordered no-margin-bottom width-70 hide" style="word-break:break-all;">
+                            <tbody>
+                            <tr>
+                                <td>预算编号</td>
+                                <td>测试预算2</td>
+                            </tr>
+                            <tr>
+                                <td>预算编号</td>
+                                <td>测试预算2</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 状态</div>
                     <div class="profile-info-value">
-                        <script type="text/javascript">document.write(formatStatus('{{ $status }}'))</script>
+                        <script type="text/javascript">document.write(formatStatus('{{ $budgetSum['status'] }}'))</script>
                     </div>
                 </div>
             </div>
@@ -64,7 +84,7 @@
 
         <div class="col-sm-4">
             <h4 class="header blue">预算项目</h4>
-            <form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budget.createBudgetSub') }}">
+            <form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('budgetSum.createBudgetSumSub') }}">
             <div class="profile-user-info profile-user-info-striped">
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算科目地址</div>
@@ -89,7 +109,7 @@
             <h4 class="header blue">预算期间</h4>
                 <div id="budgetSDFarme" style="position: relative; max-height: 40vh; width: 100%; overflow: scroll; overflow-x: hidden;"></div>
                 <p></p>
-                <input type="hidden" name="budget_id" value="{{ $budget_id }}"/>
+                <input type="hidden" name="budget_id" value="{{ $budgetSum['budget_id'] }}"/>
                 <input type="hidden" name="subject_id" id="subject_id"  value=""/>
                 {{csrf_field()}}
                 <div class="clearfix">
@@ -149,8 +169,8 @@
                             "type": "post",
                             "async": false,
                             "dataType": "json",
-                            "url": '{{route('budget.getBudgetSub')}}',
-                            "data": {"budget_id": '{{ $budget_id }}', "_token": '{{csrf_token()}}'},
+                            "url": '{{route('budgetSum.getBudgetSumSub')}}',
+                            "data": {"budget_id": '{{ $budgetSum['budget_id'] }}', "_token": '{{csrf_token()}}'},
                             "dataSrc": function (res) {
                                 if (res.status == true) {
                                     return res.data;
@@ -222,7 +242,7 @@
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
-                var data = {"budget_id": '{{ $budget_id }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
+                var data = {"budget_id": '{{ $budgetSum['budget_id'] }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
                 var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
 
                 html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
@@ -296,8 +316,8 @@
             $('#listAmount').html(listAmountHtml);
 
             //日期差额
-            var startTime = '{{ $budget_start }}';
-            var endTime = '{{ $budget_end }}';
+            var startTime = '{{ $budgetSum['budget_start'] }}';
+            var endTime = '{{ $budgetSum['budget_end'] }}';
             var startDate=new Date(startTime.replace("-", "/").replace("-", "/"));
             var endDate=new Date(endTime.replace("-", "/").replace("-", "/"));
             var number = 0;
@@ -307,8 +327,8 @@
                 number += monthToMonth;
             var number = parseInt(number  + 1);
             var html = '<div class="profile-user-info profile-user-info-striped" style="max-height: 430px;">';
-            var data = {"budget_id": '{{ $budget_id }}', "subject_id": val.id, "_token": '{{csrf_token()}}'};
-            var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
+            var data = {"budget_id": '{{ $budgetSum['budget_id'] }}', "subject_id": val.id, "_token": '{{csrf_token()}}'};
+            var result = ajaxPost(data, '{{ route('budgetSum.getBudgetSumDate') }}');
 
             var dataLength = eval(result.data).length
             var amountNum = 0;
@@ -397,6 +417,20 @@
             }
             var t2 = year2 + '-' + month2;
             return t2;
+        }
+
+        //查看子预算列表
+        function listBudgetChild(){
+            $('#budgetChildTable').removeClass('hide');
+            $('#hideBCBtn').removeClass('hide');
+            $('#listBCBtn').addClass('hide');
+
+        }
+        //隐藏子预算列表
+        function hideBudgetChild(){
+            $('#budgetChildTable').addClass('hide');
+            $('#hideBCBtn').addClass('hide');
+            $('#listBCBtn').removeClass('hide');
         }
     </script>
 @endsection()

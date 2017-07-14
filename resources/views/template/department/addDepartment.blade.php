@@ -151,7 +151,7 @@
 					</div>
 				</div>
 
-				<div class="modal-body no-padding">
+				<div class="modal-body">
 					<table id="userTable" style="width: 100%;" class="table table-striped table-bordered table-hover">
 						<thead>
 						<tr>
