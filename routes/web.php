@@ -146,8 +146,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('addBudgetSumSub/{id?}', ['as' => 'budgetSum.addBudgetSumSub', 'uses' => 'BudgetSumController@addBudgetSumSub']);//添加预算汇总项视图
         Route::post('createBudgetSumSub', ['as' => 'budgetSum.createBudgetSumSub', 'uses' => 'BudgetSumController@createBudgetSumSub']);//添加预算汇总项
         Route::post('getBudgetSumSub', ['as' => 'budgetSum.getBudgetSumSub', 'uses' => 'BudgetSumController@getBudgetSumSub']);//获取预算汇总项目
-        Route::get('getBudgetSumSub/{id?}', ['as' => 'budgetSum.getBudgetSumSub', 'uses' => 'BudgetSumController@getBudgetSumSub']);//获取预算汇总项目
-        Route::post('getBudgetSumDate', ['as' => 'budgetSum.getBudgetSumDate', 'uses' => 'BudgetSumController@getBudgetDate']);//获取预算汇总期间
+        Route::post('getBudgetSumDate', ['as' => 'budgetSum.getBudgetSumDate', 'uses' => 'BudgetSumController@getBudgetSumDate']);//获取预算汇总期间
         Route::get('listBudgetSum/{id?}', ['as' => 'budgetSum.listBudgetSum', 'uses' => 'BudgetSumController@listBudget']);//查看预算汇总详情
         Route::post('delBudgetSum', ['as' => 'budgetSum.delBudgetSum', 'uses' => 'BudgetSumController@delBudget']);//删除预算汇总
         Route::post('subBudgetSum', ['as' => 'budgetSum.subBudgetSum', 'uses' => 'BudgetSumController@subBudget']);//提交预算审核

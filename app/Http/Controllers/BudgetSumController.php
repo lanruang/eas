@@ -415,16 +415,27 @@ class BudgetSumController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-
+        $input['budget_id'] = 4;
         $budgetSum = BudgetDb::where('budget_id', $input['budget_id'])
                             ->select('budget_ids')
                             ->get()
                             ->first();
-        $ids = $budgetSum['budget_ids'].','.$input['budget_id'];
+        $ids = $budgetSum['budget_ids'];
         $ids = explode(',', $ids);
 
+        //获取汇总预算项金额
+        $subjectSum = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use($input) {
+            $join->on('bs.subject_id','=','subjects.sub_id')
+                ->where('bs.budget_id', $input['budget_id']);})
+            ->where('subjects.status', 1)
+            ->select('subjects.sub_id AS id', 'subjects.sub_pid AS pid', 'subjects.sub_name AS subject',
+                'subjects.sub_ip AS subject_ip', 'subjects.sub_budget', 'bs.sum_amount AS budget_amount',
+                'bs.status AS status')
+            ->orderBy('subjects.sub_ip', 'ASC')
+            ->get()
+            ->toArray();
         //获取预算项金额
-        $subjects = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use($input, $ids) {
+        $subject = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use($ids) {
             $join->on('bs.subject_id','=','subjects.sub_id')
                 ->whereIn('bs.budget_id', $ids);})
             ->where('subjects.status', 1)
@@ -436,26 +447,40 @@ class BudgetSumController extends Common\CommonController
             ->toArray();
 
         //树形排列科目
-        $result = sortTreeBudget($subjects, 0, 0, 1);
-
+        $budgetSum = sortTreeBudget($subjectSum, 0, 0, 1);
+        $budget = sortTreeBudget($subject, 0, 0, 1);
         //倒叙科目汇总金额
-        $result = array_reverse($result);
-        $arr = array_column($result,'pid');
-        foreach($result as $k => $v){
-            $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
-            $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];
-            while (array_search($v['id'], $arr)) {
+        $budgetSum = array_reverse($budgetSum);
+        $budget = array_reverse($budget);
+        $arrSum = array_column($budgetSum,'pid');
+        $arr = array_column($budget,'id');
+
+        foreach($budgetSum as $k => $v){
+            $budgetSum[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
+            $budgetSum[$k]['status'] = !$budgetSum[$k]['status'] ? 'false' : $budgetSum[$k]['status'];
+            $budgetSum[$k]['budget_amount_child'] = null;
+            while (in_array($v['id'], $arr)) {
                 $key = array_search($v['id'], $arr);
-                $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $result[$key]['budget_amount']);
-                $result[$k]['parent'] = 1;
+                if($budget[$key]['budget_amount']){
+                    $budgetSum[$k]['budget_amount'] = sprintf("%.2f", $budgetSum[$k]['budget_amount'] + $budget[$key]['budget_amount']);
+                    $budgetSum[$k]['budget_amount_child'] = sprintf("%.2f", $budgetSum[$k]['budget_amount_child'] + $budget[$key]['budget_amount']);
+                }
                 array_pull($arr, $key);
             }
 
+            while (in_array($v['id'], $arrSum)) {
+                $key = array_search($v['id'], $arrSum);
+                $budgetSum[$k]['budget_amount'] = sprintf("%.2f", $budgetSum[$k]['budget_amount'] + $budgetSum[$key]['budget_amount']);
+                $budgetSum[$k]['parent'] = 1;
+
+                array_pull($arrSum, $key);
+            }
         }
-        $result = array_reverse($result);
-        
+
+        $budgetSum = array_reverse($budgetSum);
+        //p($budgetSum);
         //创建结果数据
-        $data['data'] = $result;
+        $data['data'] = $budgetSum;
         $data['status'] = 1;
 
         //返回结果
@@ -463,7 +488,7 @@ class BudgetSumController extends Common\CommonController
     }
     
     //获取预算期间
-    public function getBudgetDate(Request $request)
+    public function getBudgetSumDate(Request $request)
     {
         //验证传输方式
         if(!$request->ajax())
@@ -488,15 +513,43 @@ class BudgetSumController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $result = BudgetSubjectDateDb::where('budget_id', $input['budget_id'])
+        //获取子集
+        $budget = BudgetDb::where('budget_id', $input['budget_id'])
+                        ->select('budget_ids', 'budget_id')
+                        ->get()
+                        ->first();
+
+        $ids = $budget['budget_id'].','.$budget['budget_ids'];
+        $ids = explode(',', $ids);
+
+        //获取预算期间金额
+        $budgetSD = BudgetSubjectDateDb::whereIn('budget_id', $ids)
             ->where('subject_id', $input['subject_id'])
-            ->select('budget_date', 'budget_amount')
+            ->select('budget_date', 'budget_amount', 'budget_id')
             ->orderBy('budget_date','ASC')
             ->get()
             ->toArray();
 
+        //获取最长预算期间
+        $columnDate= array_column($budgetSD, 'budget_date');
+        $date = array_unique($columnDate);
+        $date = array_values($date);
+        sort($date);
+        
+        foreach($date as $v){
+            $data['budget_date'] = $v;
+            if(in_array($v, $columnDate)){
+                $key = array_search($v, $columnDate);
+                foreach($ids as $vv){
+                    if(1){
+
+                    }
+                }
+            }
+        }
+        p($ids);
         //创建结果数据
-        $data['data'] = $result;
+        $data['data'] = $budgetSD;
         $data['status'] = 1;
 
         //返回结果

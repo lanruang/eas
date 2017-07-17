@@ -406,6 +406,7 @@ class BudgetController extends Common\CommonController
 
         //倒叙科目汇总金额
         $result = array_reverse($result);
+
         foreach($result as $k => $v){
             $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
             $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];

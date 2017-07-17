@@ -75,6 +75,7 @@
                     <th>预算科目地址</th>
                     <th>预算科目</th>
                     <th>预算总额</th>
+                    <th>子预算总额</th>
                     <th>状态</th>
                     <th>操作</th>
                 </tr>
@@ -193,6 +194,7 @@
                             }
                             },
                             {"data": "budget_amount"},
+                            {"data": "budget_amount_child"},
                             {
                                 "data": "status", render: function (data, type, row) {
                                 var status = '';
@@ -205,7 +207,7 @@
                             {"data": "null"},
                         ],
                         "columnDefs": [{
-                            "targets": 5,
+                            "targets": 6,
                             "render": function (data, type, row) {
                                 html = '';
                                 if (row.parent == '0') {
@@ -243,7 +245,7 @@
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
                 var data = {"budget_id": '{{ $budgetSum['budget_id'] }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
-                var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
+                var result = ajaxPost(data, '{{ route('budgetSum.getBudgetSumDate') }}');
 
                 html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
                         '<table class="table table-striped table-bordered" style="margin-left: 0px; width: 100%;"> ' +
