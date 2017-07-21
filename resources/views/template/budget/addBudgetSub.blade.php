@@ -34,6 +34,13 @@
                 </div>
 
                 <div class="profile-info-row">
+                    <div class="profile-info-name"> 预算期间类型</div>
+                    <div class="profile-info-value">
+                        <script type="text/javascript">document.write(transformStr('{{ $budget_period }}', 'budget'))</script>
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
                     <div class="profile-info-name"> 预算期间</div>
                     <div class="profile-info-value">
                         {{ $budget_start }} 一 {{ $budget_end }}
@@ -87,7 +94,7 @@
             </div>
 
             <h4 class="header blue">预算期间</h4>
-                <div id="budgetSDFarme" style="position: relative; max-height: 40vh; width: 100%; overflow: scroll; overflow-x: hidden;"></div>
+                <div id="budgetSDFarme" style="position: relative; max-height: 60vh; width: 100%; overflow: scroll; overflow-x: hidden; overflow-y: visible;"></div>
                 <p></p>
                 <input type="hidden" name="budget_id" value="{{ $budget_id }}"/>
                 <input type="hidden" name="subject_id" id="subject_id"  value=""/>
@@ -222,40 +229,40 @@
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
-                var data = {"budget_id": '{{ $budget_id }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
-                var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
-
-                html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
-                        '<table class="table table-striped table-bordered" style="margin-left: 0px; width: 100%;"> ' +
-                        '<thead> ' +
-                        '<tr> ' +
-                        '<th class="width-50 center">期间</th> ' +
-                        '<th class="width-50 center">金额</th> ' +
-                        '</tr> ' +
-                        '</thead> ' +
-                        '</table></div></div><div class="dataTables_scrollBody" style="position: relative; width: 100%;"> ' +
-                        '<table class="table table-striped table-bordered" style="width: 100%;"> ' +
-                        '<thead> ' +
-                        '<tr> ' +
-                        '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
-                        '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
-                        '</tr> ' +
-                        '</thead> ' +
-                        '<tbody>';
-                for (var i in result['data']) {
-                    html += '<tr>' +
-                            '<td class="center even">' + result['data'][i].budget_date + '</td>' +
-                            '<td class="align-right even">' + result['data'][i].budget_amount + '</td>' +
-                            '</tr>';
-                }
-                html += '</tbody></table></div></div></div></div>';
-
                 if (row.child.isShown()) {
                     $(this).find('i').addClass('fa-angle-double-down');
                     $(this).find('i').removeClass('fa-angle-double-up');
                     row.child.hide();
                 }
                 else {
+                    var data = {"budget_id": '{{ $budget_id }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
+                    var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
+
+                    html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
+                            '<table class="table table-striped table-bordered" style="margin-left: 0px; width: 100%;"> ' +
+                            '<thead> ' +
+                            '<tr> ' +
+                            '<th class="width-50 center">期间</th> ' +
+                            '<th class="width-50 center">金额</th> ' +
+                            '</tr> ' +
+                            '</thead> ' +
+                            '</table></div></div><div class="dataTables_scrollBody" style="position: relative; width: 100%;"> ' +
+                            '<table class="table table-striped table-bordered" style="width: 100%;"> ' +
+                            '<thead> ' +
+                            '<tr> ' +
+                            '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
+                            '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
+                            '</tr> ' +
+                            '</thead> ' +
+                            '<tbody>';
+                    for (var i in result['data']) {
+                        html += '<tr>' +
+                                '<td class="center even">' + result['data'][i].budget_date + '</td>' +
+                                '<td class="align-right even">' + toDecimal(result['data'][i].budget_amount) + '</td>' +
+                                '</tr>';
+                    }
+                    html += '</tbody></table></div></div></div></div>';
+
                     $(this).find('i').removeClass('fa-angle-double-down');
                     $(this).find('i').addClass('fa-angle-double-up');
                     row.child(html, 'widget-body').show();
@@ -298,21 +305,15 @@
             //日期差额
             var startTime = '{{ $budget_start }}';
             var endTime = '{{ $budget_end }}';
-            var startDate=new Date(startTime.replace("-", "/").replace("-", "/"));
-            var endDate=new Date(endTime.replace("-", "/").replace("-", "/"));
-            var number = 0;
-            var yearToMonth = (endDate.getFullYear() - startDate.getFullYear()) * 12;
-                number += yearToMonth;
-                monthToMonth = endDate.getMonth() - startDate.getMonth();
-                number += monthToMonth;
-            var number = parseInt(number  + 1);
+            var number = getDateToDiff(startTime, endTime, '{{ $budget_period }}');
+
             var html = '<div class="profile-user-info profile-user-info-striped" style="max-height: 430px;">';
             var data = {"budget_id": '{{ $budget_id }}', "subject_id": val.id, "_token": '{{csrf_token()}}'};
             var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
 
             var dataLength = eval(result.data).length
             var amountNum = 0;
-            for(var i=0 ; i < number; i++){
+            for(var i=0 ; i <= number; i++){
                 amount = '0.00';
                 if(dataLength > 0){
                     for(var ii=0; ii < dataLength; ii++){
@@ -328,8 +329,9 @@
                         '<div class="col-sm-8">' +
                         '<input type="text" role="budget" name="date_'+startTime+'" id="budget_date'+i+'" class="form-control text-right" value="'+amount+'" onBlur="formatNum(this);"/>' +
                         '</div></div></div>';
-                startTime = getNextMonth(startTime);
+                startTime = getNextDate(startTime, '{{ $budget_period }}');
             }
+
             html +='</div>';
             $('#budgetSDFarme').html(html);
             $("input[role=budget]").focus(function(){
@@ -378,25 +380,6 @@
             }
             $(e).val(toDecimal(e.value));
             amountSum();
-        }
-
-        //获取下一个月份
-        function getNextMonth(date) {
-            var arr = date.split('-');
-            var year = arr[0]; //获取当前日期的年份
-            var month = arr[1]; //获取当前日期的月份
-
-            var year2 = year;
-            var month2 = parseInt(month) + 1;
-            if (month2 == 13) {
-                year2 = parseInt(year2) + 1;
-                month2 = 1;
-            }
-            if (month2 < 10) {
-                month2 = '0' + month2;
-            }
-            var t2 = year2 + '-' + month2;
-            return t2;
         }
     </script>
 @endsection()

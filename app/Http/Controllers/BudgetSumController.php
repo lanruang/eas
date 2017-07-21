@@ -47,7 +47,7 @@ class BudgetSumController extends Common\CommonController
         $take = isset($input['length']) ? intval($input['length']) : 10;//数据长度
 
         //获取记录总数
-        $total = BudgetDb::count();
+        $total = BudgetDb::where($searchSql)->count();
         //获取数据
         $result = BudgetDb::where($searchSql)
             ->select('budget_id AS id', 'budget_num AS bd_num', 'budget_name AS bd_name',
@@ -74,7 +74,6 @@ class BudgetSumController extends Common\CommonController
     {
         //查询在编辑状态
         $result = BudgetDb::where('status', '102')
-            ->where('budget_id', '1')
             ->first();
         if($result){
             return redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budgetSum.index'));
@@ -93,6 +92,7 @@ class BudgetSumController extends Common\CommonController
             'budget_num' => 'required|between:1,200',
             'budget_name' => 'required|between:1,200',
             'budget_date' => 'required',
+            'budget_period' => 'required',
             'budget_ids' => 'required',
         ];
         $message = [
@@ -100,6 +100,7 @@ class BudgetSumController extends Common\CommonController
             'budget_num.between' => '预算编号字符数超出范围',
             'budget_name.required' => '请填写预算名称',
             'budget_name.between' => '预算名称字符数超出范围',
+            'budget_period.required' => '请选择预算期间类型',
             'budget_date.required' => '请选择预算期间',
             'budget_ids.required' => '请选择预算',
         ];
@@ -115,6 +116,13 @@ class BudgetSumController extends Common\CommonController
         if($result){
             return redirectPageMsg('-1', "添加失败，预算编号存在", route('budgetSum.addBudgetSum'));
         }
+        //获取子预算信息
+        $arrIds = explode(',', $input['budget_ids']);
+        $result = BudgetDb::whereIn('budget_id', $arrIds)
+            ->where('budget_sum', '0')
+            ->select('budget_id', 'budget_start', 'budget_end')
+            ->get()
+            ->toArray();
 
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
@@ -123,6 +131,29 @@ class BudgetSumController extends Common\CommonController
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
             return redirectPageMsg('-1', "添加失败，预算期间错误", route('budgetSum.addBudgetSum'));
+        }
+        if(strtotime($date[0]) > strtotime($date[1])){
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.addBudgetSum'));
+        }
+        //核实数据
+        foreach($result as $k => $v){
+            if(!in_array($v['budget_id'], $arrIds)){
+                return redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.addBudgetSum'));
+            }
+            if($v['budget_start'] > $date[1]){
+                return redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.addBudgetSum'));
+            }
+            if($v['budget_end'] < $date[0]){
+                return redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.addBudgetSum'));
+            }
+        }
+
+        //预算为天数类型时时候大于31天
+        if($input['budget_period'] == 'day'){
+            $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
+            if($dateNum > 30){
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.addBudgetSum'));
+            }
         }
 
         $input['budget_start'] = $date[0];
@@ -133,6 +164,7 @@ class BudgetSumController extends Common\CommonController
         $data['budget_sum'] = 1;
         $data['budget_ids'] = $input['budget_ids'];
         $data['budget_num'] = $input['budget_num'];
+        $data['budget_period'] = $input['budget_period'];
         $data['budget_name'] = $input['budget_name'];
         $data['budget_start'] = $input['budget_start'];
         $data['budget_end'] = $input['budget_end'];
@@ -142,7 +174,7 @@ class BudgetSumController extends Common\CommonController
         $result = BudgetModel::insertGetId($data);
 
         if($result){
-            return redirectPageMsg('1', "添加成功，将添加预算项", route('budgetSum.addBudgetSumSub')."/".$result);
+            return redirectPageMsg('1', "添加成功", route('budgetSum.index'));
         }else{
             return redirectPageMsg('-1', "添加失败", route('budgetSum.addBudgetSum'));
         }
@@ -191,6 +223,7 @@ class BudgetSumController extends Common\CommonController
             'budget_num' => 'required|between:1,200',
             'budget_name' => 'required|between:1,200',
             'budget_date' => 'required',
+            'budget_period' => 'required',
             'budget_ids' => 'required',
         ];
         $message = [
@@ -199,6 +232,7 @@ class BudgetSumController extends Common\CommonController
             'budget_name.required' => '请填写预算名称',
             'budget_name.between' => '预算名称字符数超出范围',
             'budget_date.required' => '请选择预算期间',
+            'budget_period.required' => '请选择预算期间类型',
             'budget_ids.required' => '请选择预算',
         ];
         $validator = Validator::make($input, $rules, $message);
@@ -214,6 +248,13 @@ class BudgetSumController extends Common\CommonController
         if($result){
             return redirectPageMsg('-1', "编辑失败，预算编号存在", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
+        //获取子预算信息
+        $arrIds = explode(',', $input['budget_ids']);
+        $result = BudgetDb::whereIn('budget_id', $arrIds)
+            ->where('budget_sum', '0')
+            ->select('budget_id', 'budget_start', 'budget_end')
+            ->get()
+            ->toArray();
 
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
@@ -222,6 +263,29 @@ class BudgetSumController extends Common\CommonController
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
             return redirectPageMsg('-1', "编辑失败，预算期间错误", route('budgetSum.editBudgetSum')."/".$input['id']);
+        }
+        if(strtotime($date[0]) > strtotime($date[1])){
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+        }
+        //核实数据
+        foreach($result as $k => $v){
+            if(!in_array($v['budget_id'], $arrIds)){
+                return redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.editBudgetSum')."/".$input['id']);
+            }
+            if($v['budget_start'] > $date[1]){
+                return redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+            }
+            if($v['budget_end'] < $date[0]){
+                return redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+            }
+        }
+
+        //预算为天数类型时时候大于31天
+        if($input['budget_period'] == 'day'){
+            $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
+            if($dateNum > 30){
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.editBudgetSum')."/".$input['id']);
+            }
         }
 
         $input['budget_start'] = $date[0];
@@ -232,163 +296,29 @@ class BudgetSumController extends Common\CommonController
         $data['budget_name'] = $input['budget_name'];
         $data['budget_end'] = $input['budget_end'];
         $data['budget_ids'] = $input['budget_ids'];
+        $data['budget_period'] = $input['budget_period'];
+        $data['status'] = 102;
 
+        $id = $input['id'];
         //更新预算
-        $result = BudgetDb::where('budget_id', $input['id'])
-                        ->update($data);
-        if($result){
-            return redirectPageMsg('1', "编辑成功", route('budgetSum.index'));
-        }else{
-            return redirectPageMsg('-1', "编辑失败", route('budgetSum.editBudgetSum')."/".$input['id']);
-        }
-    }
-
-    //添加预算项视图
-    public function addBudgetSumSub($id = '0')
-    {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
-        };
-
-        //获取预算信息
-        $budget['budgetSum'] = BudgetDb::where('budget_id', $id)
-            ->get()
-            ->first();
-        if(!$budget['budgetSum']){
-            return redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
-        }
-        if($budget['budgetSum']['status'] == '1009'){
-            return redirectPageMsg('-1', "该预算已提交审核，无法更新预算项", route('budgetSum.index'));
-        }
-        //获取子预算
-        $budget_ids = explode(',', $budget['budgetSum']['budget_ids']);
-        $budget['budget'] = BudgetDb::whereIn('budget_id', $budget_ids)
-            ->select('budget_name AS name')
-            ->get()
-            ->toArray();
-        if(!$budget['budget']){
-            return redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
-        }
-
-        return view('budgetSum.addBudgetSumSub', $budget);
-    }
-
-    //添加预算项
-    public function createBudgetSumSub()
-    {
-        //验证表单
-        $input = Input::all();
-        if(!array_key_exists('budget_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
-        };
-        $rules = [
-            'budget_id' => 'required|digits_between:0,11|numeric',
-            'subject_id' => 'required|digits_between:0,11|numeric',
-        ];
-        $message = [
-            'budget_id.required' => '参数不存在',
-            'budget_id.between' => '参数错误',
-            'budget_id.numeric' => '参数错误',
-            'subject_id.required' => '科目参数不存在',
-            'subject_id.between' => '科目参数错误',
-            'subject_id.numeric' => '科目参数错误',
-        ];
-
-        $validator = Validator::make($input, $rules, $message);
-        if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('budgetSum.addBudgetSumSub')."/".$input['budget_id']);
-        }
-
-        //获取预算信息
-        $budget = BudgetModel::where('budget_id', $input['budget_id'])
-                            ->get()
-                            ->first();
-        $monNum = getMonToMonNum($budget['budget_start'], $budget['budget_end']);
-        if(!$budget){
-            return redirectPageMsg('-1', "参数错误，预算不存在", route('budgetSum.addBudgetSumSub')."/".$input['budget_id']);
-        }
-        $NowDate = date("Y-m",strtotime($budget['budget_start']));
-        //获取预算项目
-        $budgetS = BudgetSubjectDb::where('budget_id',$input['budget_id'])
-                                ->where('subject_id', $input['subject_id'])
-                                ->get()
-                                ->first();
-
-        //是否更新状态（新增数据）
-        $is_budgetSUp = false;
-        if($budgetS){
-            $is_budgetSUp = $budgetS['status'] == '102' ? true : false;
-        }
-        //获取预算项目金额
-        $budgetSD = BudgetSubjectDateDb::where('budget_id',$input['budget_id'])
-                                    ->where('subject_id', $input['subject_id'])
-                                    ->get()
-                                    ->toArray();
-        //预算项目更新数据
-        $sData['sum_amount'] = 0;
-        //格式化数据
-        for($i=0; $i <= $monNum; $i++){
-            if(!array_key_exists('date_'.$NowDate, $input)) {
-                return redirectPageMsg('-1', '期间数不符，请刷新后重试', route('budgetSum.addBudgetSumSub')."/".$input['budget_id']);
-            }
-            $budget_amount_raw = $input['date_'.$NowDate];
-            $created_at = date("Y-m-d H:i:s", time());
-            $updated_at = date("Y-m-d H:i:s", time());
-            //复制原始预算金额
-            if($is_budgetSUp == false){
-                foreach($budgetSD as $k => $v){
-                    if($v['budget_date'] == $NowDate){
-                        $budget_amount_raw = $v['budget_amount_raw'];
-                        $created_at = $v['created_at'];
-                    }
-                }
-            }
-            $data[$i]['budget_id'] = $input['budget_id'];
-            $data[$i]['subject_id'] = $input['subject_id'];
-            $data[$i]['budget_date'] = $NowDate;
-            $data[$i]['budget_amount'] = $input['date_'.$NowDate];
-            $data[$i]['budget_amount_raw'] = $budget_amount_raw;
-            $data[$i]['status'] = 102;
-            $data[$i]['created_at'] = $created_at;
-            $data[$i]['updated_at'] = $updated_at;
-            $sData['sum_amount'] = $sData['sum_amount']+$input['date_'.$NowDate];
-            $NowDate = date("Y-m",strtotime("$NowDate +1 month"));
-        }
-        $sData['budget_id'] = $input['budget_id'];
-        $sData['subject_id'] = $input['subject_id'];
-        $sData['sum_amount'] = round($sData['sum_amount'], 2);
-        $sData['status'] = 102;
-
-        //事务
-        $budget_id = $input['budget_id'];
-        $subject_id = $input['subject_id'];
-        $result = DB::transaction(function () use($data, $sData, $budget_id, $subject_id, $budgetS) {
-            //更新/创建预算项目
-            if($budgetS){
-                $sData['updated_at'] = date("Y-m-d H:i:s", time());
-                BudgetSubjectDb::where('budget_id', $budget_id)
-                            ->where('subject_id', $subject_id)
-                            ->update($sData);
-            }else{
-                $sData['created_at'] = date("Y-m-d H:i:s", time());
-                $sData['updated_at'] = date("Y-m-d H:i:s", time());
-                BudgetSubjectDb::insert($sData);
-            }
-            //创建预算项目期间
-                //删除原数据
-                BudgetSubjectDateDb::where('budget_id', $budget_id)
-                                    ->where('subject_id', $subject_id)
-                                    ->delete();
-                //创建新数据
-                BudgetSubjectDateDb::insert($data);
+        $result = DB::transaction(function () use($id, $data) {
+            //更新预算
+            BudgetDb::where('budget_id', $id)
+                ->where('budget_sum', '1')
+                ->update($data);
+            //删除预算项
+            BudgetSubjectDb::where('budget_id', $id)
+                ->delete();
+            //删除预算项金额
+            BudgetSubjectDateDb::where('budget_id', $id)
+                ->delete();
             return true;
         });
 
         if($result){
-            return redirectPageMsg('1', '添加成功', route('budgetSum.addBudgetSumSub')."/".$input['budget_id']);
+            return redirectPageMsg('1', "编辑成功", route('budgetSum.index'));
         }else{
-            return redirectPageMsg('-1', '添加失败', route('budgetSum.addBudgetSumSub')."/".$input['budget_id']);
+            return redirectPageMsg('-1', "编辑失败", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
     }
 
@@ -414,10 +344,9 @@ class BudgetSumController extends Common\CommonController
         if($validator->fails()){
             echoAjaxJson('-1', $validator->errors()->first());
         }
-
-        $input['budget_id'] = 4;
+        //获取汇总预算信息
         $budgetSum = BudgetDb::where('budget_id', $input['budget_id'])
-                            ->select('budget_ids')
+                            ->select('budget_ids', 'budget_id', 'budget_start', 'budget_end')
                             ->get()
                             ->first();
         $ids = $budgetSum['budget_ids'];
@@ -434,27 +363,24 @@ class BudgetSumController extends Common\CommonController
             ->orderBy('subjects.sub_ip', 'ASC')
             ->get()
             ->toArray();
+
         //获取预算项金额
-        $subject = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use($ids) {
-            $join->on('bs.subject_id','=','subjects.sub_id')
-                ->whereIn('bs.budget_id', $ids);})
-            ->where('subjects.status', 1)
-            ->select('subjects.sub_id AS id', 'subjects.sub_pid AS pid', 'subjects.sub_name AS subject',
-                'subjects.sub_ip AS subject_ip', 'subjects.sub_budget', 'bs.sum_amount AS budget_amount',
-                'bs.status AS status')
-            ->orderBy('subjects.sub_ip', 'ASC')
+        $budget = BudgetSubjectDateDb::select('budget_id', 'subject_id',DB::raw('sum(budget_amount) AS budget_amount'))
+            ->whereIn('budget_id', $ids)
+            ->where('status', '1')
+            ->whereBetween('budget_date_str', array(strtotime($budgetSum['budget_start']), strtotime($budgetSum['budget_end'])))
+            ->groupBy('subject_id')
             ->get()
             ->toArray();
 
         //树形排列科目
         $budgetSum = sortTreeBudget($subjectSum, 0, 0, 1);
-        $budget = sortTreeBudget($subject, 0, 0, 1);
         //倒叙科目汇总金额
         $budgetSum = array_reverse($budgetSum);
-        $budget = array_reverse($budget);
         $arrSum = array_column($budgetSum,'pid');
-        $arr = array_column($budget,'id');
+        $arr = array_column($budget,'subject_id');
 
+        //汇总金额
         foreach($budgetSum as $k => $v){
             $budgetSum[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
             $budgetSum[$k]['status'] = !$budgetSum[$k]['status'] ? 'false' : $budgetSum[$k]['status'];
@@ -467,7 +393,6 @@ class BudgetSumController extends Common\CommonController
                 }
                 array_pull($arr, $key);
             }
-
             while (in_array($v['id'], $arrSum)) {
                 $key = array_search($v['id'], $arrSum);
                 $budgetSum[$k]['budget_amount'] = sprintf("%.2f", $budgetSum[$k]['budget_amount'] + $budgetSum[$key]['budget_amount']);
@@ -478,7 +403,7 @@ class BudgetSumController extends Common\CommonController
         }
 
         $budgetSum = array_reverse($budgetSum);
-        //p($budgetSum);
+
         //创建结果数据
         $data['data'] = $budgetSum;
         $data['status'] = 1;
@@ -513,43 +438,64 @@ class BudgetSumController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        //获取子集
-        $budget = BudgetDb::where('budget_id', $input['budget_id'])
-                        ->select('budget_ids', 'budget_id')
+        //获取汇总预算信息
+        $budgetSum = BudgetDb::where('budget_id', $input['budget_id'])
+                        ->select('budget_ids', 'budget_id', 'budget_start', 'budget_end', 'budget_period')
                         ->get()
                         ->first();
 
-        $ids = $budget['budget_id'].','.$budget['budget_ids'];
+        $ids = $budgetSum['budget_id'].','.$budgetSum['budget_ids'];
         $ids = explode(',', $ids);
-
+        //获取信息
+        $budget = BudgetDb::whereIn('budget_id', explode(',', $budgetSum['budget_ids']))
+            ->select('budget_id', 'budget_name')
+            ->get()
+            ->toArray();
         //获取预算期间金额
         $budgetSD = BudgetSubjectDateDb::whereIn('budget_id', $ids)
             ->where('subject_id', $input['subject_id'])
-            ->select('budget_date', 'budget_amount', 'budget_id')
-            ->orderBy('budget_date','ASC')
+            ->select('budget_date_str', 'budget_amount', 'budget_id')
             ->get()
             ->toArray();
 
-        //获取最长预算期间
-        $columnDate= array_column($budgetSD, 'budget_date');
-        $date = array_unique($columnDate);
-        $date = array_values($date);
-        sort($date);
-        
-        foreach($date as $v){
-            $data['budget_date'] = $v;
-            if(in_array($v, $columnDate)){
-                $key = array_search($v, $columnDate);
-                foreach($ids as $vv){
-                    if(1){
+        //获取日期期间
+        $monNum = getDateToDiff($budgetSum['budget_start'], $budgetSum['budget_end'], $budgetSum['budget_period']);
+        $NowDate = $budgetSum['budget_start'];
+        for($i=0; $i <= $monNum; $i++){
+            $date[$i]['date'] = $NowDate;
+            foreach($ids as $s){
+                $date[$i][$s] = 0;
+            }
+            $NowDate = getNextDate($NowDate, $budgetSum['budget_period']);
+        }
 
-                    }
+        $result = $date;
+        //格式化数据
+        switch ($budgetSum['budget_period']){
+            case 'day':
+                $str = 'Y-m-d';
+                break;
+            case 'month':
+                $str = 'Y-m';
+                break;
+            case 'year':
+                $str = 'Y';
+                break;
+        }
+        foreach($date as $k => $d){
+            foreach($budgetSD as $b){
+                if (strtotime($d['date']) == strtotime(date($str, $b['budget_date_str']))) {
+                    $result[$k][$budgetSum['budget_id']] = 0;
+                    $result[$k]['date'] = $d['date'];
+                    $result[$k][$b['budget_id']] = $result[$k][$b['budget_id']] + $b['budget_amount'];
+                    $result[$k][$budgetSum['budget_id']] = $result[$k][$budgetSum['budget_id']] + $result[$k][$b['budget_id']];
                 }
             }
+            arsort($result[$k]);
         }
-        p($ids);
+
         //创建结果数据
-        $data['data'] = $budgetSD;
+        $data['data'] = array('data'=>$result, 'head'=>$budget);
         $data['status'] = 1;
 
         //返回结果
@@ -557,26 +503,36 @@ class BudgetSumController extends Common\CommonController
     }
 
     //查看预算详情
-    public function listBudget($id = '0')
+    public function listBudgetSum($id = '0')
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
         };
 
         //获取预算信息
-        $budget = BudgetDb::where('budget_id', $id)
+        $budget['budgetSum'] = BudgetDb::where('budget_id', $id)
             ->get()
             ->first();
-        if(!$budget){
-            return redirectPageMsg('-1', "参数错误", route('budget.index'));
+        if(!$budget['budgetSum']){
+            return redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
         }
 
-        return view('budget.listBudget', $budget);
+        //获取子预算
+        $budget_ids = explode(',', $budget['budgetSum']['budget_ids']);
+        $budget['budget'] = BudgetDb::whereIn('budget_id', $budget_ids)
+            ->select('budget_name AS name', 'budget_num AS budget_num')
+            ->get()
+            ->toArray();
+        if(!$budget['budget']){
+            return redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
+        }
+
+        return view('budgetSum.listBudgetSum', $budget);
     }
 
     //删除预算
-    public function delBudget(Request $request)
+    public function delBudgetSum(Request $request)
     {
         //验证传输方式
         if(!$request->ajax())
@@ -614,6 +570,7 @@ class BudgetSumController extends Common\CommonController
         $result = DB::transaction(function () use($id) {
             //删除预算
             BudgetModel::where('budget_id', $id)
+                        ->where('budget_sum', '0')
                         ->delete();
             //删除预算项目
             BudgetSubjectDb::where('budget_id', $id)
@@ -630,9 +587,9 @@ class BudgetSumController extends Common\CommonController
             echoAjaxJson('-1', '删除失败');
         }
     }
-    
+
     //提交预算
-    public function subBudget(Request $request)
+    public function subBudgetSum(Request $request)
     {
         //验证传输方式
         if(!$request->ajax())
@@ -658,6 +615,7 @@ class BudgetSumController extends Common\CommonController
         $id = $input['id'];
         //获取预算信息
         $budget = BudgetDb::where('budget_id',$id)
+            ->where('budget_sum', '1')
             ->get()
             ->first();
         //获取预算项目
@@ -667,17 +625,17 @@ class BudgetSumController extends Common\CommonController
                             ->first();
         //验证预算
         if(!$budget) echoAjaxJson('-1', '参数错误，预算不存在！');
-        if($budget['status'] != "102" && !$budgetS) echoAjaxJson('-1', '提交失败，该预算无审核内容！');
+        if($budget['status'] != "102" && !$budgetS) echoAjaxJson('-1', '提交失败，该预算无审批内容！');
 
         $whereIn[] = 0;
         $whereIn[] = session('userInfo.dep_id');
-        //获取预算审核流程
-        $budgetAudit = auditProcessDb::where('audit_type', 'budget')
+        //获取预算审批流程
+        $budgetAudit = auditProcessDb::where('audit_type', 'budgetSum')
                                     ->whereIn('audit_dep', $whereIn)
                                     ->get()
                                     ->toArray();
         if($budgetAudit){
-            //审核流程大于1则获取对应部门预算
+            //审批流程大于1则获取对应部门预算
             if(count($budgetAudit) > 1){
                 foreach($budgetAudit as $k => $v){
                     if($v['audit_dep'] == session('userInfo.dep_id')){
@@ -688,15 +646,15 @@ class BudgetSumController extends Common\CommonController
                 $budgetAudit = $budgetAudit[0];
             }
 
-            if(!$budgetAudit['audit_process']) echoAjaxJson('-1', '提交失败，审核流程人员获取失败！');
+            if(!$budgetAudit['audit_process']) echoAjaxJson('-1', '提交失败，审批流程人员获取失败！');
 
             $result = DB::transaction(function () use($id, $budget, $input, $budgetAudit) {
                 $process_users = explode(',', $budgetAudit['audit_process']);
-                //审核内容参数
+                //审批内容参数
                 $auditInfoDb = new auditInfoDb();
-                $auditInfoDb->process_type = 'budget';
+                $auditInfoDb->process_type = 'budgetSum';
                 $auditInfoDb->process_app = $budget['budget_id'];
-                $auditInfoDb->process_title = '编号('.$budget['budget_num'].')—'.$budget['budget_name'];
+                $auditInfoDb->process_title = $input['budget_audit_type'].'—'.$budget['budget_num'].'—'.$budget['budget_name'];
                 $auditInfoDb->process_text = $input['process_text'];
                 $auditInfoDb->process_users = $budgetAudit['audit_process'];
                 $auditInfoDb->process_audit_user = $process_users[0];
@@ -719,9 +677,9 @@ class BudgetSumController extends Common\CommonController
             });
 
             if($result){
-                echoAjaxJson('1', '提交成功，请耐心等待审核！');
+                echoAjaxJson('1', '提交成功，请耐心等待审批！');
             }else{
-                echoAjaxJson('-1', '审核失败，请重新提交！');
+                echoAjaxJson('-1', '审批失败，请重新提交！');
             }
         }else{
             $result = DB::transaction(function () use($id) {
@@ -740,14 +698,14 @@ class BudgetSumController extends Common\CommonController
             });
 
             if($result){
-                echoAjaxJson('1', '审核通过，因未匹配相应审核流程，预算将直接通过审核！');
+                echoAjaxJson('1', '审批通过，因未匹配到相应审批流程，预算将直接通过审批！');
             }else{
-                echoAjaxJson('-1', '审核失败，请重新提交！');
+                echoAjaxJson('-1', '审批失败，请重新提交！');
             }
         }
     }
-    
-    //查看审核进度
+
+    //查看审批进度
     public function listAudit(Request $request)
     {
         //验证传输方式
@@ -781,7 +739,7 @@ class BudgetSumController extends Common\CommonController
         $data['budget']['budget_end'] = $budget['budget_end'];
         $data['budget']['status'] = $budget['status'];
 
-        //获取审核流程信息
+        //获取审批流程信息
         $audit = auditInfoDb::where('process_type', 'budget')
                                     ->where('process_app', $id)
                                     ->get()

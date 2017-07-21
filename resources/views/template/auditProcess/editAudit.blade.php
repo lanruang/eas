@@ -20,7 +20,7 @@
 			<!-- PAGE CONTENT BEGINS -->
 			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('auditProcess.updateAudit') }}" >
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 上级部门 </label>
+					<label class="col-sm-3 control-label no-padding-right"> 归属部门 </label>
 					<label class="col-sm-2 output" id="dep_list">{{ $audit['department'] }}</label>
 					<input type="hidden" name="dep_id" id="dep_id" value="{{ $audit['audit_dep'] }}"/>
 					<button type="button" href="#modal-tree" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
@@ -32,7 +32,8 @@
 					<div class="col-sm-3">
 						<label>
 							<select class="form-control" id="audit_type" name="audit_type">
-								<option value="budget" @if($audit['audit_type'] == 'budget')selected = "selected" @endif>预算管理类</option>
+								<option value="budget" @if($audit['audit_type'] == 'budget')selected = "selected" @endif>预算</option>
+								<option value="budgetSum" @if($audit['audit_type'] == 'budgetSum')selected = "selected" @endif>汇总预算</option>
 								<option value="contract" @if($audit['audit_type'] == 'contract')selected = "selected" @endif>合同类</option>
 								<option value="finance" @if($audit['audit_type'] == 'finance')selected = "selected" @endif>日常报销</option>
 							</select>
@@ -408,19 +409,7 @@
 			for (var i=0;i<trLength;i = i+2) {
 				var trId = trList.eq(i)[0].id;
 				if("lAdt"+val.id == trId){
-					bootbox.dialog({
-						message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请不要重复选择！',
-						buttons:
-						{"click" :
-							{
-								"label" : "确定",
-								"className" : "btn-sm btn-primary",
-								"callback": function() {
-									$('#selectClose').click();
-								}
-							}
-						}
-					});
+					alertDialog('-1', '请不要重复选择!');
 					return;
 				}
 			}

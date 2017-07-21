@@ -21,28 +21,35 @@
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算编号</div>
                     <div class="profile-info-value">
-                        {{ $budget['budget_num'] }}
+                        {{ $data['budget_num'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算名称</div>
                     <div class="profile-info-value">
-                        {{ $budget['budget_name'] }}
+                        {{ $data['budget_name'] }}
+                    </div>
+                </div>
+
+                <div class="profile-info-row">
+                    <div class="profile-info-name"> 预算期间类型</div>
+                    <div class="profile-info-value">
+                        <script type="text/javascript">document.write(transformStr('{{ $data['budget_period'] }}', 'budget'))</script>
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算期间</div>
                     <div class="profile-info-value">
-                        {{ $budget['budget_start'] }} 一 {{ $budget['budget_end'] }}
+                        {{ $data['budget_start'] }} 一 {{ $data['budget_end'] }}
                     </div>
                 </div>
 
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 状态</div>
                     <div class="profile-info-value">
-                        <script type="text/javascript">document.write(formatStatus('{{ $budget['status'] }}'))</script>
+                        <script type="text/javascript">document.write(formatStatus('{{ $data['status'] }}'))</script>
                     </div>
                 </div>
             </div>
@@ -162,7 +169,7 @@
                         <div class="col-xs-12">
 
                             <div class="widget-box widget-color-blue3">
-                                <div class="widget-header center"><h5 class="widget-title bigger lighter">预览审核流程</h5>
+                                <div class="widget-header center"><h5 class="widget-title bigger lighter">预览审批流程</h5>
                                 </div>
                                 <div class="widget-body">
                                     <div id="auditStart" class="center" style="padding:8px; border-top:1px solid #ddd;">
@@ -240,7 +247,7 @@
                             "async": false,
                             "dataType": "json",
                             "url": '{{route('budget.getBudgetSub')}}',
-                            "data": {"budget_id": '{{ $budget['budget_id'] }}', "_token": '{{csrf_token()}}'},
+                            "data": {"budget_id": '{{ $data['budget_id'] }}', "_token": '{{csrf_token()}}'},
                             "dataSrc": function (res) {
                                 if (res.status == true) {
                                     return res.data;
@@ -260,8 +267,7 @@
                             {
                                 "data": "subject", render: function (data, type, row) {
                                 return '<span style="padding-left:' + 10 * row.level + 'px;">' + row.subject + '</span>';
-                            }
-                            },
+                            }},
                             {"data": "budget_amount"},
                         ],
                         "createdRow": function (data, row) {
@@ -277,33 +283,6 @@
             $('#budgetSub tbody').on('click', 'tr td.btn_cp', function () {
                 var tr = $(this).closest('tr');
                 var row = budgetSub.row(tr);
-                var data = {"budget_id": '{{ $budget['budget_id'] }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
-                var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
-
-                html = '<div class="col-sm-offset-1 col-sm-5"><div class="dataTables_wrapper form-inline no-footer"><div class="dataTables_scroll"><div class="dataTables_scrollHead" style="overflow: hidden; position: relative; border: 0px; width: 100%;"> <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 100%;"> ' +
-                        '<table class="table table-striped table-bordered" style="margin-left: 0px; width: 100%;"> ' +
-                        '<thead> ' +
-                        '<tr> ' +
-                        '<th class="width-50 center">期间</th> ' +
-                        '<th class="width-50 center">金额</th> ' +
-                        '</tr> ' +
-                        '</thead> ' +
-                        '</table></div></div><div class="dataTables_scrollBody" style="position: relative; width: 100%;"> ' +
-                        '<table class="table table-striped table-bordered" style="width: 100%;"> ' +
-                        '<thead> ' +
-                        '<tr> ' +
-                        '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
-                        '<th class="width-50" style="padding-top: 0px; padding-bottom: 0px; border-top-width: 0px; border-bottom-width: 0px; height: 0px;"></th> ' +
-                        '</tr> ' +
-                        '</thead> ' +
-                        '<tbody>';
-                for (var i in result['data']) {
-                    html += '<tr>' +
-                            '<td class="center even">' + result['data'][i].budget_date + '</td>' +
-                            '<td class="align-right even">' + result['data'][i].budget_amount + '</td>' +
-                            '</tr>';
-                }
-                html += '</tbody></table></div></div></div></div>';
 
                 if (row.child.isShown()) {
                     $(this).find('i').addClass('fa-angle-double-down');
@@ -311,6 +290,26 @@
                     row.child.hide();
                 }
                 else {
+                    var data = {"budget_id": '{{ $data['budget_id'] }}', "subject_id": row.data().id, "_token": '{{csrf_token()}}'};
+                    var result = ajaxPost(data, '{{ route('budget.getBudgetDate') }}');
+
+                    html = '<div class="col-sm-offset-1 col-sm-8"> ' +
+                            '<table class="table table-striped table-bordered"> ' +
+                            '<thead> ' +
+                            '<tr> ' +
+                            '<th class="center">预算期间</th> ' +
+                            '<th class="center">预算金额</th> ' +
+                            '</tr> ' +
+                            '</thead> ' +
+                            '<tbody>';
+                    for (var i in result['data']) {
+                        html += '<tr>' +
+                                '<td class="center even">' + result['data'][i].budget_date + '</td>' +
+                                '<td class="align-right even">' + result['data'][i].budget_amount + '</td>';
+                        html += '</tr>';
+                    }
+                    html += '</tbody></table></div>';
+
                     $(this).find('i').removeClass('fa-angle-double-down');
                     $(this).find('i').addClass('fa-angle-double-up');
                     row.child(html, 'widget-body').show();

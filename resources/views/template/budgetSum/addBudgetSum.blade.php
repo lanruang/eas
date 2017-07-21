@@ -9,7 +9,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('budgetSum.index')}}">汇总预算</a></li>
+	<li><a href="{{route('budgetSum.index')}}">汇总预算列表</a></li>
 	<li>添加汇总预算</li>
 @endsection()
 
@@ -36,6 +36,20 @@
 				</div>
 
 				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 预算期间类型 </label>
+					<div class="col-sm-3">
+						<label>
+							<select class="form-control" id="budget_period" name="budget_period" onchange="selectPeriod();">
+								<option value="">请选择</option>
+								<option value="day">天数</option>
+								<option value="month">月度</option>
+								<option value="year">年度</option>
+							</select>
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group hide" id="budgetDateFarm">
 					<label class="col-sm-3 control-label no-padding-right"> 预算期间 </label>
 					<div class="col-sm-4">
 						<div class="input-group">
@@ -47,7 +61,7 @@
 					</div>
 				</div>
 
-				<div class="form-group">
+				<div class="form-group hide" id="budgetFarm">
 					<label class="col-sm-3 control-label no-padding-right"> 选择预算 </label>
 					<div class="col-sm-4">
 						<label class="output5">
@@ -193,15 +207,12 @@
 								"targets": 5,
 								"render": function(data, type, row) {
 									var html = '<div class="action-buttons">' +
-											"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_name+"')\">" +
+											"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_name+"', '"+row.bd_start+"', '"+row.bd_end+"')\">" +
 											'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
 											'</a></div>';
 									return html;
 								}
-							}],
-							"createdRow": function( row, data ) {
-								$(row).attr( 'id', data.id );
-							}
+							}]
 						});
 			})
 
@@ -214,12 +225,14 @@
 					budget_num: {required: true, maxlength:200},
 					budget_name: {required: true, maxlength:200},
 					budget_date: {required: true},
+					budget_period: {required: true},
 					budget_ids: {required: true}
 				},
 				messages: {
 					budget_num: {required: "请填写预算编号.", maxlength: "字符数超出范围."},
 					budget_name: {required: "请填写预算名称.", maxlength: "字符数超出范围."},
 					budget_date: {required: "请选择预算期间."},
+					budget_period: {required: "请选择预算期间类型."},
 					budget_ids: {required: "请选择预算."}
 				},
 				highlight: function (e) {
@@ -230,49 +243,33 @@
 					$(e).remove();
 				},
 			});
-			$('.input-daterange').datepicker({autoclose:true, format: "yyyy-mm-dd",language: "cn"});
-			$('#budget_date').daterangepicker({
-				"showDropdowns": true,
-				"linkedCalendars": false,
-				'applyClass' : 'btn-sm btn-success',
-				'cancelClass' : 'btn-sm btn-default',
-				locale: {
-					applyLabel : '确定',
-					cancelLabel : '取消',
-					fromLabel : '起始时间',
-					toLabel : '结束时间',
-					customRangeLabel : '自定义',
-					daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
-					monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月',
-						'七月', '八月', '九月', '十月', '十一月', '十二月' ],
-					format: 'YYYY-MM',
-					firstDay: 1,
-					separator: ' 一 '
-				}
-			})
+
 		})
 
 		//选择预算
-		function selectBudget(id, name){
+		function selectBudget(id, name, bd_start, bd_end){
 			var trList = $('#budgetChild').children("tr");
 			var trLength = trList.length;
+			var sumDate = $('#budget_date').val();
+			if(sumDate.split(' 一 ').length < 2){
+				alertDialog('-1', '预算期间获取错误，请重新选择预算期间!');
+				return;
+			}
+			var sumStart = sumDate.split(' 一 ')[0];
+			var sumEnd = sumDate.split(' 一 ')[1];
 
-			for (var i=0;i<trLength;i = i+2) {
+			if(bd_start > sumEnd){
+				alertDialog('-1', '子预算起始期间不能大于汇总预算结束期间!');
+				return;
+			}
+			if(bd_end < sumStart){
+				alertDialog('-1', '子预算结束期间不能小于汇总预算起始期间!');
+				return;
+			}
+			for (var i=0;i<trLength; i++) {
 				var trId = trList.eq(i)[0].id;
 				if("selectId"+id == trId){
-					bootbox.dialog({
-						message: '<h4 class="header smaller lighter orange2 bolder"><i class="ace-icon fa fa-exclamation-circle"></i>提示信息</h4>　　请不要重复选择！',
-						buttons:
-						{"click" :
-						{
-							"label" : "确定",
-							"className" : "btn-sm btn-primary",
-							"callback": function() {
-								$('#selectClose').click();
-							}
-						}
-						}
-					});
+					alertDialog('-1', '请不要重复选择!');
 					return;
 				}
 			}
@@ -311,9 +308,60 @@
 		//验证表单
 		function postFrom(){
 			if($('#validation-form').valid()){
+				var budget_period = $('#budget_period').val();
+				if(budget_period == 'day') {
+					var date = $('#budget_date').val();
+					date = date.split(' 一 ');
+					var getDateDiff = getDateToDiff(date[0], date[1], 'day');
+					if (getDateDiff > 30) {
+						alertDialog('-1', '预算期间类型为天数时，预算期间不能大于31天。');
+						return;
+					}
+				}
 				$('#validation-form').submit();
 			};
 		}
 
+		//选择预算期间
+		function selectPeriod(){
+			var period = $('#budget_period').val();
+			var format;
+			switch(period)
+			{
+				case 'day':
+					format = 'YYYY-MM-DD';
+					break;
+				case 'month':
+					format = 'YYYY-MM';
+					break;
+				case 'year':
+					format = 'YYYY';
+					break;
+			}
+			if(format == ''){
+				alertDialog('-1', '请选择预算期间。');
+			}
+			$('#budget_date').daterangepicker({
+				"showDropdowns": true,
+				"linkedCalendars": false,
+				'applyClass' : 'btn-sm btn-success',
+				'cancelClass' : 'btn-sm btn-default',
+				locale: {
+					applyLabel : '确定',
+					cancelLabel : '取消',
+					fromLabel : '起始时间',
+					toLabel : '结束时间',
+					customRangeLabel : '自定义',
+					daysOfWeek : [ '日', '一', '二', '三', '四', '五', '六' ],
+					monthNames : [ '一月', '二月', '三月', '四月', '五月', '六月',
+						'七月', '八月', '九月', '十月', '十一月', '十二月' ],
+					format: format,
+					firstDay: 1,
+					separator: ' 一 '
+				}
+			});
+			$('#budgetFarm').removeClass('hide');
+			$('#budgetDateFarm').removeClass('hide');
+		}
 	</script>
 @endsection()

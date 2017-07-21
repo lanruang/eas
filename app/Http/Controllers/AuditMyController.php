@@ -20,6 +20,7 @@ class AuditMyController extends Common\CommonController
     public function index()
     {
         $data['budget'] = '';
+        $data['budgetSum'] = '';
         $data['contract'] = '';
         $data['finance'] = '';
         //未审核数据
@@ -58,7 +59,12 @@ class AuditMyController extends Common\CommonController
         }
 
         //获取记录总数
-        $total = AuditInfoDb::count();
+        $total = AuditInfoDb::leftjoin('users', 'users.user_id', '=', 'audit_info.created_user')
+            ->select('users.user_name', 'audit_info.process_id', 'audit_info.process_title',
+                'audit_info.status', 'audit_info.created_at')
+            ->where('audit_info.process_type', $input['type'])
+            ->where('audit_info.process_audit_user', session('userInfo.user_id'))
+            ->count();
         //获取数据
         $result = AuditInfoDb::leftjoin('users', 'users.user_id', '=', 'audit_info.created_user')
             ->select('users.user_name', 'audit_info.process_id', 'audit_info.process_title',
@@ -108,19 +114,24 @@ class AuditMyController extends Common\CommonController
                                     ->get()
                                     ->toArray();
 
-        switch ($data['audit']['process_app'])
+        switch ($data['audit']['process_type'])
         {
             case "budget":
                 $type = "Budget";
-                $data['budget'] = $this->getBudget($data['audit']['process_app']);
+                $data['data'] = $this->getBudget($data['audit']['process_app']);
             break;
+            case "budgetSum":
+                $type = "BudgetSum";
+                $data['data'] = $this->getBudgetSum($data['audit']['process_app']);
+                break;
             default:
                 $type = "Budget";
-                $data['budget'] = $this->getBudget($data['audit']['process_app']);
+                $data['data'] = $this->getBudget($data['audit']['process_app']);
         }
-        if(!$data['budget']){
+        if(!$data['data']){
             return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
+     
         $data['process_id'] = $data['audit']['process_id'];
    
         return view("auditMy.list$type", $data);
@@ -283,10 +294,12 @@ class AuditMyController extends Common\CommonController
         ajaxJsonRes($data);
     }
 
+    /*-----------------------预算类-----------------------*/
     //预算信息
     private function getBudget($id)
     {
         $result = BudgetDb::where('budget_id', $id)
+            ->where('budget_sum', '0')
             ->get()
             ->first();
         if(!$result){
@@ -297,6 +310,43 @@ class AuditMyController extends Common\CommonController
     }
     //更新预算信息
     private function updateBudget($id, $status){
+        $data['status'] = $status == '1002' ? '1' : $status;
+        //更新预算
+        BudgetDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
+        BudgetSDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
+        BudgetSDDb::where('budget_id', $id)
+            ->where('status', '1009')
+            ->update($data);
+    }
+    //汇总预算信息
+    private function getBudgetSum($id)
+    {
+        $result = BudgetDb::where('budget_id', $id)
+            ->where('budget_sum', '1')
+            ->get()
+            ->first();
+        if(!$result){
+            return false;
+        }
+        //获取子预算
+        $budget_ids = explode(',', $result['budget_ids']);
+        $result['budget'] = BudgetDb::whereIn('budget_id', $budget_ids)
+            ->select('budget_name AS name', 'budget_num AS budget_num')
+            ->get()
+            ->toArray();
+        if(!$result['budget']){
+            return false;
+        }
+
+        $result = $result->toArray();
+        return $result;
+    }
+    //更新汇总预算信息
+    private function updateBudgetSum($id, $status){
         $data['status'] = $status == '1002' ? '1' : $status;
         //更新预算
         BudgetDb::where('budget_id', $id)

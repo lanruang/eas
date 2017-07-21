@@ -147,10 +147,10 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createBudgetSumSub', ['as' => 'budgetSum.createBudgetSumSub', 'uses' => 'BudgetSumController@createBudgetSumSub']);//添加预算汇总项
         Route::post('getBudgetSumSub', ['as' => 'budgetSum.getBudgetSumSub', 'uses' => 'BudgetSumController@getBudgetSumSub']);//获取预算汇总项目
         Route::post('getBudgetSumDate', ['as' => 'budgetSum.getBudgetSumDate', 'uses' => 'BudgetSumController@getBudgetSumDate']);//获取预算汇总期间
-        Route::get('listBudgetSum/{id?}', ['as' => 'budgetSum.listBudgetSum', 'uses' => 'BudgetSumController@listBudget']);//查看预算汇总详情
-        Route::post('delBudgetSum', ['as' => 'budgetSum.delBudgetSum', 'uses' => 'BudgetSumController@delBudget']);//删除预算汇总
-        Route::post('subBudgetSum', ['as' => 'budgetSum.subBudgetSum', 'uses' => 'BudgetSumController@subBudget']);//提交预算审核
-        Route::post('listAuditSum', ['as' => 'budgetSum.listAuditSum', 'uses' => 'BudgetSumController@listAudit']);//查看审核进度
+        Route::get('listBudgetSum/{id?}', ['as' => 'budgetSum.listBudgetSum', 'uses' => 'BudgetSumController@listBudgetSum']);//查看预算汇总详情
+        Route::post('delBudgetSum', ['as' => 'budgetSum.delBudgetSum', 'uses' => 'BudgetSumController@delBudgetSum']);//删除预算汇总
+        Route::post('subBudgetSum', ['as' => 'budgetSum.subBudgetSum', 'uses' => 'BudgetSumController@subBudgetSum']);//提交预算审核
+        Route::post('listAuditSum', ['as' => 'budgetSum.listAuditSum', 'uses' => 'BudgetSumController@listAuditSum']);//查看审核进度
     });
 
     /*-----------------------------系统组件-----------------------------*/
