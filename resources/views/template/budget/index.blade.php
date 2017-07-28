@@ -1,5 +1,5 @@
 {{--引入模板--}}
-@extends(config('sysInfo.templateAdminName').'.layouts.main')
+@extends('layouts.main')
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
@@ -19,7 +19,7 @@
 
 				<div class="grid2 new_grid2">
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listSubBedgetFarm()">提交预算</button>
-					<button type="button" class="btn btn-white btn-sm btn-round"  onclick="listAuditFarm();">审核进度</button>
+					<button type="button" class="btn btn-white btn-sm btn-round"  onclick="listAuditFarm();">审批进度</button>
 					<button id="subBedgetBtn"  href="#subBudget-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
 					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
 				</div>

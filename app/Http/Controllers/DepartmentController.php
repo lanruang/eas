@@ -75,13 +75,13 @@ class DepartmentController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('department.addDepartment'));
+            redirectPageMsg('-1', $validator->errors()->first(), route('department.addDepartment'));
         }
 
         //部门是否存在
         $result = DepartmentDb::where('dep_name', $input['dep_name'])->first();
         if($result){
-            return redirectPageMsg('-1', "添加失败，部门名称重复", route('department.addDepartment'));
+            redirectPageMsg('-1', "添加失败，部门名称重复", route('department.addDepartment'));
         }
 
         //格式化数据
@@ -100,9 +100,9 @@ class DepartmentController extends Common\CommonController
         $result = $departmentDb->save();
 
         if($result){
-            return redirectPageMsg('1', "添加成功", route('department.addDepartment'));
+            redirectPageMsg('1', "添加成功", route('department.addDepartment'));
         }else{
-            return redirectPageMsg('-1', "添加失败", route('department.addDepartment'));
+            redirectPageMsg('-1', "添加失败", route('department.addDepartment'));
         }
     }
     
@@ -111,7 +111,7 @@ class DepartmentController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('department.index'));
+            redirectPageMsg('-1', '参数错误', route('department.index'));
         };
 
         //获取部门信息
@@ -122,7 +122,7 @@ class DepartmentController extends Common\CommonController
             ->first()
             ->toArray();
         if(!$department){
-            return redirectPageMsg('-1', "参数错误", route('department.index'));
+            redirectPageMsg('-1', "参数错误", route('department.index'));
         }
         $department['p_name'] = '';
         //获取上级部门
@@ -147,7 +147,7 @@ class DepartmentController extends Common\CommonController
         $input = Input::all();
         //检测id类型是否整数
         if(!array_key_exists('dep_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('department.index'));
+            redirectPageMsg('-1', '参数错误', route('department.index'));
         };
 
         $rules = [
@@ -169,7 +169,7 @@ class DepartmentController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('department.editDepartment')."/".$input['dep_id']);
+            redirectPageMsg('-1', $validator->errors()->first(), route('department.editDepartment')."/".$input['dep_id']);
         }
 
         //部门是否存在
@@ -177,7 +177,7 @@ class DepartmentController extends Common\CommonController
                             ->where('dep_id', '<>', $input['dep_id'])
                             ->first();
         if($result){
-            return redirectPageMsg('-1', "修改失败，部门名称重复", route('department.editDepartment')."/".$input['dep_id']);
+            redirectPageMsg('-1', "修改失败，部门名称重复", route('department.editDepartment')."/".$input['dep_id']);
         }
 
         //格式化数据
@@ -192,9 +192,9 @@ class DepartmentController extends Common\CommonController
             ->update($data);
 
         if($result){
-            return redirectPageMsg('1', "编辑成功", route('department.index'));
+            redirectPageMsg('1', "编辑成功", route('department.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('department.editDepartment')."/".$input['dep_id']);
+            redirectPageMsg('-1', "编辑失败", route('department.editDepartment')."/".$input['dep_id']);
         }
     }
 

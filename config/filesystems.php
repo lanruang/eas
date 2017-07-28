@@ -62,6 +62,10 @@ return [
             'bucket' => 'your-bucket',
         ],
 
+        'storageTemp' => [
+            'driver' => 'local',
+            'root' => base_path('uploads'),
+        ],
     ],
 
 ];

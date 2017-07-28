@@ -6,6 +6,7 @@
 	statusArr['1'] = '<span>使用中</span>';
 	statusArr['0'] = '<span style="color:red;">已停用</span>';
 	statusArr['102'] = '<span style="color:green;">更新预算项</span>';
+	statusArr['202'] = '<span style="color:green;">编辑单据</span>';
 	statusArr['1000'] = '<span>未审批</span>';
 	statusArr['1001'] = '<span>已审批</span>';
 	statusArr['1002'] = '<span style="color:green;">批准</span>';
@@ -13,9 +14,14 @@
 	statusArr['1009'] = '<span style="color:orange;">审批中</span>';
 
 	strArr = new Array();
-	strArr['budget_day'] = '天数';
-	strArr['budget_month'] = '月度';
-	strArr['budget_year'] = '年度';
+	strArr['day'] = '天数';
+	strArr['month'] = '月度';
+	strArr['year'] = '年度';
+	strArr['budget'] = '预算';
+	strArr['budgetSum'] = '汇总预算';
+	strArr['contract'] = '合同类';
+	strArr['reimburse'] = '费用报销';
+
 
 
 	/**
@@ -107,6 +113,25 @@
 	}
 
 	/**
+	 * 格式化数字保留指定小数
+	 *
+	 * @param    string        id
+	 * @param    int           num
+	 * @return   string
+	 *
+	 */
+	function formatAmount(id, num) {
+		var val = toDecimal($('#'+id).val(), num);
+		if(!val){
+			$('#'+id).val('');
+			$('#'+id).focus;
+			alertDialog(-1, '请输入数字！');
+			return false;
+		}
+		$('#'+id).val(val);
+	}
+
+	/**
 	 * 计算日期时间天数
 	 *
 	 * @param    date        startDate
@@ -188,9 +213,12 @@
 	 * @return    string
 	 *
 	 */
-	function transformStr(key, type)
+	function transformStr(key)
 	{
-		return strArr[type+'_'+key];
+		if(!strArr[key]){
+			return '';
+		}
+		return strArr[key];
 	}
 
 	function writeObj(obj) {

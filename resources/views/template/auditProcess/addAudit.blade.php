@@ -35,7 +35,7 @@
 								<option value="budget">预算</option>
 								<option value="budgetSum">汇总预算</option>
 								<option value="contract">合同类</option>
-								<option value="finance">日常报销</option>
+								<option value="reimburse">费用报销</option>
 							</select>
 						</label>
 					</div>

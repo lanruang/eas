@@ -55,7 +55,7 @@ class AuditMyController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return echoAjaxJson('false', $validator->errors()->first());
+            echoAjaxJson('false', $validator->errors()->first());
         }
 
         //获取记录总数
@@ -89,7 +89,7 @@ class AuditMyController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '缺少必要参数', route('auditMy.index'));
+            redirectPageMsg('-1', '缺少必要参数', route('auditMy.index'));
         };
 
         //获取审核内容信息
@@ -103,7 +103,7 @@ class AuditMyController extends Common\CommonController
                             ->get()
                             ->first();
         if(!$data['audit']){
-            return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
+            redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
         $data['audit'] = $data['audit']->toArray();
         //获取审批结果
@@ -129,7 +129,7 @@ class AuditMyController extends Common\CommonController
                 $data['data'] = $this->getBudget($data['audit']['process_app']);
         }
         if(!$data['data']){
-            return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
+            redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
      
         $data['process_id'] = $data['audit']['process_id'];
@@ -155,17 +155,17 @@ class AuditMyController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
+            redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
         }
 
         $audit = AuditInfoDb::where('process_id', $input['process_id'])
                             ->get()
                             ->first();
         if(!$audit){
-            return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
+            redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
         if($audit['process_audit_user'] != session('userInfo.user_id')){
-            return redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
+            redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
         };
 
         //事务处理
@@ -214,6 +214,9 @@ class AuditMyController extends Common\CommonController
                     case "budget":
                         $this->updateBudget($audit['process_app'], $input['audit_res']);
                         break;
+                    case "budgetSum":
+                        $this->updateBudgetSum($audit['process_app'], $input['audit_res']);
+                        break;
                 }
             }else{
                 $info['process_user_res'] = implode(',', $process_user_res);
@@ -230,9 +233,9 @@ class AuditMyController extends Common\CommonController
         });
 
         if($result){
-            return redirectPageMsg('1', '审批成功', route('auditMy.index'));
+            redirectPageMsg('1', '审批成功', route('auditMy.index'));
         }else{
-            return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
+            redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
         }
     }
 
@@ -266,7 +269,7 @@ class AuditMyController extends Common\CommonController
                             ->get()
                             ->first();
         if(!$audit){
-            return redirectPageMsg('-1', '流程信息获取错误，请刷新页面重试', route('auditMy.index'));
+            redirectPageMsg('-1', '流程信息获取错误，请刷新页面重试', route('auditMy.index'));
         };
         $audit = $audit->toArray();
         //格式化流程
@@ -313,6 +316,7 @@ class AuditMyController extends Common\CommonController
         $data['status'] = $status == '1002' ? '1' : $status;
         //更新预算
         BudgetDb::where('budget_id', $id)
+            ->where('budget_sum', '0')
             ->where('status', '1009')
             ->update($data);
         BudgetSDb::where('budget_id', $id)
@@ -350,6 +354,7 @@ class AuditMyController extends Common\CommonController
         $data['status'] = $status == '1002' ? '1' : $status;
         //更新预算
         BudgetDb::where('budget_id', $id)
+            ->where('budget_sum', '1')
             ->where('status', '1009')
             ->update($data);
         BudgetSDb::where('budget_id', $id)

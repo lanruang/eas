@@ -153,6 +153,15 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('listAuditSum', ['as' => 'budgetSum.listAuditSum', 'uses' => 'BudgetSumController@listAuditSum']);//查看审核进度
     });
 
+    /*-----------------------------费用管理-----------------------------*/
+    Route::group(['prefix' => 'reimburse'], function () {
+        Route::get('index', ['as' => 'reimburse.index', 'uses' => 'ReimburseController@index']);//费用报销
+        Route::get('addBudgetSum', ['as' => 'reimburse.addReimburse', 'uses' => 'ReimburseController@addReimburse']);//添加报销单据视图
+        Route::post('updateExpense', ['as' => 'reimburse.updateExpense', 'uses' => 'ReimburseController@updateExpense']);//更新表头信息
+        Route::post('uploadImg', ['as' => 'reimburse.uploadImg', 'uses' => 'ReimburseController@uploadImg']);//test
+    });
+
+
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {
         Route::post('ctGetUser', ['as' => 'component.ctGetUser', 'uses' => 'Common\ComponentController@ctGetUser']);//用户数据

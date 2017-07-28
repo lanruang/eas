@@ -12783,8 +12783,8 @@ tr.detail-row > td {
 .ace-thumbnails > li {
     float: left;
     overflow: hidden;
-    margin: 2px;
-    border: 2px solid #333
+    margin: 5px;
+    border: 1px solid #AAA;
 }
 
 .ace-thumbnails > li > :first-child:focus {
@@ -15716,7 +15716,7 @@ div.dataTables_processing {
 }
 
 #cboxContent {
-    border: 12px solid #000;
+    border: 1px solid #000;
     background-color: #FFF;
     padding: 7px;
     overflow: visible
@@ -19753,7 +19753,7 @@ input.typeahead.scrollable ~ .tt-menu {
 }
 
 .no-skin .navbar .navbar-toggle {
-    background-color: #75B3D7
+    background-color: #75B3D7;
 }
 
 .no-skin .navbar .navbar-toggle:focus {
@@ -20646,4 +20646,7 @@ input.typeahead.scrollable ~ .tt-menu {
     border-left: none;
     margin: 0;
     padding: 0;
+}
+.new_reimburse_bg{
+    background-color: #f9f9f9;
 }

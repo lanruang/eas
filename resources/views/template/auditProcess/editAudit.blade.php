@@ -35,7 +35,7 @@
 								<option value="budget" @if($audit['audit_type'] == 'budget')selected = "selected" @endif>预算</option>
 								<option value="budgetSum" @if($audit['audit_type'] == 'budgetSum')selected = "selected" @endif>汇总预算</option>
 								<option value="contract" @if($audit['audit_type'] == 'contract')selected = "selected" @endif>合同类</option>
-								<option value="finance" @if($audit['audit_type'] == 'finance')selected = "selected" @endif>日常报销</option>
+								<option value="reimburse" @if($audit['audit_type'] == 'reimburse')selected = "selected" @endif>费用报销</option>
 							</select>
 						</label>
 					</div>

@@ -36,7 +36,7 @@
                 <div class="profile-info-row">
                     <div class="profile-info-name"> 预算期间类型</div>
                     <div class="profile-info-value">
-                        <script type="text/javascript">document.write(transformStr('{{ $budget_period }}', 'budget'))</script>
+                        <script type="text/javascript">document.write(transformStr('{{ $budget_period }}'))</script>
                     </div>
                 </div>
 

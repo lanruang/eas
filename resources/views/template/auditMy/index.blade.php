@@ -21,7 +21,7 @@
                     </li>
 
                     <li>
-                        <a data-toggle="tab" href="#budgetSum">
+                        <a data-toggle="tab" href="#budgetSum" onclick="budgetSumFun();">
                             <i class="pink ace-icon fa fa-bar-chart-o bigger-110"></i>
                             汇总预算
                             <span class="badge badge-danger">{{ $budgetSum }}</span>
@@ -49,7 +49,7 @@
                     <div id="budget" class="tab-pane in active">
                         <div class="row">
                             <div class="col-xs-12 col-sm-11">
-                                <table id="budgetTable" class="table table-striped table-bordered table-hover">
+                                <table id="budgetTable" class="table table-striped table-bordered table-hover" style="width: 100%">
                                     <thead>
                                     <tr>
                                         <th class="center">&nbsp;</th>
@@ -107,7 +107,7 @@
 @section('FooterJs')
     <script type="text/javascript">
         var budgetTable;
-        var budgetSumTable;
+        var budgetSumTable = false;
         $(function($) {
             budgetTable = $('#budgetTable')
                     .DataTable({
@@ -115,6 +115,7 @@
                         "ordering": false,
                         "searching": false,
                         "deferRender": true,
+                        "autoWidth": false,
                         "language": {
                             "sProcessing":   "处理中...",
                             "sLengthMenu":   "显示 _MENU_ 项结果",
@@ -166,66 +167,70 @@
                             }, "class": "center align-middle" }
                         ]
                     });
-
-            budgetSumTable = $('#budgetSumTable')
-                    .DataTable({
-                        "lengthChange": false,
-                        "ordering": false,
-                        "searching": false,
-                        "deferRender": true,
-                        "language": {
-                            "sProcessing":   "处理中...",
-                            "sLengthMenu":   "显示 _MENU_ 项结果",
-                            "sZeroRecords":  "没有匹配结果",
-                            "sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-                            "sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
-                            "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-                            "sInfoPostFix":  "",
-                            "sSearch":       "搜索:",
-                            "sUrl":          "",
-                            "sEmptyTable":     "表中数据为空",
-                            "sLoadingRecords": "载入中...",
-                            "sInfoThousands":  ",",
-                            "oPaginate": {
-                                "sFirst":    "首页",
-                                "sPrevious": "上页",
-                                "sNext":     "下页",
-                                "sLast":     "末页"
-                            }
-                        },
-                        "serverSide": true,
-                        "ajax": {
-                            "type": "post",
-                            "dataType": "json",
-                            "async":false,
-                            "url": '{{route('auditMy.getAuditList')}}',
-                            "data": {"type": 'budgetSum' ,"_token": '{{csrf_token()}}'},
-                            "dataSrc": function ( res ) {
-                                if(res.status == true){
-                                    return res.data;
-                                }else{
-                                    alertDialog(res.status, res.msg);
-                                }
-                            }
-                        },
-                        "columns": [
-                            {
-                                "class": "center",
-                                "data": null,
-                                "defaultContent": "", render: function(data, type, row) {
-                                var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
-                                return html;
-                            }},
-                            {"data": "process_title", "class": "align-middle"},
-                            {"data": "user_name", "class": "center align-middle" },
-                            {"data": "created_at", "class": "center align-middle" },
-                            {"data": "status", render: function(data, type, row) {
-                                return formatStatus(row.status);
-                            }, "class": "center align-middle" }
-                        ]
-                    });
         })
 
+        function budgetSumFun(){
+            if(!budgetSumTable){
+                budgetSumTable = $('#budgetSumTable')
+                        .DataTable({
+                            "lengthChange": false,
+                            "ordering": false,
+                            "searching": false,
+                            "deferRender": true,
+                            "autoWidth": false,
+                            "language": {
+                                "sProcessing":   "处理中...",
+                                "sLengthMenu":   "显示 _MENU_ 项结果",
+                                "sZeroRecords":  "没有匹配结果",
+                                "sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                                "sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
+                                "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                                "sInfoPostFix":  "",
+                                "sSearch":       "搜索:",
+                                "sUrl":          "",
+                                "sEmptyTable":     "表中数据为空",
+                                "sLoadingRecords": "载入中...",
+                                "sInfoThousands":  ",",
+                                "oPaginate": {
+                                    "sFirst":    "首页",
+                                    "sPrevious": "上页",
+                                    "sNext":     "下页",
+                                    "sLast":     "末页"
+                                }
+                            },
+                            "serverSide": true,
+                            "ajax": {
+                                "type": "post",
+                                "dataType": "json",
+                                "async":false,
+                                "url": '{{route('auditMy.getAuditList')}}',
+                                "data": {"type": 'budgetSum' ,"_token": '{{csrf_token()}}'},
+                                "dataSrc": function ( res ) {
+                                    if(res.status == true){
+                                        return res.data;
+                                    }else{
+                                        alertDialog(res.status, res.msg);
+                                    }
+                                }
+                            },
+                            "columns": [
+                                {
+                                    "class": "center",
+                                    "data": null,
+                                    "defaultContent": "", render: function(data, type, row) {
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
+                                    return html;
+                                }},
+                                {"data": "process_title", "class": "align-middle"},
+                                {"data": "user_name", "class": "center align-middle" },
+                                {"data": "created_at", "class": "center align-middle" },
+                                {"data": "status", render: function(data, type, row) {
+                                    return formatStatus(row.status);
+                                }, "class": "center align-middle" }
+                            ]
+                        });
+            }
+        }
 
         function auditDoc(e){
             window.location.href = "{{route('auditMy.getAuditInfo')}}" + "/" + e;

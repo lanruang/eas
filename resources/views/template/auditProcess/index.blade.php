@@ -99,7 +99,9 @@
 								"defaultContent": ""
 							},
 							{"data": "department"},
-							{"data": "audit_type" },
+							{"data": "audit_type", render: function(data, type, row) {
+								return transformStr(row.audit_type);
+							}},
 							{"data": "audit_name"},
 							{"data": "status", render: function(data, type, row) {
 								return formatStatus(row.status);

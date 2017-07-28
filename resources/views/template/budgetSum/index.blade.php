@@ -1,5 +1,5 @@
 {{--引入模板--}}
-@extends(config('sysInfo.templateAdminName').'.layouts.main')
+@extends('layouts.main')
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
