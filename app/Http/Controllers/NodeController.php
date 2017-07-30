@@ -103,7 +103,7 @@ class NodeController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('node.addNode'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('node.addNode'));
         }
 
 
@@ -129,9 +129,9 @@ class NodeController extends Common\CommonController
         $result = $nodeDb->save();
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('node.addNode'));
+            return redirectPageMsg('1', "添加成功", route('node.addNode'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('node.addNode'));
+            return redirectPageMsg('-1', "添加失败", route('node.addNode'));
         }
     }
 
@@ -140,7 +140,7 @@ class NodeController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '缺少必要参数', route('node.index'));
+            return redirectPageMsg('-1', '缺少必要参数', route('node.index'));
         };
 
         //获取权限信息
@@ -153,7 +153,7 @@ class NodeController extends Common\CommonController
                             ->first()
                             ->toArray();
         if(!$node){
-            redirectPageMsg('-1', "权限获取失败", route('node.index'));
+            return redirectPageMsg('-1', "权限获取失败", route('node.index'));
         }
 
         //下拉菜单信息
@@ -178,7 +178,7 @@ class NodeController extends Common\CommonController
 
         //检测参数是否存在
         if(!array_key_exists('node_id', $input)){
-            redirectPageMsg('-1', '缺少必要参数', route('node.index'));
+            return redirectPageMsg('-1', '缺少必要参数', route('node.index'));
         };
         $rules = [
             'node_name' => 'required|max:40',
@@ -208,7 +208,7 @@ class NodeController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('node.editNode')."/".$input['node_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('node.editNode')."/".$input['node_id']);
         }
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;
@@ -232,9 +232,9 @@ class NodeController extends Common\CommonController
         $result = nodeDb::where('id', $input['node_id'])
                                 ->update($data);
         if($result){
-            redirectPageMsg('1', "编辑成功", route('node.index'));
+            return redirectPageMsg('1', "编辑成功", route('node.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('node.editNode')."/".$input['node_id']);
+            return redirectPageMsg('-1', "编辑失败", route('node.editNode')."/".$input['node_id']);
         }
     }
 

@@ -178,6 +178,12 @@
 								<div class="form-group">
 									<label class="col-sm-3 control-label no-padding-right"> 附件 </label>
 									<div class="col-sm-3">
+
+                                        <div id="progressbar" class="hide ui-progressbar ui-widget ui-widget-content ui-corner-all progress progress-striped active"
+                                             role="progressbar" style="margin-top: 7px;">
+                                            <div id="progressbarWidth" class="output5 ui-progressbar-value ui-widget-header ui-corner-left progress-bar progress-bar-success"></div>
+                                        </div>
+
 										<button class="btn btn-purple btn-sm" type="button">
 											<i class="ace-icon fa fa-cloud-upload bigger-120"></i>
 											上传
@@ -186,12 +192,12 @@
 								</div>
 
 							</form>
-
+                            <input type="file" multiple="multiple" class="hide">
 							<div class="col-xs-12">
 								<ul id="upload_frame" class="ace-thumbnails clearfix">
-									<li class="cboxElement dz-preview btn_cp">
-										<img data-dz-thumbnail="" />
-									</li>
+                                    <li class="cboxElement dz-preview btn_cp hide">
+                                        <img src=""/>
+                                    </li>
 								</ul>
 							</div>
 						</div>
@@ -207,7 +213,8 @@
 		</div>
 	</div>
 
-	<input type="file" multiple="multiple">
+
+
 @endsection()
 
 {{--页面加载js--}}
@@ -218,7 +225,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox-min.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -226,6 +233,9 @@
 	<script type="text/javascript">
 		var upload_frame;
 		$(function() {
+
+            $(".group1").colorbox();
+
 			$('.date-picker').datepicker({
 				autoclose: true,
 				todayHighlight: true,
@@ -254,31 +264,52 @@
 				params: {"_token": '{{csrf_token()}}'},
 				thumbnailWidth: 80,
 				thumbnailHeight: 80,
-				maxFilesize: 1,
+				maxFilesize: 5,
 				previewTemplate: $('#upload_frame').html(),//显示文件html
 				clickable: ".btn-purple", //选择文件窗口
 				acceptedFiles: ".jpg,.jpeg,.png",
 				createImageThumbnails: false,
+                dictFileTooBig: "上传失败,文件不能大于5MB",
+                dictInvalidFileType: "上传失败,文件格式错误。支持格式jpg、jpeg、png.",
 				success: function(file, data) {
 					var data = JSON.parse(data);
-					$(file.previewElement).attr("href", data.msg);
+                    var html = '<li href="'+ data.msg +'" class="cboxElement dz-preview btn_cp" style="width: 80px; height: 80px; margin: 5px;">' +
+                                '<img style="width: 80px; height: 80px;" src="'+data.msg+'" />' +
+                                '</li>';
+                    $('#upload_frame').append(html);
 				},
 				error: function (file, msg) {
-					alert(msg);
-				}
+                    alertDialog('-1', msg);
+				},
+                processing: function (){
+                    $('.btn-purple').addClass('hide');
+                    $('#progressbar').removeClass('hide');
+                },
+                uploadprogress: function(a, b, c) {
+                    setTimeout(
+                            function(){
+                                $('#progressbarWidth').css('width', b+'%');
+                            },1)
+                    if(b == '100'){
+                        setTimeout(function(){
+                        $('.btn-purple').removeClass('hide');
+                        $('#progressbar').addClass('hide');
+                        $('#progressbarWidth').css('width', '0%');
+                        },700)
+                    }
+                }
+
+
 			});
+
 
 			//图片展示
 			var colorbox_params = {
-				rel: 'colorbox',
 				reposition:true,
-				scalePhotos:true,
 				scrolling:false,
-				preloading: false,
-				maxWidth:'100%',
-				maxHeight:'100%',
+                preloading: false,
 			};
-			$('.ace-thumbnails .cboxElement').colorbox(colorbox_params);
+			$('.cboxElement').colorbox(colorbox_params);
 			$("#cboxLoadingGraphic").html("<i class='ace-icon fa fa-spinner orange fa-spin'></i>");//let's add a custom loading icon
 		});
 

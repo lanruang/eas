@@ -77,7 +77,7 @@ class BudgetController extends Common\CommonController
             ->where('budget_sum', '0')
             ->first();
         if($result){
-            redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budget.index'));
+            return redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budget.index'));
         }
 
         return view('budget.addBudget');
@@ -105,7 +105,7 @@ class BudgetController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('budget.addBudget'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('budget.addBudget'));
         }
 
         //检查预算编号是否存在
@@ -113,26 +113,26 @@ class BudgetController extends Common\CommonController
             ->where('budget_sum', '0')
             ->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，预算编号存在", route('budget.addBudget'));
+            return redirectPageMsg('-1', "添加失败，预算编号存在", route('budget.addBudget'));
         }
 
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
         if(count($date) != '2'){
-            redirectPageMsg('-1', "添加失败，预算期间错误", route('budget.addBudget'));
+            return redirectPageMsg('-1', "添加失败，预算期间错误", route('budget.addBudget'));
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，预算期间错误", route('budget.addBudget'));
+            return redirectPageMsg('-1', "添加失败，预算期间错误", route('budget.addBudget'));
         }
         if(strtotime($date[0]) > strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budget.addBudget'));
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budget.addBudget'));
         }
 
         //预算为天数类型时时候大于31天
         if($input['budget_period'] == 'day'){
             $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
             if($dateNum > 30){
-                redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budget.addBudget'));
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budget.addBudget'));
             }
         }
 
@@ -151,9 +151,9 @@ class BudgetController extends Common\CommonController
         $result = BudgetModel::insertGetId($data);
 
         if($result){
-            redirectPageMsg('1', "添加成功，将添加预算项", route('budget.addBudgetSub')."/".$result);
+            return redirectPageMsg('1', "添加成功，将添加预算项", route('budget.addBudgetSub')."/".$result);
         }else{
-            redirectPageMsg('-1', "添加失败", route('budget.addBudget'));
+            return redirectPageMsg('-1', "添加失败", route('budget.addBudget'));
         }
     }
 
@@ -162,7 +162,7 @@ class BudgetController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
 
         //获取预算信息
@@ -172,10 +172,10 @@ class BudgetController extends Common\CommonController
             ->first()
             ->toArray();
         if(!$budget){
-            redirectPageMsg('-1', "参数错误", route('budget.index'));
+            return redirectPageMsg('-1', "参数错误", route('budget.index'));
         }
         if($budget['status'] != '102'){
-            redirectPageMsg('-1', "该预算状态无法修改", route('budget.index'));
+            return redirectPageMsg('-1', "该预算状态无法修改", route('budget.index'));
         }
 
         return view('budget.editBudget', $budget);
@@ -188,7 +188,7 @@ class BudgetController extends Common\CommonController
         $input = Input::all();
         //检测id是否存在
         if(!array_key_exists('id', $input)){
-            redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
         $rules = [
             'budget_num' => 'required|between:1,200',
@@ -206,7 +206,7 @@ class BudgetController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('budget.editBudget')."/".$input['id']);
         }
 
         //检查预算编号是否存在
@@ -215,26 +215,26 @@ class BudgetController extends Common\CommonController
                         ->where('budget_sum', '0')
                         ->first();
         if($result){
-            redirectPageMsg('-1', "编辑失败，预算编号存在", route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算编号存在", route('budget.editBudget')."/".$input['id']);
         }
 
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
         if(count($date) != '2'){
-            redirectPageMsg('-1', "编辑失败，预算期间错误", route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算期间错误", route('budget.editBudget')."/".$input['id']);
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
-            redirectPageMsg('-1', "编辑失败，预算期间错误", route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算期间错误", route('budget.editBudget')."/".$input['id']);
         }
         if(strtotime($date[0]) > strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budget.editBudget')."/".$input['id']);
         }
 
         //预算为天数类型时时候大于31天
         if($input['budget_period'] == 'day'){
             $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
             if($dateNum > 30){
-                redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budget.editBudget')."/".$input['id']);
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budget.editBudget')."/".$input['id']);
             }
         }
 
@@ -266,9 +266,9 @@ class BudgetController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "编辑成功，预算已被重置", route('budget.addBudgetSub')."/".$result);
+            return redirectPageMsg('1', "编辑成功，预算已被重置", route('budget.addBudgetSub')."/".$result);
         }else{
-            redirectPageMsg('-1', "编辑失败", route('budget.editBudget')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败", route('budget.editBudget')."/".$input['id']);
         }
     }
 
@@ -277,7 +277,7 @@ class BudgetController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
 
         //获取预算信息
@@ -286,10 +286,10 @@ class BudgetController extends Common\CommonController
             ->get()
             ->first();
         if(!$budget){
-            redirectPageMsg('-1', "参数错误", route('budget.index'));
+            return redirectPageMsg('-1', "参数错误", route('budget.index'));
         }
         if($budget['status'] == '1009'){
-            redirectPageMsg('-1', "该预算已提交审批，无法更新预算项", route('budget.index'));
+            return redirectPageMsg('-1', "该预算已提交审批，无法更新预算项", route('budget.index'));
         }
         return view('budget.addBudgetSub', $budget);
     }
@@ -300,7 +300,7 @@ class BudgetController extends Common\CommonController
         //验证表单
         $input = Input::all();
         if(!array_key_exists('budget_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
         $rules = [
             'budget_id' => 'required|digits_between:0,11|numeric',
@@ -317,7 +317,7 @@ class BudgetController extends Common\CommonController
 
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('budget.addBudgetSub')."/".$input['budget_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('budget.addBudgetSub')."/".$input['budget_id']);
         }
 
         //获取预算信息
@@ -327,7 +327,7 @@ class BudgetController extends Common\CommonController
                             ->first();
         $monNum = getDateToDiff($budget['budget_start'], $budget['budget_end'], $budget['budget_period']);
         if(!$budget){
-            redirectPageMsg('-1', "参数错误，预算不存在", route('budget.addBudgetSub')."/".$input['budget_id']);
+            return redirectPageMsg('-1', "参数错误，预算不存在", route('budget.addBudgetSub')."/".$input['budget_id']);
         }
         $NowDate = $budget['budget_start'];
 
@@ -352,7 +352,7 @@ class BudgetController extends Common\CommonController
         //格式化数据
         for($i=0; $i <= $monNum; $i++){
             if(!array_key_exists('date_'.$NowDate, $input)) {
-                redirectPageMsg('-1', '期间数不符，请刷新后重试', route('budget.addBudgetSub')."/".$input['budget_id']);
+                return redirectPageMsg('-1', '期间数不符，请刷新后重试', route('budget.addBudgetSub')."/".$input['budget_id']);
             }
             $created_at = date("Y-m-d H:i:s", time());
             $updated_at = date("Y-m-d H:i:s", time());
@@ -407,9 +407,9 @@ class BudgetController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', '添加成功', route('budget.addBudgetSub')."/".$input['budget_id']);
+            return redirectPageMsg('1', '添加成功', route('budget.addBudgetSub')."/".$input['budget_id']);
         }else{
-            redirectPageMsg('-1', '添加失败', route('budget.addBudgetSub')."/".$input['budget_id']);
+            return redirectPageMsg('-1', '添加失败', route('budget.addBudgetSub')."/".$input['budget_id']);
         }
     }
 
@@ -517,7 +517,7 @@ class BudgetController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('budget.index'));
+            return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
 
         //获取预算信息
@@ -526,7 +526,7 @@ class BudgetController extends Common\CommonController
             ->get()
             ->first();
         if(!$budget){
-            redirectPageMsg('-1', "参数错误", route('budget.index'));
+            return redirectPageMsg('-1', "参数错误", route('budget.index'));
         }
 
         return view('budget.listBudget', $budget);

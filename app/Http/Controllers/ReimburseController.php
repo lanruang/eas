@@ -125,13 +125,13 @@ class ReimburseController extends Common\CommonController
         $ext = $file->getClientOriginalExtension();                     // 扩展名
         $realPath = $file->getRealPath();                               //临时文件的绝对路径
         $type = $file->getClientMimeType();                             //mime
-        $size = $file->getClientSize()/10000;                           //获取文件尺寸MB
+        $size = $file->getClientSize()/1000/1000;                       //获取文件尺寸MB
         $fileName = date('Y-m-d-H-i-s'). '-' . uniqid() . '.' .$ext;    // 上传文件名
         if(!in_array($type, $ext_mime)){
             echoAjaxJson('-1', '上传失败，只能上传图片（jpg、jpeg、png、gif、bmp）！');
         }
         if($size > 5){
-            echoAjaxJson('-1', '上传失败，图片过大，最大支持5MB！');
+            return echoAjaxJson('-1', '上传失败，图片过大，最大支持5MB！');
         }
 
         $rel = Storage::disk('storageTemp')->put($fileName, file_get_contents($realPath));

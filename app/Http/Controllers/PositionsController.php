@@ -72,13 +72,13 @@ class PositionsController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('positions.addPositions'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('positions.addPositions'));
         }
 
         //岗位是否存在
         $result = PositionsDb::where('pos_name', $input['pos_name'])->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，岗位名称重复", route('positions.addPositions'));
+            return redirectPageMsg('-1', "添加失败，岗位名称重复", route('positions.addPositions'));
         }
 
         //格式化数据
@@ -95,9 +95,9 @@ class PositionsController extends Common\CommonController
         $result = $PositionsDb->save();
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('positions.addPositions'));
+            return redirectPageMsg('1', "添加成功", route('positions.addPositions'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('positions.addPositions'));
+            return redirectPageMsg('-1', "添加失败", route('positions.addPositions'));
         }
     }
     
@@ -106,7 +106,7 @@ class PositionsController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('positions.index'));
+            return redirectPageMsg('-1', '参数错误', route('positions.index'));
         };
 
         //获取岗位信息
@@ -116,7 +116,7 @@ class PositionsController extends Common\CommonController
             ->first()
             ->toArray();
         if(!$positions){
-            redirectPageMsg('-1', "参数错误", route('positions.index'));
+            return redirectPageMsg('-1', "参数错误", route('positions.index'));
         }
         $positions['p_name'] = '';
         //获取上级岗位
@@ -140,7 +140,7 @@ class PositionsController extends Common\CommonController
         $input = Input::all();
         //检测id类型是否整数
         if(!array_key_exists('pos_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('positions.index'));
+            return redirectPageMsg('-1', '参数错误', route('positions.index'));
         };
 
         $rules = [
@@ -159,7 +159,7 @@ class PositionsController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('positions.editPositions')."/".$input['pos_id']);
         }
 
         //格式化数据
@@ -173,7 +173,7 @@ class PositionsController extends Common\CommonController
                             ->where('pos_id', '<>', $input['pos_id'])
                             ->first();
         if($result){
-            redirectPageMsg('-1', "修改失败，岗位名称重复", route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', "修改失败，岗位名称重复", route('positions.editPositions')."/".$input['pos_id']);
         }
 
         //更新数据
@@ -181,9 +181,9 @@ class PositionsController extends Common\CommonController
             ->update($data);
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('positions.index'));
+            return redirectPageMsg('1', "编辑成功", route('positions.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', "编辑失败", route('positions.editPositions')."/".$input['pos_id']);
         }
     }
 

@@ -89,7 +89,7 @@ class AuditMyController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '缺少必要参数', route('auditMy.index'));
+            return redirectPageMsg('-1', '缺少必要参数', route('auditMy.index'));
         };
 
         //获取审核内容信息
@@ -103,7 +103,7 @@ class AuditMyController extends Common\CommonController
                             ->get()
                             ->first();
         if(!$data['audit']){
-            redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
+            return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
         $data['audit'] = $data['audit']->toArray();
         //获取审批结果
@@ -129,7 +129,7 @@ class AuditMyController extends Common\CommonController
                 $data['data'] = $this->getBudget($data['audit']['process_app']);
         }
         if(!$data['data']){
-            redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
+            return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
      
         $data['process_id'] = $data['audit']['process_id'];
@@ -155,17 +155,17 @@ class AuditMyController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
         }
 
         $audit = AuditInfoDb::where('process_id', $input['process_id'])
                             ->get()
                             ->first();
         if(!$audit){
-            redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
+            return redirectPageMsg('-1', '流程不存在', route('auditMy.index'));
         };
         if($audit['process_audit_user'] != session('userInfo.user_id')){
-            redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
+            return redirectPageMsg('-1', '审批失败，审批人错误', route('auditMy.index'));
         };
 
         //事务处理
@@ -233,9 +233,9 @@ class AuditMyController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', '审批成功', route('auditMy.index'));
+            return redirectPageMsg('1', '审批成功', route('auditMy.index'));
         }else{
-            redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
+            return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
         }
     }
 
@@ -269,7 +269,7 @@ class AuditMyController extends Common\CommonController
                             ->get()
                             ->first();
         if(!$audit){
-            redirectPageMsg('-1', '流程信息获取错误，请刷新页面重试', route('auditMy.index'));
+            return redirectPageMsg('-1', '流程信息获取错误，请刷新页面重试', route('auditMy.index'));
         };
         $audit = $audit->toArray();
         //格式化流程

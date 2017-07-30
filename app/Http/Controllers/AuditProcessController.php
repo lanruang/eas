@@ -70,7 +70,7 @@ class AuditProcessController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.addAudit'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.addAudit'));
         }
 
         //判断审核流程是否存在
@@ -78,7 +78,7 @@ class AuditProcessController extends Common\CommonController
                                 ->where('audit_dep', $input['dep_id'])
                                 ->first();
         if($result){
-            redirectPageMsg('-1', '审核流程已存在', route('auditProcess.addAudit'));
+            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.addAudit'));
         }
 
         //格式化数据
@@ -94,9 +94,9 @@ class AuditProcessController extends Common\CommonController
         $result = $auditProcessDb->save();
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('auditProcess.index'));
+            return redirectPageMsg('1', "添加成功", route('auditProcess.index'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('auditProcess.addAudit'));
+            return redirectPageMsg('-1', "添加失败", route('auditProcess.addAudit'));
         }
     }
 
@@ -105,7 +105,7 @@ class AuditProcessController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt")){
-            redirectPageMsg('-1', '参数错误', route('auditProcess.index'));
+            return redirectPageMsg('-1', '参数错误', route('auditProcess.index'));
         };
 
         //获取数据
@@ -145,7 +145,7 @@ class AuditProcessController extends Common\CommonController
 
         //检测id类型是否整数
         if(!array_key_exists('audit_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', '参数错误', route('auditProcess.editAudit')."/".$input['audit_id']);
         };
         $rules = [
             'audit_name' => 'required|between:1,100',
@@ -161,14 +161,14 @@ class AuditProcessController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.editAudit')."/".$input['audit_id']);
         }
 
         //判断审核流程是否存在
         $result = auditProcessDb::where('audit_id',$input['audit_id'])
                                 ->first();
         if(!$result){
-            redirectPageMsg('-1', '审核流程不存在！', route('auditProcess.index'));
+            return redirectPageMsg('-1', '审核流程不存在！', route('auditProcess.index'));
         }
 
         //判断审核流程是否重复
@@ -177,7 +177,7 @@ class AuditProcessController extends Common\CommonController
                                 ->where('audit_dep', $input['dep_id'])
                                 ->first();
         if($result){
-            redirectPageMsg('-1', '审核流程已存在', route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.editAudit')."/".$input['audit_id']);
         }
 
         //格式化数据
@@ -195,9 +195,9 @@ class AuditProcessController extends Common\CommonController
             ->update($data);
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('auditProcess.index'));
+            return redirectPageMsg('1', "编辑成功", route('auditProcess.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', "编辑失败", route('auditProcess.editAudit')."/".$input['audit_id']);
         }
     }
     

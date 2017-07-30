@@ -76,7 +76,7 @@ class BudgetSumController extends Common\CommonController
         $result = BudgetDb::where('status', '102')
             ->first();
         if($result){
-            redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budgetSum.index'));
+            return redirectPageMsg('-1', "无法添加预算，已存在编辑状态预算", route('budgetSum.index'));
         }
 
         return view('budgetSum.addBudgetSum');
@@ -106,7 +106,7 @@ class BudgetSumController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('budgetSum.addBudgetSum'));
         }
 
         //检查预算编号是否存在
@@ -114,7 +114,7 @@ class BudgetSumController extends Common\CommonController
             ->where('budget_sum', '1')
             ->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，预算编号存在", route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', "添加失败，预算编号存在", route('budgetSum.addBudgetSum'));
         }
         //获取子预算信息
         $arrIds = explode(',', $input['budget_ids']);
@@ -127,24 +127,24 @@ class BudgetSumController extends Common\CommonController
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
         if(count($date) != '2'){
-            redirectPageMsg('-1', "添加失败，预算期间错误", route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', "添加失败，预算期间错误", route('budgetSum.addBudgetSum'));
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，预算期间错误", route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', "添加失败，预算期间错误", route('budgetSum.addBudgetSum'));
         }
         if(strtotime($date[0]) > strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.addBudgetSum'));
         }
         //核实数据
         foreach($result as $k => $v){
             if(!in_array($v['budget_id'], $arrIds)){
-                redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.addBudgetSum'));
+                return redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.addBudgetSum'));
             }
             if($v['budget_start'] > $date[1]){
-                redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.addBudgetSum'));
+                return redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.addBudgetSum'));
             }
             if($v['budget_end'] < $date[0]){
-                redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.addBudgetSum'));
+                return redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.addBudgetSum'));
             }
         }
 
@@ -152,7 +152,7 @@ class BudgetSumController extends Common\CommonController
         if($input['budget_period'] == 'day'){
             $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
             if($dateNum > 30){
-                redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.addBudgetSum'));
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.addBudgetSum'));
             }
         }
 
@@ -174,9 +174,9 @@ class BudgetSumController extends Common\CommonController
         $result = BudgetModel::insertGetId($data);
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('budgetSum.index'));
+            return redirectPageMsg('1', "添加成功", route('budgetSum.index'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('budgetSum.addBudgetSum'));
+            return redirectPageMsg('-1', "添加失败", route('budgetSum.addBudgetSum'));
         }
     }
 
@@ -185,7 +185,7 @@ class BudgetSumController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
+            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
         };
 
         //获取预算信息
@@ -193,7 +193,7 @@ class BudgetSumController extends Common\CommonController
             ->get()
             ->first();
         if(!$budget['budgetSum']){
-            redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
+            return redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
         }
         $budget['budgetSum'] = $budget['budgetSum']->toArray();
         //获取子预算
@@ -203,7 +203,7 @@ class BudgetSumController extends Common\CommonController
             ->get()
             ->toArray();
         if(!$budget['budget']){
-            redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
+            return redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
         }
         $budget['budget'] = json_encode($budget['budget']);
  
@@ -217,7 +217,7 @@ class BudgetSumController extends Common\CommonController
         $input = Input::all();
         //检测id是否存在
         if(!array_key_exists('id', $input)){
-            redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
+            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
         };
         $rules = [
             'budget_num' => 'required|between:1,200',
@@ -237,7 +237,7 @@ class BudgetSumController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('budgetSum.editBudgetSum')."/".$input['id']);
         }
 
         //检查预算编号是否存在
@@ -246,7 +246,7 @@ class BudgetSumController extends Common\CommonController
                         ->where('budget_sum', '1')
                         ->first();
         if($result){
-            redirectPageMsg('-1', "编辑失败，预算编号存在", route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算编号存在", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
         //获取子预算信息
         $arrIds = explode(',', $input['budget_ids']);
@@ -259,24 +259,24 @@ class BudgetSumController extends Common\CommonController
         //格式化日期数据
         $date = explode(' 一 ', $input['budget_date']);
         if(count($date) != '2'){
-            redirectPageMsg('-1', "编辑失败，预算期间错误", route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算期间错误", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
         if(!strtotime($date[0]) || !strtotime($date[1])){
-            redirectPageMsg('-1', "编辑失败，预算期间错误", route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败，预算期间错误", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
         if(strtotime($date[0]) > strtotime($date[1])){
-            redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', "添加失败，起始期间不能大于结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
         //核实数据
         foreach($result as $k => $v){
             if(!in_array($v['budget_id'], $arrIds)){
-                redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.editBudgetSum')."/".$input['id']);
+                return redirectPageMsg('-1', "添加失败，子预算信息获取失败", route('budgetSum.editBudgetSum')."/".$input['id']);
             }
             if($v['budget_start'] > $date[1]){
-                redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+                return redirectPageMsg('-1', "添加失败，子预算起始期间不能大于汇总预算结束期间", route('budgetSum.editBudgetSum')."/".$input['id']);
             }
             if($v['budget_end'] < $date[0]){
-                redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.editBudgetSum')."/".$input['id']);
+                return redirectPageMsg('-1', "添加失败，子预算结束期间不能小于汇总预算起始期间", route('budgetSum.editBudgetSum')."/".$input['id']);
             }
         }
 
@@ -284,7 +284,7 @@ class BudgetSumController extends Common\CommonController
         if($input['budget_period'] == 'day'){
             $dateNum = (strtotime($date[1]) - strtotime($date[0]))/86400;
             if($dateNum > 30){
-                redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.editBudgetSum')."/".$input['id']);
+                return redirectPageMsg('-1', "添加失败，预算期间类型为天数时，预算期间不能大于31天", route('budgetSum.editBudgetSum')."/".$input['id']);
             }
         }
 
@@ -316,9 +316,9 @@ class BudgetSumController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('budgetSum.index'));
+            return redirectPageMsg('1', "编辑成功", route('budgetSum.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('budgetSum.editBudgetSum')."/".$input['id']);
+            return redirectPageMsg('-1', "编辑失败", route('budgetSum.editBudgetSum')."/".$input['id']);
         }
     }
 
@@ -507,7 +507,7 @@ class BudgetSumController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
+            return redirectPageMsg('-1', '参数错误', route('budgetSum.index'));
         };
 
         //获取预算信息
@@ -515,7 +515,7 @@ class BudgetSumController extends Common\CommonController
             ->get()
             ->first();
         if(!$budget['budgetSum']){
-            redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
+            return redirectPageMsg('-1', "参数错误", route('budgetSum.index'));
         }
 
         //获取子预算
@@ -525,7 +525,7 @@ class BudgetSumController extends Common\CommonController
             ->get()
             ->toArray();
         if(!$budget['budget']){
-            redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
+            return redirectPageMsg('-1', "获取子预算失败，请重新选择", route('budgetSum.index'));
         }
 
         return view('budgetSum.listBudgetSum', $budget);

@@ -103,14 +103,14 @@ class SubjectsController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('subject.addSubjects'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('subject.addSubjects'));
         }
 
         //科目是否存在
         $result = subjectDb::Where('sub_ip', $input['subject_ip'])
             ->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，科目地址重复", route('subjects.addSubjects'));
+            return redirectPageMsg('-1', "添加失败，科目地址重复", route('subjects.addSubjects'));
         }
 
         //格式化状态
@@ -129,9 +129,9 @@ class SubjectsController extends Common\CommonController
         $result = $subjectDb->save();
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('subjects.addSubjects'));
+            return redirectPageMsg('1', "添加成功", route('subjects.addSubjects'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('subjects.addSubjects'));
+            return redirectPageMsg('-1', "添加失败", route('subjects.addSubjects'));
         }
     }
 
@@ -140,7 +140,7 @@ class SubjectsController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
+            return redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
         };
 
         //获取科目信息
@@ -152,7 +152,7 @@ class SubjectsController extends Common\CommonController
             ->first()
             ->toArray();
         if(!$subject){
-            redirectPageMsg('-1', "科目获取失败", route('subjects.index'));
+            return redirectPageMsg('-1', "科目获取失败", route('subjects.index'));
         }
 
         //下拉菜单信息
@@ -178,7 +178,7 @@ class SubjectsController extends Common\CommonController
 
         //检测id类型是否整数
         if(!array_key_exists('subject_id', $input)){
-            redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
+            return redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
         };
         $rules = [
             'subject_name' => 'required|max:100',
@@ -194,7 +194,7 @@ class SubjectsController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('subjects.editSubjects')."/".$input['subjects_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('subjects.editSubjects')."/".$input['subjects_id']);
         }
 
         //科目是否存在
@@ -203,7 +203,7 @@ class SubjectsController extends Common\CommonController
             ->first();
 
         if($result){
-            redirectPageMsg('-1', "添加失败，科目名称或地址重复", route('subjects.editSubjects')."/".$input['subject_id']);
+            return redirectPageMsg('-1', "添加失败，科目名称或地址重复", route('subjects.editSubjects')."/".$input['subject_id']);
         }
 
         //格式化状态
@@ -222,9 +222,9 @@ class SubjectsController extends Common\CommonController
         $result = subjectDb::where('sub_id', $input['subject_id'])
             ->update($data);
         if($result){
-            redirectPageMsg('1', "编辑成功", route('subjects.index'));
+            return redirectPageMsg('1', "编辑成功", route('subjects.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('subjects.editSubjects')."/".$input['subject_id']);
+            return redirectPageMsg('-1', "编辑失败", route('subjects.editSubjects')."/".$input['subject_id']);
         }
     }
 

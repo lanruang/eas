@@ -211,13 +211,13 @@ class UserController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('user.addUser'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.addUser'));
         }
 
         //姓名是否存在
         $result = UserDb::where('user_email', $input['user_email'])->first();
         if($result){
-            redirectPageMsg('-1', "添加失败，邮箱已存在", route('user.addUser'));
+            return redirectPageMsg('-1', "添加失败，邮箱已存在", route('user.addUser'));
         }
 
         //格式化数据
@@ -250,9 +250,9 @@ class UserController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "添加成功", route('user.addUser'));
+            return redirectPageMsg('1', "添加成功", route('user.addUser'));
         }else{
-            redirectPageMsg('-1', "添加失败", route('user.addUser'));
+            return redirectPageMsg('-1', "添加失败", route('user.addUser'));
         }
     }
 
@@ -261,7 +261,7 @@ class UserController extends Common\CommonController
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('user.index'));
+            return redirectPageMsg('-1', '参数错误', route('user.index'));
         };
 
         //获取员工信息
@@ -282,7 +282,7 @@ class UserController extends Common\CommonController
         $user->dep_leader = $dep_leader->dep_leader;
 
         if(!$user){
-            redirectPageMsg('-1', "参数错误", route('user.index'));
+            return redirectPageMsg('-1', "参数错误", route('user.index'));
         }
 
         //获取部门下拉菜单
@@ -331,7 +331,7 @@ class UserController extends Common\CommonController
         $input = Input::all();
         //检测id是否存在
         if(!array_key_exists('user_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('user.index'));
+            return redirectPageMsg('-1', '参数错误', route('user.index'));
         };
         $rules = [
             'user_name' => 'required|between:1,255',
@@ -348,7 +348,7 @@ class UserController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."/".$input['user_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."/".$input['user_id']);
         }
 
         //格式化数据
@@ -376,9 +376,9 @@ class UserController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('user.index'));
+            return redirectPageMsg('1', "编辑成功", route('user.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('user.editUser')."/".$uid);
+            return redirectPageMsg('-1', "编辑失败", route('user.editUser')."/".$uid);
         }
     }
 

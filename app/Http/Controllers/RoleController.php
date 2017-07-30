@@ -171,7 +171,7 @@ class RoleController extends Common\CommonController
         $input = Input::all();
         //检测id类型是否整数
         if(!array_key_exists('role_id', $input)){
-            redirectPageMsg('-1', '参数错误', route('role.index'));
+            return redirectPageMsg('-1', '参数错误', route('role.index'));
         };
         $rules = [
             'role_name' => 'required|between:1,40',
@@ -189,7 +189,7 @@ class RoleController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            redirectPageMsg('-1', $validator->errors()->first(), route('role.editRole')."/".$input['role_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('role.editRole')."/".$input['role_id']);
         }
 
         //格式化状态
@@ -221,12 +221,12 @@ class RoleController extends Common\CommonController
         });
 
         if($result){
-            redirectPageMsg('1', "编辑成功", route('role.index'));
+            return redirectPageMsg('1', "编辑成功", route('role.index'));
         }else{
-            redirectPageMsg('-1', "编辑失败", route('role.editRole')."/".$input['role_id']);
+            return redirectPageMsg('-1', "编辑失败", route('role.editRole')."/".$input['role_id']);
         }
     }
-    
+
     //删除角色
     public function delRole(Request $request)
     {
@@ -251,7 +251,7 @@ class RoleController extends Common\CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
         $id = $input['id'];
-  
+
         $result = DB::transaction(function () use($id) {
             $role = roleDb::where('id', $id)
                 ->delete();
@@ -263,20 +263,20 @@ class RoleController extends Common\CommonController
                 return false;
             }
         });
-        
+
         if ($result) {
             echoAjaxJson('1', '删除成功');
         } else {
             echoAjaxJson('-1', '删除失败');
         }
     }
-    
+
     //角色详情
     public function roleInfo($id = '0')
     {
         //检测id类型是否整数
         if(!validateParam($id, "nullInt") || $id == '0'){
-            redirectPageMsg('-1', '参数错误', route('role.index'));
+            return redirectPageMsg('-1', '参数错误', route('role.index'));
         };
 
         //获取角色信息
@@ -294,7 +294,7 @@ class RoleController extends Common\CommonController
         $role['node'] = implode(',', $role['node']);
 
         if(!$role){
-            redirectPageMsg('-1', "参数错误", route('role.index'));
+            return redirectPageMsg('-1', "参数错误", route('role.index'));
         }
         $role['node'] = json_encode(explode(',', $role['node']));
 

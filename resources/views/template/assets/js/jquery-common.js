@@ -94,22 +94,25 @@
 	 *
 	 */
 	function toDecimal(num, x) {
-		var x = 2;
-		var f = parseFloat(num);
-		if (isNaN(f)) {
-			return false;
-		}
-		var f = Math.round(num * 100) / 100;
-		var s = f.toString();
-		var rs = s.indexOf('.');
-		if (rs < 0) {
-			rs = s.length;
-			s += '.';
-		}
-		while (s.length <= rs + x) {
-			s += '0';
-		}
-		return s;
+        var x = !x ? 2 : x;
+        var f = parseFloat(num);
+        if (isNaN(f)) {
+            return false;
+        }
+        var f = Math.round(num*100)/100;
+        var s = f.toString();
+        var rs = s.indexOf('.');
+        if (rs < 0) {
+            rs = s.length;
+            s += '.';
+        }
+        while (s.length <= rs + x) {
+            s += '0';
+        }
+        if(x <= 0){
+            s=s.substring(0,s.length-1);
+        }
+        return s;
 	}
 
 	/**
