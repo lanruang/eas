@@ -55,20 +55,6 @@
 								"ordering": false,
 								"searching": false,
 								"paging": false,
-								"language": {
-									"sProcessing":   "处理中...",
-									"sLengthMenu":   "显示 _MENU_ 项结果",
-									"sZeroRecords":  "没有匹配结果",
-									"sInfo":         "部门总数 _TOTAL_ ",
-									"sInfoEmpty":    "部门总数 0 ",
-									"sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-									"sInfoPostFix":  "",
-									"sSearch":       "搜索:",
-									"sUrl":          "",
-									"sEmptyTable":     "表中数据为空",
-									"sLoadingRecords": "载入中...",
-									"sInfoThousands":  ",",
-								},
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -85,11 +71,11 @@
 									}
 								},
 								"columns": [
-									{ "data": "name" , render: function(data, type, row) {
+									{ "data": "name", "class": "center", render: function(data, type, row) {
 										return '<span style="padding-left: '+ row.level +'em;">' + row.name + '</span>';
 									}},
-									{ "data": "u_name" },
-									{ "data": "status", render: function(data, type, row) {
+									{ "data": "u_name", "class": "center"},
+									{ "data": "status", "class": "center", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
 									{ "data": "null"},

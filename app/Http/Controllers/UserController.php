@@ -394,14 +394,15 @@ class UserController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer',
+            'id' => 'required|integer|digits_between:1,11',
         ];
         $message = [
             'id.required' => '参数不存在',
             'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
-        if ($validator->fails()) {
+        if($validator->fails()){
             echoAjaxJson('-1', $validator->errors()->first());
         }
 

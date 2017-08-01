@@ -303,7 +303,7 @@ class BudgetController extends Common\CommonController
             return redirectPageMsg('-1', '参数错误', route('budget.index'));
         };
         $rules = [
-            'budget_id' => 'required|digits_between:0,11|numeric',
+            'exp_remark' => 'required|numeric:0,11|numeric',
             'subject_id' => 'required|digits_between:0,11|numeric',
         ];
         $message = [

@@ -69,20 +69,35 @@
 	 * @return    string
 	 *
 	 */
-	function alertDialog(status, msg) {
+	function alertDialog(status, msg, url) {
 		var aClass;
 		aClass = String(status) == "-1" ? "red" : "green";
 		aType = String(status) == "-1" ? "错误提示" : "提示信息";
-
-		bootbox.dialog({
-			message: '<h4 class="header smaller lighter bolder ' + aClass + '"><i class="ace-icon fa fa-bullhorn"></i>' + aType + '</h4><span>　　' + msg + '</span>',
-			buttons: {
-				"button": {
-					"label": "确定",
-					"className": "btn-primary btn-sm"
+		if(!url){
+			bootbox.dialog({
+				message: '<h4 class="header smaller lighter bolder ' + aClass + '"><i class="ace-icon fa fa-bullhorn"></i>' + aType + '</h4><span>　　' + msg + '</span>',
+				buttons: {
+					"button": {
+						"label": "确定",
+						"className": "btn-primary btn-sm"
+					}
 				}
-			}
-		});
+			});
+		}else{
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter bolder ' + aClass + '"><i class="ace-icon fa fa-bullhorn"></i>' + aType + '</h4><span>　　' + msg + '</span>',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					}
+				},
+				callback: function() {
+					window.location.href = url;
+				}
+			});
+		}
+
 	}
 
 	/**

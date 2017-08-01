@@ -40,11 +40,11 @@
 					<button type="button" class="btn btn-white btn-sm btn-round" href="#reimburse-form" data-toggle="modal">添加明细</button>
 				</div>
 				<div class="align-right">
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addReimburse();">保存单据</button>
-					<button type="button" class="btn btn-white btn-danger btn-sm btn-round" onclick="addReimburse();">删除单据</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="goBack();">保存单据</button>
+					<button type="button" class="btn btn-white btn-danger btn-sm btn-round" onclick="delReimburse();">删除单据</button>
 				</div>
 			</div>
-			<table class="table table-bordered"  style="margin-bottom:0;">
+			<table id="expMainTable" class="table table-bordered"  style="margin-bottom:0;">
 				<tr class="new_reimburse_bg">
 					<th class="center col-xs-1">序号</th>
 					<th class="center">用途</th>
@@ -52,92 +52,53 @@
 					<th class="center col-xs-1">附件</th>
 					<th class="center col-xs-1">操作</th>
 				</tr>
-				<tr>
-					<td class="center col-xs-1">1</td>
-					<td>测试</td>
-					<td class="align-right col-xs-2">100.00</td>
-					<td class="center col-xs-1">
-						<i class="ace-icon fa fa-check green bigger-130"></i>
-					</td>
-					<td class="center col-xs-1">
-						<div class="hidden-sm hidden-xs action-buttons">
-							<a class="green" href="#" onclick="editNode(' + row.id + ')">
-								<i class="ace-icon fa fa-pencil bigger-130"></i>
-							</a>
-							<a class="red" href="#" onclick="delNode(' + row.id + ')">
-								<i class="ace-icon fa fa-trash-o bigger-130"></i>
-							</a>
-						</div>
-						<div class="hidden-md hidden-lg">
-							<div class="inline pos-rel">
-								<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
-									<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
-								</button>
-								<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
-									<li>
-										<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
+				@foreach ($expMain as $k => $v)
+					<tr>
+						<td class="center col-xs-1">{{ $k+1 }}</td>
+						<td>{{ $v['exp_remark'] }}</td>
+						<td class="align-right col-xs-2">{{ $v['exp_amount'] }}</td>
+						<td class="center col-xs-1">
+							<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
+						</td>
+						<td class="center col-xs-1">
+							<div class="hidden-sm hidden-xs action-buttons">
+								<a class="green" href="#" onclick="editNode(' + row.id + ')">
+									<i class="ace-icon fa fa-pencil bigger-130"></i>
+								</a>
+								<a class="red" href="#" onclick="delNode(' + row.id + ')">
+									<i class="ace-icon fa fa-trash-o bigger-130"></i>
+								</a>
+							</div>
+							<div class="hidden-md hidden-lg">
+								<div class="inline pos-rel">
+									<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
+										<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
+									</button>
+									<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+										<li>
+											<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
 											<span class="green" onclick="editNode(' + row.id + ')">
 												<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
 											</span>
-										</a>
-									</li>
-									<li>
-										<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode(' + row.id + ')">
+											</a>
+										</li>
+										<li>
+											<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode(' + row.id + ')">
 											<span class="red">
 												<i class="ace-icon fa fa-trash-o bigger-120"></i>
 											</span>
-										</a>
-									</li>
-								</ul>
+											</a>
+										</li>
+									</ul>
+								</div>
 							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td class="center col-xs-1">2</td>
-					<td>测试</td>
-					<td class="align-right col-xs-2">100.00</td>
-					<td class="center col-xs-1">
-						<i class="ace-icon fa fa-close red bigger-130"></i>
-					</td>
-					<td class="center col-xs-1">
-						<div class="hidden-sm hidden-xs action-buttons">
-							<a class="green" href="#" onclick="editNode(' + row.id + ')">
-								<i class="ace-icon fa fa-pencil bigger-130"></i>
-							</a>
-							<a class="red" href="#" onclick="delNode(' + row.id + ')">
-								<i class="ace-icon fa fa-trash-o bigger-130"></i>
-							</a>
-						</div>
-						<div class="hidden-md hidden-lg">
-							<div class="inline pos-rel">
-								<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
-									<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
-								</button>
-								<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
-									<li>
-										<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-											<span class="green" onclick="editNode(' + row.id + ')">
-												<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
-											</span>
-										</a>
-									</li>
-									<li>
-										<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode(' + row.id + ')">
-											<span class="red">
-												<i class="ace-icon fa fa-trash-o bigger-120"></i>
-											</span>
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</td>
-				</tr>
+						</td>
+					</tr>
+				@endforeach
 				<tr class="new_reimburse_bg">
 					<th class="center">合计</th>
 					<th></th>
-					<th class="align-right">1231231.00</th>
+					<th class="align-right">0.00</th>
 					<th colspan="2">&nbsp;</th>
 				</tr>
 			</table>
@@ -149,11 +110,11 @@
 		</div>
 	</div>
 
-	<div id="reimburse-form">
+	<div id="reimburse-form" class="modal" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button type="button" id="subBudgetClose" class="close" data-dismiss="modal">&times;</button>
+					<button type="button" id="btnClose" class="close" data-dismiss="modal">&times;</button>
 					<h4 class="blue bigger">添加明细</h4>
 				</div>
 				<div class="modal-body">
@@ -164,7 +125,7 @@
 								<div class="form-group">
 									<label class="col-sm-3 control-label no-padding-right"> 用途 </label>
 									<div class="col-sm-6">
-										<textarea class="input-xlarge" name="process_text" id="process_text" placeholder="用途"></textarea>
+										<textarea class="input-xlarge" name="exp_remark" id="exp_remark" placeholder="用途"></textarea>
 									</div>
 								</div>
 
@@ -190,7 +151,7 @@
 										</button>
 									</div>
 								</div>
-
+							<input type="hidden" id="enclosure" name="enclosure" readonly>
 							</form>
                             <input type="file" multiple="multiple" class="hide">
 							<div class="col-xs-12">
@@ -205,16 +166,18 @@
 				</div>
 
 				<div class="modal-footer">
-					<button type="button" class="btn btn-sm btn-primary" onclick="subBudget();">
-						提交
+					<button type="button" class="btn btn-sm btn-primary" onclick="postFrom();">
+						保存明细
 					</button>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
-
+	<ul id="" class="ace-thumbnails clearfix">
+		<li class="cboxElement  btn_cp hide">
+			<img src="">
+		</li>
+	<li href="http://127.0.0.1:100/uploads/reimburse/19/2017-08-01-17-50-46-59804ef659968.jpg" class="cboxElement dz-preview btn_cp" style="width: 80px; height: 80px; margin: 5px;"><img style="width: 80px; height: 80px;" src="http://127.0.0.1:100/uploads/reimburse/19/2017-08-01-17-50-46-59804ef659968.jpg"></li></ul>
 @endsection()
 
 {{--页面加载js--}}
@@ -232,10 +195,8 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var upload_frame;
+		var expMainNum = 0;
 		$(function() {
-
-            $(".group1").colorbox();
-
 			$('.date-picker').datepicker({
 				autoclose: true,
 				todayHighlight: true,
@@ -259,24 +220,27 @@
 			});
 
 			//图片上传
-			upload_frame =$("#upload_frame").dropzone({
+			upload_frame = new Dropzone('#upload_frame', {
 				url: '{{ route('reimburse.uploadImg') }}', //url
 				params: {"_token": '{{csrf_token()}}'},
 				thumbnailWidth: 80,
 				thumbnailHeight: 80,
 				maxFilesize: 5,
+				maxFiles: 1,
 				previewTemplate: $('#upload_frame').html(),//显示文件html
 				clickable: ".btn-purple", //选择文件窗口
 				acceptedFiles: ".jpg,.jpeg,.png",
 				createImageThumbnails: false,
                 dictFileTooBig: "上传失败,文件不能大于5MB",
                 dictInvalidFileType: "上传失败,文件格式错误。支持格式jpg、jpeg、png.",
+				dictMaxFilesExceeded: "上传失败,已到最大上传数量,对多上传1个附件.",
 				success: function(file, data) {
 					var data = JSON.parse(data);
                     var html = '<li href="'+ data.msg +'" class="cboxElement dz-preview btn_cp" style="width: 80px; height: 80px; margin: 5px;">' +
                                 '<img style="width: 80px; height: 80px;" src="'+data.msg+'" />' +
-                                '</li>';
+								'</li>' ;
                     $('#upload_frame').append(html);
+					$('#enclosure').val(data.data);
 				},
 				error: function (file, msg) {
                     alertDialog('-1', msg);
@@ -297,11 +261,8 @@
                         $('#progressbarWidth').css('width', '0%');
                         },700)
                     }
-                }
-
-
+                },
 			});
-
 
 			//图片展示
 			var colorbox_params = {
@@ -310,9 +271,37 @@
                 preloading: false,
 			};
 			$('.cboxElement').colorbox(colorbox_params);
-			$("#cboxLoadingGraphic").html("<i class='ace-icon fa fa-spinner orange fa-spin'></i>");//let's add a custom loading icon
+			$("#cboxLoadingGraphic").html("<i class='ace-icon fa fa-spinner orange fa-spin'></i>");
+
+			$('#validation-form').validate({
+				errorElement: 'div',
+				errorClass: 'help-block',
+				focusInvalid: false,
+				ignore: "",
+				rules: {
+					exp_remark: {required: true, maxlength:150},
+					exp_amount: {required: true, number:true, min:0.01},
+				},
+				messages: {
+					exp_remark: {required: "请填写用途.", maxlength: "字符数超出范围."},
+					exp_amount: {required: "请填写金额.", number:"请输入数字", min:"金额不能小于或者等于0"},
+				},
+				highlight: function (e) {
+					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+				},
+				success: function (e) {
+					$(e).closest('.form-group').removeClass('has-error');
+					$(e).remove();
+				},
+			});
+
+			getExpMainAmount();
 		});
 
+		//返回
+		function goBack(){
+			window.location.href = "{{route('reimburse.index')}}";
+		}
 
 		//更新表头
 		function updateExpense(date){
@@ -323,6 +312,107 @@
 			alertDialog(res.status, res.msg);
 		}
 
+		//添加明细
+		function postFrom(){
+			var enclosure;
+			if($('#validation-form').valid()){
+				var data = {
+					'exp_remark': $('#exp_remark').val(),
+					'exp_amount': $('#exp_amount').val(),
+					'enclosure': $('#enclosure').val(),
+					"_token": '{{csrf_token()}}'
+				}
+				enclosure = $('#enclosure').val() ? 'fa-check green' : 'fa-close red';
+				var rel = ajaxPost(data, '{{ route('reimburse.createReimburseMain') }}');
+				if(rel.status == '-1'){
+						alertDialog('-1', rel.msg);
+					return false;
+				}
+				var html = '<tr><td class="center col-xs-1">'+(expMainNum+1)+'</td>' +
+							'<td>'+data.exp_remark+'</td>' +
+							'<td class="align-right col-xs-2">'+data.exp_amount+'</td>' +
+							'<td class="center col-xs-1">' +
+							'<i class="ace-icon fa fa-check '+enclosure+' bigger-130"></i></td>' +
+							'<td class="center col-xs-1">'+
+							'<div class="hidden-sm hidden-xs action-buttons">' +
+							'<a class="green" href="#" onclick="editNode()">' +
+							'<i class="ace-icon fa fa-pencil bigger-130"></i></a>' +
+							'<a class="red" href="#" onclick="delNode()">' +
+							'<i class="ace-icon fa fa-trash-o bigger-130"></i></a></div>' +
+							'<div class="hidden-md hidden-lg">' +
+							'<div class="inline pos-rel">' +
+							'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto"> ' +
+							'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i></button> ' +
+							'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close"><li> ' +
+							'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit"> ' +
+							'<span class="green" onclick="editNode()"> ' +
+							'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i> ' +
+							'</span></a></li><li> ' +
+							'<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode()"> ' +
+							'<span class="red">' +
+							'<i class="ace-icon fa fa-trash-o bigger-120"></i> ' +
+							'</span></a></li></ul></div></div></td></tr>'
+				$('#expMainTable tr:eq(-1):last').before(html);
+				getExpMainAmount();
+				$('#btnClose').click();
+				//初始化表单
+				upload_frame.removeAllFiles(true);
+				$('#upload_frame li:eq(1)').remove();
+				$('#exp_remark').val('');
+				$('#exp_amount').val('0.00');
+				$('#enclosure').val('');
+			};
+		}
+
+		//明细金额汇总
+		function getExpMainAmount(){
+			var trNum = $('#expMainTable').find('tr').length -1;
+			var amount = 0;
+			for(var i=1; i<trNum; i++){
+				amount += parseFloat($('#expMainTable')[0].rows[i].cells[2].innerText);
+			}
+			amount = toDecimal(amount);
+			$('#expMainTable tr:last')[0].cells[2].innerText = amount;
+			expMainNum = trNum-1;
+		}
+
+		//删除单据
+		function delReimburse(){
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('reimburse.delReimburse')}}',
+							data: {
+								"id": '{{ $expense_id }}',
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									alertDialog(res.status, res.msg, '{{route('reimburse.index')}}');
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
 
 	</script>
 @endsection()

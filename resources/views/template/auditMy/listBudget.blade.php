@@ -232,16 +232,6 @@
                         "scrollY": '80vh',
                         "scrollCollapse": true,
                         "paging": false,
-                        "language": {
-                            "sProcessing": "处理中...",
-                            "sZeroRecords": "没有匹配结果",
-                            "sInfoEmpty": "",
-                            "sInfoFiltered": "",
-                            "sInfoPostFix": "",
-                            "sUrl": "",
-                            "sLoadingRecords": "载入中...",
-                            "sInfoThousands": ",",
-                        },
                         "ajax": {
                             "type": "post",
                             "async": false,
@@ -268,7 +258,7 @@
                                 "data": "subject", render: function (data, type, row) {
                                 return '<span style="padding-left:' + 10 * row.level + 'px;">' + row.subject + '</span>';
                             }},
-                            {"data": "budget_amount"},
+                            {"data": "budget_amount", "class": "align-right"},
                         ],
                         "createdRow": function (data, row) {
                             if (row.parent == '0' && row.budget_amount > 0) {

@@ -65,10 +65,10 @@
 			<table id="userTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
-					<th>姓名</th>
-					<th>邮箱</th>
-					<th>系统状态</th>
-					<th>操作</th>
+					<th class="center">姓名</th>
+					<th class="center">邮箱</th>
+					<th class="center">系统状态</th>
+					<th class="center">操作</th>
 				</tr>
 				</thead>
 			</table>
@@ -95,30 +95,6 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
-								"language": {
-									"sProcessing":   "处理中...",
-									"sLengthMenu":   "显示 _MENU_ 项结果",
-									"sZeroRecords":  "没有匹配结果",
-									"sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-									"sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
-									"sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-									"sInfoPostFix":  "",
-									"sSearch":       "搜索:",
-									"sUrl":          "",
-									"sEmptyTable":     "表中数据为空",
-									"sLoadingRecords": "载入中...",
-									"sInfoThousands":  ",",
-									"oPaginate": {
-										"sFirst":    "首页",
-										"sPrevious": "上页",
-										"sNext":     "下页",
-										"sLast":     "末页"
-									},
-									"oAria": {
-										"sSortAscending":  ": 以升序排列此列",
-										"sSortDescending": ": 以降序排列此列"
-									}
-								},
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -135,11 +111,11 @@
 									}
 								},
 								"columns": [
-									{ "data": "name" , render: function(data, type, row, meta) {
+									{ "data": "name", render: function(data, type, row, meta) {
 										return '<a style="cursor:pointer" onclick="userInfo(' + row.id + ')">' + row.name + '</a>';
 									}},
-									{ "data": "email" },
-									{ "data": "status", render: function(data, type, row) {
+									{ "data": "email"},
+									{ "data": "status", "class": "center", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
 									{ "data": "null"},
@@ -187,7 +163,7 @@
 
 		function delUser(e){
 			bootbox.confirm({
-				message: '<h4 class="header smaller lighter green bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
 				buttons: {
 					confirm: {
 						label: "确定",

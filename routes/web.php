@@ -156,9 +156,13 @@ Route::group(['middleware' => ['permission']], function () {
     /*-----------------------------费用管理-----------------------------*/
     Route::group(['prefix' => 'reimburse'], function () {
         Route::get('index', ['as' => 'reimburse.index', 'uses' => 'ReimburseController@index']);//费用报销
-        Route::get('addBudgetSum', ['as' => 'reimburse.addReimburse', 'uses' => 'ReimburseController@addReimburse']);//添加报销单据视图
+        Route::post('getReimburse', ['as' => 'reimburse.getReimburse', 'uses' => 'ReimburseController@getReimburse']);//获取费用报销单据列表
+        Route::get('addReimburse', ['as' => 'reimburse.addReimburse', 'uses' => 'ReimburseController@addReimburse']);//添加报销单据视图
+        Route::get('editReimburse/{id?}', ['as' => 'reimburse.editReimburse', 'uses' => 'ReimburseController@editReimburse']);//编辑报销单据视图
         Route::post('updateExpense', ['as' => 'reimburse.updateExpense', 'uses' => 'ReimburseController@updateExpense']);//更新表头信息
-        Route::post('uploadImg', ['as' => 'reimburse.uploadImg', 'uses' => 'ReimburseController@uploadImg']);//test
+        Route::post('createReimburseMain', ['as' => 'reimburse.createReimburseMain', 'uses' => 'ReimburseController@createReimburseMain']);//添加明细
+        Route::post('delReimburse', ['as' => 'reimburse.delReimburse', 'uses' => 'ReimburseController@delReimburse']);//删除单据
+        Route::post('uploadImg', ['as' => 'reimburse.uploadImg', 'uses' => 'ReimburseController@uploadImg']);//上传图片
     });
 
 

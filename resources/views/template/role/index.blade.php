@@ -25,10 +25,10 @@
 			<table id="roleTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
-					<th>名称</th>
-					<th>排序</th>
-					<th>状态</th>
-					<th>操作</th>
+					<th class="center">名称</th>
+					<th class="center">排序</th>
+					<th class="center">状态</th>
+					<th class="center">操作</th>
 				</tr>
 				</thead>
 			</table>
@@ -54,30 +54,6 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
-								"language": {
-									"sProcessing":   "处理中...",
-									"sLengthMenu":   "显示 _MENU_ 项结果",
-									"sZeroRecords":  "没有匹配结果",
-									"sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-									"sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
-									"sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-									"sInfoPostFix":  "",
-									"sSearch":       "搜索:",
-									"sUrl":          "",
-									"sEmptyTable":     "表中数据为空",
-									"sLoadingRecords": "载入中...",
-									"sInfoThousands":  ",",
-									"oPaginate": {
-										"sFirst":    "首页",
-										"sPrevious": "上页",
-										"sNext":     "下页",
-										"sLast":     "末页"
-									},
-									"oAria": {
-										"sSortAscending":  ": 以升序排列此列",
-										"sSortDescending": ": 以降序排列此列"
-									}
-								},
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -94,11 +70,11 @@
 									}
 								},
 								"columns": [
-									{ "data": "name" , render: function(data, type, row, meta) {
+									{ "data": "name", render: function(data, type, row, meta) {
 										return '<a style="cursor:pointer" onclick="roleInfo(' + row.id + ')">' + row.name + '</a>';
 									}},
 									{ "data": "sort" },
-									{ "data": "status", render: function(data, type, row, meta) {
+									{ "data": "status", "class": "center", render: function(data, type, row, meta) {
 										return formatStatus(row.status);
 									}},
 									{ "data": "null"},

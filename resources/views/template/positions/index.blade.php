@@ -25,9 +25,9 @@
 			<table id="positionsTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
-					<th>岗位名称</th>
-					<th>状态</th>
-					<th>操作</th>
+					<th class="center">岗位名称</th>
+					<th class="center">状态</th>
+					<th class="center">操作</th>
 				</tr>
 				</thead>
 			</table>
@@ -54,20 +54,6 @@
 								"ordering": false,
 								"searching": false,
 								"paging": false,
-								"language": {
-									"sProcessing":   "处理中...",
-									"sLengthMenu":   "显示 _MENU_ 项结果",
-									"sZeroRecords":  "没有匹配结果",
-									"sInfo":         "岗位总数 _TOTAL_ ",
-									"sInfoEmpty":    "岗位总数 0 ",
-									"sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-									"sInfoPostFix":  "",
-									"sSearch":       "搜索:",
-									"sUrl":          "",
-									"sEmptyTable":     "表中数据为空",
-									"sLoadingRecords": "载入中...",
-									"sInfoThousands":  ",",
-								},
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -84,10 +70,10 @@
 									}
 								},
 								"columns": [
-									{ "data": "name" , render: function(data, type, row) {
+									{ "data": "name", render: function(data, type, row) {
 										return '<span style="padding-left: '+ row.level +'em;">' + row.name + '</span>';
 									}},
-									{ "data": "status", render: function(data, type, row) {
+									{ "data": "status", "class": "center", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
 									{ "data": "null"},

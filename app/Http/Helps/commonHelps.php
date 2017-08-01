@@ -39,14 +39,16 @@
      *
      * @param	int		$status
      * @param   str     $msg
+     * @param   array   $data
      * @return	json
      *
      */
-    function echoAjaxJson($status = '0', $msg = '')
+    function echoAjaxJson($status = '0', $msg = '', $data= '')
     {
         //1-正常，0-提示，-1-错误
         $result['status'] = $status;
         $result['msg'] = $msg;
+        $result['data'] = $data;
         echo json_encode($result);
         exit();
     }

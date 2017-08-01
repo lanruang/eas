@@ -25,17 +25,17 @@
 			<table id="nodeTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
-					<th>名称</th>
-					<th>别名/地址</th>
-					<th>排序</th>
-					<th>状态</th>
-					<th>图标</th>
-					<th>权限</th>
-					<th>菜单</th>
-					<th>回收站项</th>
-					<th>回收站名称</th>
-					<th>回收站分类</th>
-					<th>操作</th>
+					<th class="center">名称</th>
+					<th class="center">别名/地址</th>
+					<th class="center">排序</th>
+					<th class="center">状态</th>
+					<th class="center">图标</th>
+					<th class="center">权限</th>
+					<th class="center">菜单</th>
+					<th class="center">回收站项</th>
+					<th class="center">回收站名称</th>
+					<th class="center">回收站分类</th>
+					<th class="center">操作</th>
 				</tr>
 				</thead>
 			</table>
@@ -66,30 +66,6 @@
 								"ordering": false,
 								"searching": false,
 								"deferRender": true,
-								"language": {
-									"sProcessing":   "处理中...",
-									"sLengthMenu":   "显示 _MENU_ 项结果",
-									"sZeroRecords":  "没有匹配结果",
-									"sInfo":         "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
-									"sInfoEmpty":    "显示第 0 至 0 项结果，共 0 项",
-									"sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-									"sInfoPostFix":  "",
-									"sSearch":       "搜索:",
-									"sUrl":          "",
-									"sEmptyTable":     "表中数据为空",
-									"sLoadingRecords": "载入中...",
-									"sInfoThousands":  ",",
-									"oPaginate": {
-										"sFirst":    "首页",
-										"sPrevious": "上页",
-										"sNext":     "下页",
-										"sLast":     "末页"
-									},
-									"oAria": {
-										"sSortAscending":  ": 以升序排列此列",
-										"sSortDescending": ": 以降序排列此列"
-									}
-								},
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -106,25 +82,25 @@
 									}
 								},
 								"columns": [
-									{"data": "name" , render: function(data, type, row) {
+									{"data": "name", render: function(data, type, row) {
 										return '<a style="cursor:pointer" onclick="getParameter(' + row.id + ')">' + row.name + '</a>';
 									}},
-									{"data": "alias" },
+									{"data": "alias"},
 									{"data": "sort"},
-									{"data": "status", render: function(data, type, row) {
+									{"data": "status", "class": "center", render: function(data, type, row) {
 										return formatStatus(row.status);
 									}},
-									{"data": "icon" , render: function(data, type, row) {
+									{"data": "icon", render: function(data, type, row) {
 										return '<i class="' + row.icon + '"></i>  [' + row.icon + ']';
 									}},
-									{"data": "is_permissioin", render: function(data, type, row) {
+									{"data": "is_permissioin", "class": "center", render: function(data, type, row) {
 										if(row.is_menu == "1"){
 											return '是';
 										}else{
 											return '否';
 										}
 									}},
-									{"data": "is_menu", render: function(data, type, row) {
+									{"data": "is_menu", "class": "center", render: function(data, type, row) {
 										if(row.is_menu == "1"){
 											return '是';
 										}else{
@@ -132,7 +108,7 @@
 										}
 									}},
 
-									{ "data": "is_recycle", render: function(data, type, row, meta) {
+									{ "data": "is_recycle", "class": "center", render: function(data, type, row, meta) {
 										if(row.is_recycle == "1"){
 											return '是';
 										}else{
