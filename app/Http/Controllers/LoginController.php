@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Models\User\UserModel AS loginDb;
 use App\Http\Models\Node\NodeModel AS nodeDb;
+use App\Http\Models\SysConfig\SysConfigModel AS sysConfigDb;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Validator;
@@ -65,6 +66,13 @@ class LoginController extends Common\CommonController
                 ->withErrors(array('0'=>'用户名已被禁止登录'));
         }
 
+        //获取系统配置
+        $sysConfig = $this->getSysConfig();
+        if(!$sysConfig) {
+            return redirect(route('login.index'))
+                ->withErrors(array('0'=>'初始化参数错误，请联系管理员。'));
+        }
+
         //获取菜单、权限
         $menu = $this->getMenu($userInfo->role_id, $userInfo->supper_admin);
         if(!$menu){
@@ -84,7 +92,8 @@ class LoginController extends Common\CommonController
         session(['userInfo.menu' => json_encode($menu['menu'])]);
         session(['userInfo.permission' => $menu['permission']]);
         session(['userInfo.not_permission' => $menu['not_permission']]);
-        session(['userInfo.recycle' => $menu['recycle']]);
+        //session(['userInfo.recycle' => $menu['recycle']]);
+        session(['userInfo.sysConfig' => $sysConfig]);
 
         return redirect(route('main.index'));
     }
@@ -152,5 +161,19 @@ class LoginController extends Common\CommonController
 
         return $arr;
     }
-    
+
+    //获取系统配置参数
+    private function getSysConfig(){
+        $sysConfig = sysConfigDb::get()
+            ->toArray();
+        if($sysConfig){
+            foreach($sysConfig as $k => $v){
+                $arr[$v['sys_class']][$v['sys_type']] = $v['sys_value'];
+            }
+        }else{
+            $arr = false;
+        }
+        return $arr;
+    }
+
 }

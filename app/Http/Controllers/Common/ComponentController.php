@@ -13,6 +13,20 @@ use Validator;
 
 class ComponentController extends CommonController
 {
+    //中间层页面跳转
+    public function ctRedirectMsg()
+    {
+        $input = Input::all();
+
+        //1-正常，0-提示，-1-错误
+        $result['status'] = base64_decode($input['status']);
+        $result['msg'] = base64_decode($input['msg']);
+        $result['url'] = base64_decode($input['url']);
+
+        return view('layouts.pageMsg', $result);
+    }
+    
+    //获取用户
     public function ctGetUser(Request $request)
     {
         //验证传输方式

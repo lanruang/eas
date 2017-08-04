@@ -18,9 +18,9 @@
 				</div>
 
 				<div class="grid2 new_grid2">
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listSubBedgetFarm()">提交预算</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listSubBudgetFarm()">提交预算</button>
 					<button type="button" class="btn btn-white btn-sm btn-round"  onclick="listAuditFarm();">审批进度</button>
-					<button id="subBedgetBtn"  href="#subBudget-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
+					<button id="subBudgetBtn"  href="#subBudget-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
 					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
 				</div>
 			</div>
@@ -215,7 +215,7 @@
 							{ "data": "status","class": "center", render: function(data, type, row) {
 								return formatStatus(row.status);
 							}},
-							{ "data": "null"},
+							{ "data": "null","class": "center"},
 						],
 						"columnDefs": [{
 							"targets": 5,
@@ -297,7 +297,7 @@
 
 		function addBudgetSub(){
 			if(select_id == ''){
-				alertDialog('1', '请选择一个预算！');
+				alertDialog('-1', '请选择一个预算！');
 				return false;
 			}
 			window.location.href = "{{route('budget.addBudgetSub')}}" + "/" + select_id;
@@ -306,7 +306,7 @@
 		//预算详情
 		function listBudget(){
 			if(select_id == ''){
-				alertDialog('1', '请选择一个预算！');
+				alertDialog('-1', '请选择一个预算！');
 				return false;
 			}
 			window.location.href = "{{route('budget.listBudget')}}" + "/" + select_id;
@@ -352,18 +352,18 @@
 		}
 
 		//提交预算视图
-		function listSubBedgetFarm(){
+		function listSubBudgetFarm(){
 			if(select_id == ''){
-				alertDialog('1', '请选择一个预算！');
+				alertDialog('-1', '请选择一个预算！');
 				return false;
 			}
-			$('#subBedgetBtn').click();
+			$('#subBudgetBtn').click();
 		}
 
 		//提交预算
 		function subBudget(){
 			if(select_id == ''){
-				alertDialog('1', '请选择一个预算！');
+				alertDialog('-1', '请选择一个预算！');
 				return false;
 			}
 			if($('#validation-form').valid()){
@@ -413,7 +413,7 @@
 		//查看审核进度
 		function listAuditFarm(){
 			if(select_id == ''){
-				alertDialog('1', '请选择一个预算！');
+				alertDialog('-1', '请选择一个预算！');
 				return false;
 			}
             var data = {

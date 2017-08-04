@@ -191,7 +191,7 @@
 	if('ontouchstart' in document.documentElement) document.write("<script src='{{asset('resources/views/template')}}/assets/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
 </script>
 <script src="{{asset('resources/views/template')}}/assets/js/bootstrap.min.js"></script>
-
+<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 <!-- page specific plugin scripts -->
 @section('pageSpecificPluginScripts')@show
 

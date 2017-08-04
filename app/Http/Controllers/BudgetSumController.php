@@ -374,7 +374,7 @@ class BudgetSumController extends Common\CommonController
             ->toArray();
 
         //树形排列科目
-        $budgetSum = sortTreeBudget($subjectSum, 0, 0, 1);
+        $budgetSum = sortTreeBudget($subjectSum, 0, 0, session('userInfo.sysConfig.budget.subBudget'));
         //倒叙科目汇总金额
         $budgetSum = array_reverse($budgetSum);
         $arrSum = array_column($budgetSum,'pid');

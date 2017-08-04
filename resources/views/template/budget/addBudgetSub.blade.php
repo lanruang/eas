@@ -137,6 +137,7 @@
                     .DataTable({
                         "lengthChange": false,
                         "ordering": false,
+                        "info": false,
                         "searching": false,
                         "serverSide": true,
                         "scrollY": '80vh',

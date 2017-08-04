@@ -162,12 +162,17 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('updateExpense', ['as' => 'reimburse.updateExpense', 'uses' => 'ReimburseController@updateExpense']);//更新表头信息
         Route::post('createReimburseMain', ['as' => 'reimburse.createReimburseMain', 'uses' => 'ReimburseController@createReimburseMain']);//添加明细
         Route::post('delReimburse', ['as' => 'reimburse.delReimburse', 'uses' => 'ReimburseController@delReimburse']);//删除单据
+        Route::post('delReimburseMain', ['as' => 'reimburse.delReimburseMain', 'uses' => 'ReimburseController@delReimburseMain']);//删除单据明细
         Route::post('uploadImg', ['as' => 'reimburse.uploadImg', 'uses' => 'ReimburseController@uploadImg']);//上传图片
+        Route::post('addAudit', ['as' => 'reimburse.addAudit', 'uses' => 'ReimburseController@addAudit']);//提交审批
+        Route::get('listReimburse/{id?}', ['as' => 'reimburse.listReimburse', 'uses' => 'ReimburseController@listReimburse']);//查看单据
+        Route::post('listAudit', ['as' => 'reimburse.listAudit', 'uses' => 'ReimburseController@listAudit']);//查看审核进度
     });
 
 
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {
+        Route::get('ctRedirectMsg', ['as' => 'component.ctRedirectMsg', 'uses' => 'Common\ComponentController@ctRedirectMsg']);//中间层页面跳转
         Route::post('ctGetUser', ['as' => 'component.ctGetUser', 'uses' => 'Common\ComponentController@ctGetUser']);//用户数据
         Route::post('ctGetDep', ['as' => 'component.ctGetDep', 'uses' => 'Common\ComponentController@ctGetDep']);//部门数据
         Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//岗位数据

@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Models\Expense\ExpenseModel AS ExpenseDb;
 use App\Http\Models\Expense\ExpenseMainModel AS ExpenseMainDb;
 use App\Http\Models\Expense\ExpEnclosureModel AS ExpEnclosureDb;
+use App\Http\Models\AuditProcess\AuditProcessModel AS auditProcessDb;
+use App\Http\Models\AuditProcess\AuditInfoModel AS auditInfoDb;
+use App\Http\Models\User\UserModel AS userDb;
+use App\Http\Models\AuditProcess\AuditInfoTextModel AS auditITDb;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;
@@ -22,13 +26,13 @@ class ReimburseController extends Common\CommonController
     
     //获取报销列表
     public function getReimburse(Request $request)
-    {/*
+    {
         //验证传输方式
         if(!$request->ajax())
         {
             echoAjaxJson('-1', '非法请求');
         }
-*/
+
         //获取参数
         $input = Input::all();
 
@@ -114,9 +118,11 @@ class ReimburseController extends Common\CommonController
         $data['dep_name'] = session('userInfo.dep_name');
 
         //获取明细
-        $data['expMain'] = ExpenseMainDb::where('expense_id', $data['expense_id'])
-            ->select('exp_remark', 'exp_amount', 'enclosure')
-            ->orderBy('created_at', 'desc')
+        $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->where('expM.expense_id', $data['expense_id'])
+            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
 
@@ -145,9 +151,11 @@ class ReimburseController extends Common\CommonController
             return redirectPageMsg('-1', '单据信息获取失败，请刷新后重试', route('reimburse.index'));
         }
         //获取明细
-        $data['expMain'] = ExpenseMainDb::where('expense_id', $id)
-            ->select('exp_remark', 'exp_amount', 'enclosure')
-            ->orderBy('created_at', 'desc')
+        $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->where('expM.expense_id', $data['expense_id'])
+            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
 
@@ -253,11 +261,16 @@ class ReimburseController extends Common\CommonController
                     ExpEnclosureDb::insert($dataEnclo);
                 }
             }
-            return true;
+
+            $rel['result'] = true;
+            $rel['expId'] = $expId;
+            $rel['url'] = $input['enclosure'] ? asset($dataEnclo['enclo_url']) : '';
+            return $rel;
         });
 
-        if($result){
-            echoAjaxJson('1', "添加成功!");
+
+        if($result['result']){
+            echoAjaxJson('1', "添加成功!", array('id'=>$result['expId'], 'url'=>$result['url']));
         }else{
             echoAjaxJson('-1', "添加失败，请刷新页面重试!");
         }
@@ -294,9 +307,8 @@ class ReimburseController extends Common\CommonController
             ->where('expense_type', 'reimburse')
             ->get()
             ->first();
-        if (!$expense) {
-            echoAjaxJson('-1', "删除失败，单据信息获取失败");
-        }
+        if (!$expense) echoAjaxJson('-1', "删除失败，单据信息获取失败");
+        if ($expense['expense_status'] != '202') echoAjaxJson('-1', "删除失败，单据状态不正确");
 
         //事物删除数据
         $result = DB::transaction(function () use($id) {
@@ -319,6 +331,297 @@ class ReimburseController extends Common\CommonController
         }
     }
 
+    //删除凭证明细
+    public function delReimburseMain(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        //获取单据明细信息
+        $expMain = ExpenseMainDb::where('exp_id', $id)
+            ->get()
+            ->first();
+        if (!$expMain) echoAjaxJson('-1', "删除失败，单据信息获取失败");
+
+        //获取单据信息
+        $expense = ExpenseDb::where('expense_id', $expMain['expense_id'])
+            ->where('expense_status', '202')
+            ->where('expense_type', 'reimburse')
+            ->get()
+            ->first();
+        if (!$expense) echoAjaxJson('-1', "删除失败，单据信息获取失败");
+        if ($expense['expense_status'] != '202') echoAjaxJson('-1', "删除失败，单据状态不正确");
+
+        $expEnclo = '';
+        if($expMain['enclosure']){
+            //获取附件信息
+            $expEnclo = ExpEnclosureDb::where('exp_id', $id)
+                ->get()
+                ->first();
+        }
+
+        //事物删除数据
+        $result = DB::transaction(function () use($id, $expEnclo) {
+            //删除明细
+            ExpenseMainDb::where('exp_id', $id)
+                ->delete();
+            //删除附件
+            if($expEnclo){
+                ExpEnclosureDb::where('exp_id', $id)
+                    ->delete();
+            }
+            return true;
+        });
+
+        if($expEnclo) {
+            //删除上传的图片
+            $directory = mb_substr($expEnclo['enclo_url'], 8, mb_strlen($expEnclo['enclo_url']));
+            Storage::disk('storageTemp')->delete($directory);
+        }
+        if($result){
+            echoAjaxJson('1', "删除成功");
+        }else{
+            echoAjaxJson('-1', "删除失败，请刷新后重试");
+        }
+    }
+
+    //查看单据详情
+    public function listReimburse($id = 0)
+    {
+        //检测id类型是否整数
+        if(!validateParam($id, "nullInt") || $id == '0'){
+            return redirectPageMsg('-1', '参数错误', route('reimburse.index'));
+        };
+
+        //获取编辑状态单据
+        $data = ExpenseDb::from('expense AS exp')
+            ->leftJoin('department AS dep', 'dep.dep_id','=','exp.expense_dep')
+            ->leftJoin('users AS u', 'u.user_id','=','exp.expense_user')
+            ->select('u.user_name AS user_name', 'dep.dep_name AS dep_name', 'exp.expense_num', 'exp.expense_id',
+                'exp.expense_title', 'exp.expense_date', 'exp.expense_status')
+            ->where('exp.expense_type', 'reimburse')
+            ->get()
+            ->first();
+        if(!$data){
+            return redirectPageMsg('-1', '单据信息获取失败，请刷新后重试', route('reimburse.index'));
+        }
+        //获取明细
+        $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->where('expM.expense_id', $id)
+            ->select('expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->orderBy('expM.created_at', 'asc')
+            ->get()
+            ->toArray();
+
+        //获取审批进度
+        $audit = auditInfoDb::from('audit_info AS ai')
+            ->leftjoin('audit_info_text AS ait', 'ai.process_id', '=', 'ait.process_id')
+            ->leftjoin('users AS u', 'u.user_id', '=', 'ait.created_user')
+            ->leftjoin('users_base AS ub', 'ub.user_id', '=', 'ait.created_user')
+            ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
+            ->where('ai.process_type', 'reimburse')
+            ->where('ai.process_app', $id)
+            ->select('ait.audit_res','u.user_name', 'pos.pos_name')
+            ->orderby('ait.audit_sort', 'asc')
+            ->get()
+            ->first();
+
+        p($audit);
+
+        return view('reimburse.listReimburse', $data);
+    }
+
+    //提交审批
+    public function addAudit(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        $reimburse = ExpenseDb::where('expense_id', $id)
+            ->where('expense_type', 'reimburse')
+            ->get()
+            ->first();
+        if(!$reimburse) echoAjaxJson('-1', '参数错误，单据不存！');
+        if(!$reimburse['reimburse'] != '202') echoAjaxJson('-1', '提交失败，单据状态错误！');
+
+        //获取预算审批流程
+        $whereIn[] = 0;
+        $whereIn[] = session('userInfo.dep_id');
+        $auditArr = auditProcessDb::where('audit_type', 'reimburse')
+            ->whereIn('audit_dep', $whereIn)
+            ->get()
+            ->toArray();
+
+        if($auditArr){
+            //审批流程大于1则获取对应部门预算
+            if(count($auditArr) > 1){
+                foreach($auditArr as $k => $v){
+                    if($v['audit_dep'] == session('userInfo.dep_id')){
+                        $auditArr = $v;
+                    }
+                }
+            }else{
+                $auditArr = $auditArr[0];
+            }
+
+            if(!$auditArr['audit_process']) echoAjaxJson('-1', '提交失败，审批流程人员获取失败！');
+
+            $result = DB::transaction(function () use($id, $reimburse, $input, $auditArr) {
+                $process_users = explode(',', $auditArr['audit_process']);
+                //审批内容参数
+                $auditInfoDb = new auditInfoDb();
+                $auditInfoDb->process_type = 'reimburse';
+                $auditInfoDb->process_app = $reimburse['expense_id'];
+                $auditInfoDb->process_title = '单据号：'.$reimburse['expense_num'];
+                $auditInfoDb->process_text = $input['process_text'];
+                $auditInfoDb->process_users = $auditArr['audit_process'];
+                $auditInfoDb->process_audit_user = $process_users[0];
+                $auditInfoDb->created_user = session('userInfo.user_id');
+                $auditInfoDb->status = '1000';
+                $auditInfoDb->save();
+
+                //更新报销单据状态
+                ExpenseDb::where('expense_id', $id)
+                    ->where('expense_type', 'reimburse')
+                    ->update(array('expense_status'=>1009));
+                return true;
+            });
+
+            if($result){
+                echoAjaxJson('1', '提交成功，请耐心等待审批！');
+            }else{
+                echoAjaxJson('-1', '审批失败，请重新提交！');
+            }
+        }else{
+            $result = DB::transaction(function () use($id) {
+                //更新预算
+                BudgetDb::where('budget_id', $id)
+                    ->where('budget_sum', '0')
+                    ->update(array('status'=>1));
+                //更新预算项目
+                BudgetSubjectDb::where('budget_id', $id)
+                    ->where('status','102')
+                    ->update(array('status'=>1));
+                //更新预算项目金额
+                BudgetSubjectDateDb::where('budget_id', $id)
+                    ->where('status','102')
+                    ->update(array('status'=>1));
+                return true;
+            });
+
+            if($result){
+                echoAjaxJson('1', '审批通过，因未匹配到相应审批流程，预算将直接通过审批！');
+            }else{
+                echoAjaxJson('-1', '审批失败，请重新提交！');
+            }
+        }
+    }
+
+    //查看审批进度
+    public function listAudit(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|integer|digits_between:1,11',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数类型错误',
+            'id.digits_between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+        //获取编辑状态单据
+        $expense = ExpenseDb::where('expense_id', $id)
+            ->where('expense_type', 'reimburse')
+            ->get()
+            ->first();
+        if(!$expense){
+            return redirectPageMsg('-1', '单据信息获取失败，请刷新后重试', route('reimburse.index'));
+        }
+
+        //获取审批流程信息
+        $audit = auditInfoDb::where('process_type', 'reimburse')
+            ->where('process_app', $id)
+            ->get()
+            ->first();
+        if($audit['status'] == '1001'){
+            echoAjaxJson('-1', '该项目已经结束审审批!');
+        }
+        $data['audit_user'] = $audit['process_audit_user'];
+        //格式化流程
+        $audit = explode(',', $audit['process_users']);
+
+        $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
+            ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
+            ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
+            ->whereIn('users.user_id', $audit)
+            ->get()
+            ->toArray();
+
+        //格式化数据
+        $data['auditProcess'] = array();
+        $data['status'] = 1;
+        foreach($audit as $k => $v){
+            foreach($result as $u => $d){
+                if($v == $d['uid']) $data['auditProcess'][] = $d;
+            }
+        }
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+    
     //上传图片
     public function uploadImg(Request $request){
         //获取单据信息
@@ -358,8 +661,8 @@ class ReimburseController extends Common\CommonController
             echoAjaxJson('-1', '上传失败，请刷新后重试！');
         }
         $url = asset('uploads/reimburse/'.$result['expense_id']).'/'.$fileName;
-        $data = $fileName;
-
-        echoAjaxJson('1', $url, $data);
+        $data['fUrl'] = $url;
+        $data['url'] = $fileName;
+        echoAjaxJson('1', '上传成功', $data);
     }
 }

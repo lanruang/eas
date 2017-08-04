@@ -6,5 +6,5 @@ use App\Http\Controllers\Common\Controller;
 
 class CommonController
 {
-
+    
 }

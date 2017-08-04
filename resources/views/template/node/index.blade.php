@@ -32,9 +32,6 @@
 					<th class="center">图标</th>
 					<th class="center">权限</th>
 					<th class="center">菜单</th>
-					<th class="center">回收站项</th>
-					<th class="center">回收站名称</th>
-					<th class="center">回收站分类</th>
 					<th class="center">操作</th>
 				</tr>
 				</thead>
@@ -107,20 +104,10 @@
 											return '否';
 										}
 									}},
-
-									{ "data": "is_recycle", "class": "center", render: function(data, type, row, meta) {
-										if(row.is_recycle == "1"){
-											return '是';
-										}else{
-											return '否';
-										}
-									}},
-									{ "data": "recycle_name"},
-									{ "data": "recycle_type"},
 									{"data": "null"},
 								],
 								"columnDefs": [{
-									"targets": 10,
+									"targets": 7,
 									"render": function(data, type, row) {
 										html = '<div class="hidden-sm hidden-xs action-buttons">' +
 													'<a class="green" href="#" onclick="editNode(' + row.id + ')">' +

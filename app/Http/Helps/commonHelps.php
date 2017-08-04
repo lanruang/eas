@@ -173,9 +173,9 @@
     function sortTreeBudget($array, $pid = 0, $level = 0, $budget = 0)
     {
         $arr = array();
-        if($budget == '1'){
+        if($budget != '0'){
             foreach($array as $v){
-                if($v['pid']==$pid && $v['sub_budget'] == $budget){
+                if($v['pid']==$pid && $v['sub_id'] == $budget){
                     $v['level'] = $level;
                     $arr[] = $v;
                     $v['level'] = $level + 1;

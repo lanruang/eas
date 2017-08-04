@@ -440,14 +440,14 @@ class BudgetController extends Common\CommonController
                 $join->on('bs.subject_id','=','subjects.sub_id')
                     ->where('bs.budget_id', $input['budget_id']);})
             ->where('subjects.status', 1)
-            ->select('subjects.sub_ip AS subject_ip', 'subjects.sub_pid AS pid', 'subjects.sub_id AS id', 'subjects.sub_name AS subject',
+            ->select('subjects.sub_id', 'subjects.sub_ip AS subject_ip', 'subjects.sub_pid AS pid', 'subjects.sub_id AS id', 'subjects.sub_name AS subject',
                  'subjects.sub_budget', 'bs.sum_amount AS budget_amount', 'bs.status AS status')
             ->orderBy('subjects.sub_ip', 'ASC')
             ->get()
             ->toArray();
 
         //树形排列科目
-        $result = sortTreeBudget($subjects, 0, 0, 1);
+        $result = sortTreeBudget($subjects, 0, 0, session('userInfo.sysConfig.budget.subBudget'));
         //倒叙科目汇总金额
         $result = array_reverse($result);
 
@@ -628,10 +628,10 @@ class BudgetController extends Common\CommonController
         //验证预算
         if(!$budget) echoAjaxJson('-1', '参数错误，预算不存在！');
         if($budget['status'] != "102" && !$budgetS) echoAjaxJson('-1', '提交失败，该预算无审批内容！');
-
+        
+        //获取预算审批流程
         $whereIn[] = 0;
         $whereIn[] = session('userInfo.dep_id');
-        //获取预算审批流程
         $budgetAudit = auditProcessDb::where('audit_type', 'budget')
                                     ->whereIn('audit_dep', $whereIn)
                                     ->get()

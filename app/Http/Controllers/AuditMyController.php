@@ -22,7 +22,7 @@ class AuditMyController extends Common\CommonController
         $data['budget'] = '';
         $data['budgetSum'] = '';
         $data['contract'] = '';
-        $data['finance'] = '';
+        $data['reimburse'] = '';
         //未审核数据
         $result = AuditInfoDb::where('process_audit_user', session('userInfo.user_id'))
                             ->where('status', 1000)

@@ -29,8 +29,30 @@ class Permission
             if ($request->ajax() || $request->wantsJson()) {
                 echoAjaxJson('-1', '没有权限');
             } else {
-                redirectPageMsg('-1', "没有权限", route('main.index'));
+                $rel['status'] = base64_encode('-1');
+                $rel['msg'] = base64_encode('没有权限');
+                $rel['url'] = base64_encode(route('main.index'));
+                return redirect(route('component.ctRedirectMsg', $rel));
             }
+        }
+
+        switch ($request->route()->getPrefix()) {
+            case '/budget':
+                if(session('userInfo.sysConfig.budget.subBudget') == '0'){
+                    $rel['status'] = base64_encode('-1');
+                    $rel['msg'] = base64_encode('预算科目未设置，无法使用该功能');
+                    $rel['url'] = base64_encode(route('main.index'));
+                    return redirect(route('component.ctRedirectMsg', $rel));
+                }
+            break;
+            case '/reimburse':
+                if(session('userInfo.sysConfig.reimburse.posCashier') == '0'){
+                    $rel['status'] = base64_encode('-1');
+                    $rel['msg'] = base64_encode('出纳岗位未设置，无法使用该功能');
+                    $rel['url'] = base64_encode(route('main.index'));
+                    return redirect(route('component.ctRedirectMsg', $rel));
+                }
+            break;
         }
 
         return $next($request);

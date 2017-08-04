@@ -231,6 +231,7 @@
                         "serverSide": true,
                         "scrollY": '80vh',
                         "scrollCollapse": true,
+                        "info": false,
                         "paging": false,
                         "ajax": {
                             "type": "post",

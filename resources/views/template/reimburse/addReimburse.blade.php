@@ -37,7 +37,7 @@
 			</table>
 			<div class="clearfix" style="margin-bottom:5px;">
 				<div class="grid2 new_grid2">
-					<button type="button" class="btn btn-white btn-sm btn-round" href="#reimburse-form" data-toggle="modal">添加明细</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addReimburseMain();">添加明细</button>
 				</div>
 				<div class="align-right">
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="goBack();">保存单据</button>
@@ -45,148 +45,140 @@
 				</div>
 			</div>
 
-			<table id="expMainTable" class="table table-bordered hide"  style="margin-bottom:0;">
-				<tr class="new_reimburse_bg">
-					<th class="center col-xs-1">序号</th>
-					<th class="center">用途</th>
-					<th class="center col-xs-2">金额</th>
-					<th class="center col-xs-1">附件</th>
-					<th class="center col-xs-1">操作</th>
-				</tr>
-				@foreach ($expMain as $k => $v)
+			<div id="reimburseMain">
+				<table id="expMainTable" class="table table-bordered"  style="margin-bottom:0;">
+					<tr class="new_reimburse_bg">
+						<th class="center col-xs-1">序号</th>
+						<th class="center">用途</th>
+						<th class="center col-xs-2">金额</th>
+						<th class="center col-xs-1">附件</th>
+						<th class="center col-xs-1">操作</th>
+					</tr>
+					@foreach ($expMain as $k => $v)
+						<tr>
+							<td class="center col-xs-1">{{ $k+1 }}</td>
+							<td>{{ $v['exp_remark'] }}</td>
+							<td class="align-right col-xs-2">{{ $v['exp_amount'] }}</td>
+							<td class="center col-xs-1">
+								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
+							</td>
+							<td class="align-right col-xs-1">
+								<div class="hidden-sm hidden-xs action-buttons">
+									@if ($v['enclosure'])
+										<a href="{{ asset($v['url']) }}" class="green cboxElement" title="查看附件">
+											<i class="ace-icon fa fa-search-plus bigger-130"></i>
+										</a>
+									@endif
+									<a class="red" href="#" onclick="delReimburseMain(this ,'{{ $v['exp_id'] }}')">
+										<i class="ace-icon fa fa-trash-o bigger-130"></i>
+									</a>
+								</div>
+								<div class="hidden-md hidden-lg">
+									<div class="inline pos-rel">
+										<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
+											<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
+										</button>
+										<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+											@if ($v['enclosure'])
+											<li>
+												<a href="{{ asset($v['url']) }}" class="green cboxElement" title="查看附件">
+													<i class="ace-icon fa fa-search-plus bigger-120"></i>
+												</a>
+											</li>
+											@endif
+											<li>
+												<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete" onclick="delReimburseMain(this ,'{{ $v['exp_id'] }}')">
+												<span class="red">
+													<i class="ace-icon fa fa-trash-o bigger-120"></i>
+												</span>
+												</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</td>
+						</tr>
+					@endforeach
+					<tr class="new_reimburse_bg">
+						<th class="center">合计</th>
+						<th></th>
+						<th class="align-right">0.00</th>
+						<th colspan="2">&nbsp;</th>
+					</tr>
+				</table>
+				<table class="table table-bordered" style="background-color: #f9f9f9; width: 100%; margin:-1px 0 0 0;">
 					<tr>
-						<td class="center col-xs-1">{{ $k+1 }}</td>
-						<td>{{ $v['exp_remark'] }}</td>
-						<td class="align-right col-xs-2">{{ $v['exp_amount'] }}</td>
-						<td class="center col-xs-1">
-							<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
-						</td>
-						<td class="center col-xs-1">
-							<div class="hidden-sm hidden-xs action-buttons">
-								<a class="green" href="#" onclick="editNode(' + row.id + ')">
-									<i class="ace-icon fa fa-pencil bigger-130"></i>
-								</a>
-								<a class="red" href="#" onclick="delNode(' + row.id + ')">
-									<i class="ace-icon fa fa-trash-o bigger-130"></i>
-								</a>
-							</div>
-							<div class="hidden-md hidden-lg">
-								<div class="inline pos-rel">
-									<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
-										<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
-									</button>
-									<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
-										<li>
-											<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">
-											<span class="green" onclick="editNode(' + row.id + ')">
-												<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
-											</span>
-											</a>
-										</li>
-										<li>
-											<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode(' + row.id + ')">
-											<span class="red">
-												<i class="ace-icon fa fa-trash-o bigger-120"></i>
-											</span>
-											</a>
+						<td class="col-xs-4">申请人：{{ $user_name }}</td>
+					</tr>
+				</table>
+			</div>
+			<div id="reimburseForm" class="hide col-sm-offset-2 col-sm-8">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="blue bigger">添加明细</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-xs-12">
+								<form class="form-horizontal" id="validation-form">
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"> 用途 </label>
+										<div class="col-sm-6">
+											<textarea class="input-xlarge" name="exp_remark" id="exp_remark" placeholder="用途"></textarea>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"> 金额 </label>
+										<div class="col-sm-3">
+											<input type="text" name="exp_amount" id="exp_amount" placeholder="0.00" class="form-control align-right" onblur="formatAmount('exp_amount');" value="0.00"/>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"> 附件 </label>
+										<div class="col-sm-3">
+
+											<div id="progressbar" class="hide ui-progressbar ui-widget ui-widget-content ui-corner-all progress progress-striped active" role="progressbar" style="margin-top: 7px;">
+												<div id="progressbarWidth" class="output5 ui-progressbar-value ui-widget-header ui-corner-left progress-bar progress-bar-success"></div>
+											</div>
+
+											<button class="btn btn-purple btn-sm" type="button">
+												<i class="ace-icon fa fa-cloud-upload bigger-120"></i>
+												上传
+											</button>
+										</div>
+									</div>
+									<img class="cboxElement hide"/>
+									<input type="hidden" id="enclosure" name="enclosure" readonly>
+								</form>
+								<input type="file" multiple="multiple" class="hide">
+								<div class="col-xs-12">
+									<ul id="uploadFrame" class="ace-thumbnails clearfix">
+										<li id="uploadFrameImg" class="cboxElement dz-preview btn_cp">
+											<img data-dz-thumbnail/>
+											<div class="tools tools-top">
+												<a><i data-dz-remove class="ace-icon fa fa-times red"></i></a>
+											</div>
 										</li>
 									</ul>
 								</div>
 							</div>
-						</td>
-					</tr>
-				@endforeach
-				<tr class="new_reimburse_bg">
-					<th class="center">合计</th>
-					<th></th>
-					<th class="align-right">0.00</th>
-					<th colspan="2">&nbsp;</th>
-				</tr>
-			</table>
-			<table class="table table-bordered" style="background-color: #f9f9f9; width: 100%; margin:-1px 0 0 0;">
-				<tr>
-					<td class="col-xs-4">申请人：{{ $user_name }}</td>
-				</tr>
-			</table>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm" onclick="cancelForm();">
+							取消
+						</button>
+						<button type="button" class="btn btn-sm btn-primary" onclick="postForm();">
+							保存明细
+						</button>
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 
-    <div id="reimburse-form" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" id="btnClose" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="blue bigger">添加明细</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <form class="form-horizontal" id="validation-form">
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right"> 用途 </label>
-                                    <div class="col-sm-6">
-                                                <textarea class="input-xlarge" name="exp_remark" id="exp_remark"
-                                                          placeholder="用途"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right"> 金额 </label>
-                                    <div class="col-sm-3">
-                                        <input type="text" name="exp_amount" id="exp_amount" placeholder="0.00"
-                                               class="form-control align-right"
-                                               onblur="formatAmount('exp_amount');" value="0.00"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right"> 附件 </label>
-                                    <div class="col-sm-3">
-
-                                        <div id="progressbar"
-                                             class="hide ui-progressbar ui-widget ui-widget-content ui-corner-all progress progress-striped active"
-                                             role="progressbar" style="margin-top: 7px;">
-                                            <div id="progressbarWidth"
-                                                 class="output5 ui-progressbar-value ui-widget-header ui-corner-left progress-bar progress-bar-success"></div>
-                                        </div>
-
-                                        <button class="btn btn-purple btn-sm" type="button">
-                                            <i class="ace-icon fa fa-cloud-upload bigger-120"></i>
-                                            上传
-                                        </button>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="enclosure" name="enclosure" readonly>
-                            </form>
-                            <input type="file" multiple="multiple" class="hide">
-                            <div class="col-xs-12">
-                                <ul id="upload_frame" class="ace-thumbnails clearfix">
-                                    <li class="cboxElement dz-preview btn_cp hide">
-                                        <img src=""/>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-primary" onclick="postFrom();">
-                        保存明细
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <ul id="" class="ace-thumbnails clearfix dz-started dz-max-files-reached">
-        <li class="cboxElement dz-preview btn_cp hide">
-            <img src="">
-        </li>
-        <li class="cboxElement dz-preview btn_cp hide dz-complete">
-            <img src="">
-        </li><li href="http://127.0.0.1:81/uploads/reimburse/19/2017-08-01-20-39-31-5980768324138.jpg" class="cboxElement dz-preview btn_cp" style="width: 80px; height: 80px; margin: 5px;"><img style="width: 80px; height: 80px;" src="http://127.0.0.1:81/uploads/reimburse/19/2017-08-01-20-39-31-5980768324138.jpg"></li></ul>
 @endsection()
 
 {{--页面加载js--}}
@@ -195,17 +187,14 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox-min.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var upload_frame;
-		var expMainNum = 0;
 		$(function() {
-
 			$('.date-picker').datepicker({
 				autoclose: true,
 				todayHighlight: true,
@@ -229,38 +218,39 @@
 			});
 
 			//图片上传
-			upload_frame = new Dropzone('#upload_frame', {
+			var previewNode = document.querySelector("#uploadFrameImg");
+				previewNode.id = "";
+			var previewTemplate = previewNode.parentNode.innerHTML;
+				previewNode.parentNode.removeChild(previewNode);
+			uploadFrame = new Dropzone(document.body,{
 				url: '{{ route('reimburse.uploadImg') }}', //url
 				params: {"_token": '{{csrf_token()}}'},
 				thumbnailWidth: 80,
 				thumbnailHeight: 80,
 				maxFilesize: 5,
 				maxFiles: 1,
-				previewTemplate: $('#upload_frame').html(),//显示文件html
+				previewTemplate: previewTemplate,//显示文件html
+				previewsContainer: "#uploadFrame",
 				clickable: ".btn-purple", //选择文件窗口
 				acceptedFiles: ".jpg,.jpeg,.png",
-				createImageThumbnails: false,
                 dictFileTooBig: "上传失败,文件不能大于5MB",
                 dictInvalidFileType: "上传失败,文件格式错误。支持格式jpg、jpeg、png.",
 				dictMaxFilesExceeded: "上传失败,已到最大上传数量,对多上传1个附件.",
 				success: function(file, data) {
 					var data = JSON.parse(data);
-                    var html = '<li href="'+ data.msg +'" class="cboxElement dz-preview btn_cp" style="width: 80px; height: 80px; margin: 5px;">' +
-                                '<img style="width: 80px; height: 80px;" src="'+data.msg+'" />' +
-								'</li>' ;
-                    $('#upload_frame').append(html);
-					$('#enclosure').val(data.data);
+					$(file.previewElement).attr('href',data.data.fUrl);
+					$('#enclosure').val(data.data.url);
 				},
 				error: function (file, msg) {
                     alertDialog('-1', msg);
+					uploadFrame.removeFile(file);
 				},
                 processing: function (){
                     $('.btn-purple').addClass('hide');
                     $('#progressbar').removeClass('hide');
                 },
                 uploadprogress: function(a, b, c) {
-                    setTimeout(
-                            function(){
+                    setTimeout(function(){
                                 $('#progressbarWidth').css('width', b+'%');
                             },1)
                     if(b == '100'){
@@ -304,6 +294,7 @@
 				},
 			});
 
+
 			getExpMainAmount();
 		});
 
@@ -322,7 +313,7 @@
 		}
 
 		//添加明细
-		function postFrom(){
+		function postForm(){
 			var enclosure;
 			if($('#validation-form').valid()){
 				var data = {
@@ -337,39 +328,38 @@
 						alertDialog('-1', rel.msg);
 					return false;
 				}
+
 				var html = '<tr><td class="center col-xs-1">'+(expMainNum+1)+'</td>' +
 							'<td>'+data.exp_remark+'</td>' +
 							'<td class="align-right col-xs-2">'+data.exp_amount+'</td>' +
 							'<td class="center col-xs-1">' +
 							'<i class="ace-icon fa fa-check '+enclosure+' bigger-130"></i></td>' +
-							'<td class="center col-xs-1">'+
-							'<div class="hidden-sm hidden-xs action-buttons">' +
-							'<a class="green" href="#" onclick="editNode()">' +
-							'<i class="ace-icon fa fa-pencil bigger-130"></i></a>' +
-							'<a class="red" href="#" onclick="delNode()">' +
+							'<td class="align-right col-xs-1">'+
+							'<div class="hidden-sm hidden-xs action-buttons">';
+				if(rel.data.url){
+					html += '<a href="'+ rel.data.url +'" class="green cboxElement" title="查看附件">'+
+							'<i class="ace-icon fa fa-search-plus bigger-130"></i></a>';
+				}
+					html += '<a class="red" href="#" onclick="delReimburseMain(this, '+ rel.data.id+')">' +
 							'<i class="ace-icon fa fa-trash-o bigger-130"></i></a></div>' +
 							'<div class="hidden-md hidden-lg">' +
 							'<div class="inline pos-rel">' +
 							'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto"> ' +
 							'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i></button> ' +
-							'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close"><li> ' +
-							'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit"> ' +
-							'<span class="green" onclick="editNode()"> ' +
-							'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i> ' +
-							'</span></a></li><li> ' +
-							'<a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delNode()"> ' +
+							'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">';
+				if(rel.data.url){
+					html += '<li><a href="'+ rel.data.url +'" class="green cboxElement" title="查看附件">'+
+							'<i class="ace-icon fa fa-search-plus bigger-120"></i></a></li>';
+				}
+					html += '<li><a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delReimburseMain(this, '+ rel.data.id+')"> ' +
 							'<span class="red">' +
 							'<i class="ace-icon fa fa-trash-o bigger-120"></i> ' +
 							'</span></a></li></ul></div></div></td></tr>'
 				$('#expMainTable tr:eq(-1):last').before(html);
+				alertDialog('1', rel.msg);
 				getExpMainAmount();
-				$('#btnClose').click();
-				//初始化表单
-				upload_frame.removeAllFiles(true);
-				$('#upload_frame li:eq(1)').remove();
-				$('#exp_remark').val('');
-				$('#exp_amount').val('0.00');
-				$('#enclosure').val('');
+				$('#reimburseForm').addClass('hide');
+				$('#reimburseMain').removeClass('hide');
 			};
 		}
 
@@ -425,9 +415,58 @@
 
         //添加明细视图
         function addReimburseMain(){
-            //body     modal-open
-
-            $('#reimburseMain-form').removeClass('hide');
+			uploadFrame.removeAllFiles(true);
+			$('#upload_frame li:eq(1)').remove();
+			$('#exp_remark').val('');
+			$('#exp_amount').val('0.00');
+			$('#enclosure').val('');
+			$('#reimburseForm').removeClass('hide');
+			$('#reimburseMain').addClass('hide');
         }
+
+		//取消明细视图
+		function cancelForm(){
+			$('#reimburseForm').addClass('hide');
+			$('#reimburseMain').removeClass('hide');
+		}
+
+		//删除明细
+		function delReimburseMain(t, e){
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter red bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　确定删除吗?',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('reimburse.delReimburseMain')}}',
+							data: {
+								"id": e,
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									alertDialog(res.status, res.msg);
+									$(t).closest('tr').remove();
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
 	</script>
 @endsection()

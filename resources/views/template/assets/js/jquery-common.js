@@ -90,6 +90,10 @@
 					confirm: {
 						label: "确定",
 						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "hide btn-sm",
 					}
 				},
 				callback: function() {
