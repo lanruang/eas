@@ -13,6 +13,8 @@ use App\Http\Models\Budget\BudgetSubjectModel AS BudgetSDb;
 use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSDDb;
 use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
 use App\Http\Models\User\UserModel AS UserDb;
+use App\Http\Models\Expense\ExpenseModel AS ExpenseDb;
+use App\Http\Models\Expense\ExpenseMainModel AS ExpenseMainDb;
 use Illuminate\Support\Facades\DB;
 
 class AuditMyController extends Common\CommonController
@@ -117,23 +119,24 @@ class AuditMyController extends Common\CommonController
         switch ($data['audit']['process_type'])
         {
             case "budget":
-                $type = "Budget";
+                $type = "Budget";//模版名称
                 $data['data'] = $this->getBudget($data['audit']['process_app']);
             break;
             case "budgetSum":
-                $type = "BudgetSum";
+                $type = "BudgetSum";//模版名称
                 $data['data'] = $this->getBudgetSum($data['audit']['process_app']);
                 break;
-            default:
-                $type = "Budget";
-                $data['data'] = $this->getBudget($data['audit']['process_app']);
+            case "reimburse":
+                $type = "Reimburse";//模版名称
+                $data['data'] = $this->getReimburse($data['audit']['process_app']);
+                break;
         }
         if(!$data['data']){
             return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
      
         $data['process_id'] = $data['audit']['process_id'];
-   
+
         return view("auditMy.list$type", $data);
     }
     
@@ -144,12 +147,12 @@ class AuditMyController extends Common\CommonController
         $input = Input::all();
 
         $rules = [
-            'process_id' => 'required|digits_between:0,11|numeric',
+            'process_id' => 'required|digits_between:1,11|numeric',
             'audit_res' => 'required|digits_between:0,11|numeric',
         ];
         $message = [
             'process_id.required' => '参数不存在',
-            'process_id.between' => '参数错误',
+            'process_id.digits_between' => '参数错误',
             'process_id.numeric' => '参数错误',
             'audit_res.required' => '请选择审批结果',
         ];
@@ -216,6 +219,9 @@ class AuditMyController extends Common\CommonController
                         break;
                     case "budgetSum":
                         $this->updateBudgetSum($audit['process_app'], $input['audit_res']);
+                        break;
+                    case "reimburse":
+                        $this->updateReimburse($audit['process_app'], $input['audit_res']);
                         break;
                 }
             }else{
@@ -363,5 +369,56 @@ class AuditMyController extends Common\CommonController
         BudgetSDDb::where('budget_id', $id)
             ->where('status', '1009')
             ->update($data);
+    }
+
+    /*-----------------------费用报销-----------------------*/
+    //报销单信息
+    private function getReimburse($id)
+    {
+        //获取编辑状态单据
+        $result = ExpenseDb::from('expense AS exp')
+            ->leftJoin('department AS dep', 'dep.dep_id','=','exp.expense_dep')
+            ->leftJoin('users AS u', 'u.user_id','=','exp.expense_user')
+            ->select('u.user_name AS user_name', 'dep.dep_name AS dep_name', 'exp.expense_num', 'exp.expense_id',
+                'exp.expense_title', 'exp.expense_date', 'exp.expense_status')
+            ->where('exp.expense_type', 'reimburse')
+            ->get()
+            ->first();
+        if(!$result){
+            return false;
+        }
+        //获取明细
+        $result['expMain'] = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->where('expM.expense_id', $id)
+            ->select('expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->orderBy('expM.created_at', 'asc')
+            ->get()
+            ->toArray();
+        return $result;
+    }
+    //更新报销单信息
+    private function updateReimburse($id, $status){
+        //转换状态
+        $data['expense_status'] = $status == '1002' ? '203' : $status;
+        //更新单据状态
+        ExpenseDb::where('expense_id', $id)
+            ->where('expense_type', 'reimburse')
+            ->where('expense_status', '1009')
+            ->update($data);
+        //获取单据状态
+        $expense = ExpenseDb::where('expense_id', $id)
+            ->where('expense_type', 'reimburse')
+            ->select('expense_num')
+            ->get()
+            ->first();
+
+        //发送出纳通知
+        $notice['notice_class'] = 'reimburse';//分组
+        $notice['notice_type'] = 1;//需要确认操作
+        $notice['notice_app'] = $id;//需要确认操作
+        $notice['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，等待付款。';
+        $notice['notice_user'] = session('userInfo.sysConfig.reimburse.userCashier');
+        $this->createNotice($notice);
     }
 }

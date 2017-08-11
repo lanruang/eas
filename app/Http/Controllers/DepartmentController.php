@@ -60,7 +60,7 @@ class DepartmentController extends Common\CommonController
             'dep_name' => 'required|between:1,50',
             'dep_leader' => 'between:0,11|numeric',
             'dep_sort' => 'required|between:1,4|numeric',
-            'dep_pid' => 'between:0,11|numeric',
+            'dep_pid' => 'digits_between:0,11|numeric',
         ];
         $message = [
             'dep_name.required' => '部门名称未填写',
@@ -70,7 +70,7 @@ class DepartmentController extends Common\CommonController
             'dep_sort.required' => '排序未填写',
             'dep_sort.between' => '排序符数过多',
             'dep_sort.numeric' => '参数错误',
-            'dep_pid.between' => '上级部门参数错误',
+            'dep_pid.digits_between' => '上级部门参数错误',
             'dep_pid.numeric' => '上级部门参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
@@ -154,7 +154,7 @@ class DepartmentController extends Common\CommonController
             'dep_name' => 'required|between:1,50',
             'dep_leader' => 'between:0,11|numeric',
             'dep_sort' => 'required|between:1,4|numeric',
-            'dep_pid' => 'between:0,11|numeric',
+            'dep_pid' => 'digits_between:0,11|numeric',
         ];
         $message = [
             'dep_name.required' => '部门名称未填写',
@@ -164,7 +164,7 @@ class DepartmentController extends Common\CommonController
             'dep_sort.required' => '排序未填写',
             'dep_sort.between' => '排序符数过多',
             'dep_sort.numeric' => '参数错误',
-            'dep_pid.between' => '上级部门参数错误',
+            'dep_pid.digits_between' => '上级部门参数错误',
             'dep_pid.numeric' => '上级部门参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);

@@ -31,47 +31,41 @@
 					<td class="align-right align-middle">单据编号：{{ $expense_num }}</td>
 				</tr>
 			</table>
-			<td id="reimburseMain">
-				<table id="expMainTable" class="table table-bordered"  style="margin-bottom:0;">
-					<tr class="new_reimburse_bg">
-						<th class="center col-xs-1">序号</th>
-						<th class="center">用途</th>
-						<th class="center col-xs-2">金额</th>
-						<th class="center col-xs-1">附件</th>
-						<th class="center col-xs-1">操作</th>
+			<table id="expMainTable" class="table table-bordered" style="margin-bottom:0;">
+				<tr class="new_reimburse_bg">
+					<th class="center col-xs-1">序号</th>
+					<th class="center">用途</th>
+					<th class="center col-xs-2">金额</th>
+					<th class="center col-xs-1">附件</th>
+					<th class="center col-xs-1">操作</th>
+				</tr>
+				@foreach ($expMain as $k => $v)
+					<tr title="qwer">
+						<td class="center col-xs-1 align-middle">{{ $k+1 }}</td>
+						<td class="align-middle">{{ $v['exp_remark'] }}</td>
+						<td class="align-right col-xs-2 align-middle">{{ $v['exp_amount'] }}</td>
+						<td class="center col-xs-1 align-middle">
+							<a>
+								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
+							</a>
+						</td>
+						<td class="center col-xs-1 align-middle">
+							@if ($v['enclosure'])
+								<button href="{{ asset($v['url']) }}" type="button"
+										class="btn btn-success btn-minier cboxElement">查 看
+								</button>
+							@endif
+						</td>
 					</tr>
-					@foreach ($expMain as $k => $v)
-						<tr title="qwer">
-							<td class="center col-xs-1 align-middle">{{ $k+1 }}</td>
-							<td class="align-middle">{{ $v['exp_remark'] }}</td>
-							<td class="align-right col-xs-2 align-middle">{{ $v['exp_amount'] }}</td>
-							<td class="center col-xs-1 align-middle">
-								<a>
-									<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
-								</a>
-							</td>
-							<td class="center col-xs-1 align-middle">
-								@if ($v['enclosure'])
-									<button href="{{ asset($v['url']) }}" type="button" class="btn btn-success btn-minier cboxElement">查 看</button>
-								@endif
-							</td>
-						</tr>
-					@endforeach
-					<tr class="new_reimburse_bg">
-						<th class="center">合计</th>
-						<th></th>
-						<th class="align-right">0.00</th>
-						<th colspan="2">&nbsp;</th>
-					</tr>
-				</table>
-				<table class="table table-bordered" style="background-color: #f9f9f9; width: 100%; margin:-1px 0 0 0;">
-					<tr>
-						<td class="col-xs-4">申请人：{{ $user_name }}</td>
-					</tr>
-				</table>
-			</div>
-
-
+				@endforeach
+				<tr class="new_reimburse_bg">
+					<th class="center">合计</th>
+					<th></th>
+					<th class="align-right">0.00</th>
+					<th colspan="2">&nbsp;</th>
+				</tr>
+			</table>
+			<table id="listAudit" class="table table-bordered" style="background-color: #f9f9f9; width: 100%; margin:-1px 0 0 0;"></table>
 		</div>
 	</div>
 
@@ -100,13 +94,27 @@
 			$('.cboxElement').colorbox(colorbox_params);
 			$("#cboxLoadingGraphic").html("<i class='ace-icon fa fa-spinner orange fa-spin'></i>");
 
+			var auditDate = JSON.parse('{!! $audit !!}');
+			var html;
+			if(auditDate[0].audit_res != null){
+				var vv;
+				html = '<tr>';
+				for(var v in auditDate){
+					vv = parseInt(v);
+					var cos = (vv+1) == auditDate.length ? 'colspan="'+ (3-(vv+1)%3 + 1) +'"' : '';
+					if((vv+1)%4 == 0){
+						html += '<tr>';
+					}
+					html += '<td '+ cos +'class="col-xs-4">'+ auditDate[v].pos_name +'：'+ auditDate[v].user_name +'('+ formatStatus(auditDate[v].audit_res) +')</td>';
+					if((vv+1)%3 == 0 || (vv+1) == auditDate.length){
+						html += '</tr>';
+					}
+				}
+			}
+			html += '<tr><td colspan="3" class="col-xs-4">申请人：{{ $user_name }}</td> </tr>'
+			$('#listAudit').html(html);
 			getExpMainAmount();
 		});
-
-		//返回
-		function goBack(){
-			window.location.href = "{{route('reimburse.index')}}";
-		}
 
 		//明细金额汇总
 		function getExpMainAmount(){

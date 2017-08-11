@@ -18,13 +18,16 @@ Route::get('logout', ['as' => 'login.logout', 'uses' => 'LoginController@logout'
 
 //验证登录中间件
 Route::group(['middleware' => ['permission']], function () {
-    //后台主页
+    /*-----------------------------后台主页-----------------------------*/
     Route::get('', ['as' => 'main.index', 'uses' => 'MainController@index']);
+    Route::group(['prefix' => 'main'], function () {
+        Route::post('getMainNotice', ['as' => 'main.getMainNotice', 'uses' => 'MainController@getMainNotice']);//消息通知列表
+    });
 
     /*-----------------------------系统管理-----------------------------*/
     //权限列表
     Route::group(['prefix' => 'node'], function () {
-        Route::get('index/', ['as' => 'node.index', 'uses' => 'NodeController@index']);//权限列表
+        Route::get('index', ['as' => 'node.index', 'uses' => 'NodeController@index']);//权限列表
         Route::post('getNode', ['as' => 'node.getNode', 'uses' => 'NodeController@getNode']);//获取权限列表
         Route::get('addNode/', ['as' => 'node.addNode', 'uses' => 'NodeController@addNode']);//添加权限视图
         Route::post('createNode/', ['as' => 'node.createNode', 'uses' => 'NodeController@createNode']);//添加权限
@@ -44,6 +47,13 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('roleInfo/{id?}', ['as' => 'role.roleInfo', 'uses' => 'RoleController@roleInfo']);//角色详情
     });
     /*-----------------------------我的工作-----------------------------*/
+    //消息通知
+    Route::group(['prefix' => 'notice'], function () {
+        Route::get('index', ['as' => 'notice.index', 'uses' => 'NoticeController@index']);//消息通知
+        Route::post('getNotice', ['as' => 'notice.getNotice', 'uses' => 'NoticeController@getNotice']);//通知列表
+        Route::get('noticeRead/{id?}', ['as' => 'notice.noticeRead', 'uses' => 'NoticeController@noticeRead']);//阅读消息
+        Route::post('updateNotice', ['as' => 'notice.updateNotice', 'uses' => 'NoticeController@updateNotice']);//添加审核结果
+    });
     //流程审核
     Route::group(['prefix' => 'auditMy'], function () {
         Route::get('index', ['as' => 'auditMy.index', 'uses' => 'AuditMyController@index']);//流程审核

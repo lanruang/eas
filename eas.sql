@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-08-04 16:50:06
+Date: 2017-08-11 17:58:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -40,7 +40,7 @@ CREATE TABLE `audit_info` (
 -- ----------------------------
 INSERT INTO `audit_info` VALUES ('2', 'budgetSum', '11', '新增预算—汇总', 'restes', '1', '', '1', '1', '1000', '2017-07-21 14:34:31', '2017-07-24 09:44:03');
 INSERT INTO `audit_info` VALUES ('3', 'budget', '12', '更新预算—普通', '更新预算', '1', '', '1', '1', '1000', '2017-07-21 14:50:37', '2017-07-21 16:15:57');
-INSERT INTO `audit_info` VALUES ('6', 'reimburse', '20', '单据号：R2017080210153067533', '123', '1,4', '|1|', '4', '1', '1000', '2017-08-04 15:48:16', '2017-08-04 16:22:49');
+INSERT INTO `audit_info` VALUES ('6', 'reimburse', '20', '单据号：R2017080210153067533', '123', '1,1,1', '|1|,|1|,|1|', '0', '1', '1001', '2017-08-04 15:48:16', '2017-08-08 10:39:02');
 
 -- ----------------------------
 -- Table structure for `audit_info_text`
@@ -56,7 +56,7 @@ CREATE TABLE `audit_info_text` (
   `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`audit_text_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of audit_info_text
@@ -75,7 +75,9 @@ INSERT INTO `audit_info_text` VALUES ('13', '3', '1', '', '10', '1003', '2017-07
 INSERT INTO `audit_info_text` VALUES ('14', '3', '1', '', '11', '1003', '2017-07-21 16:15:57', '2017-07-21 16:15:57');
 INSERT INTO `audit_info_text` VALUES ('15', '4', '1', '123', '1', '1002', '2017-07-21 17:28:54', '2017-07-21 17:28:54');
 INSERT INTO `audit_info_text` VALUES ('16', '2', '1', '', '2', '1002', '2017-07-24 09:44:03', '2017-07-24 09:44:03');
-INSERT INTO `audit_info_text` VALUES ('17', '6', '1', '', '1', '1002', '2017-08-04 16:22:49', '2017-08-04 16:22:49');
+INSERT INTO `audit_info_text` VALUES ('101', '6', '1', '123123', '1', '1002', '2017-08-07 13:48:46', '2017-08-07 13:48:46');
+INSERT INTO `audit_info_text` VALUES ('102', '6', '1', '', '2', '1002', '2017-08-07 15:12:00', '2017-08-07 15:12:00');
+INSERT INTO `audit_info_text` VALUES ('103', '6', '1', '', '3', '1002', '2017-08-08 10:39:02', '2017-08-08 10:39:02');
 
 -- ----------------------------
 -- Table structure for `audit_process`
@@ -258,7 +260,7 @@ CREATE TABLE `expense` (
 -- ----------------------------
 -- Records of expense
 -- ----------------------------
-INSERT INTO `expense` VALUES ('20', 'reimburse', '1', '1', 'R2017080210153067533', '', '2017-08-02', '0', '0.00', '1009', '2017-08-04 15:48:16', '2017-08-04 15:48:16');
+INSERT INTO `expense` VALUES ('20', 'reimburse', '1', '1', 'R2017080210153067533', '', '2017-08-02', '0', '0.00', '205', '2017-08-09 14:29:23', '2017-08-09 14:29:23');
 
 -- ----------------------------
 -- Table structure for `expense_enclosure`
@@ -330,7 +332,7 @@ CREATE TABLE `node` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------
 -- Records of node
@@ -378,10 +380,39 @@ INSERT INTO `node` VALUES ('49', '0', '客户管理', '#', '6', 'fa fa-users', '
 INSERT INTO `node` VALUES ('50', '39', '回收站', 'recycle.index', '1', 'fa fa-caret-right', '0', '1', '1', '0', '', '', '2017-05-31 02:46:48', '2017-07-02 17:50:30');
 INSERT INTO `node` VALUES ('52', '40', '审核流程', 'auditProcess.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-06-07 03:53:22', '2017-06-07 03:53:22');
 INSERT INTO `node` VALUES ('53', '38', '预算列表', 'budget.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-06-13 05:53:46', '2017-06-13 05:53:46');
-INSERT INTO `node` VALUES ('54', '39', '流程审核', 'auditMy.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-07-02 17:50:14', '2017-07-02 17:50:38');
+INSERT INTO `node` VALUES ('54', '39', '流程审核', 'auditMy.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-07-02 17:50:14', '2017-08-07 15:14:25');
 INSERT INTO `node` VALUES ('55', '38', '汇总预算', 'budgetSum.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-07-12 14:38:42', '2017-07-12 14:38:42');
 INSERT INTO `node` VALUES ('56', '47', '费用报销', 'reimburse.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-07-24 10:39:46', '2017-07-24 10:39:46');
 INSERT INTO `node` VALUES ('57', '2', '系统组件-页面跳转', 'component.ctRedirectMsg', '1', 'fa fa-caret-right', '0', '0', '1', '0', '', '', '2017-08-04 14:45:44', '2017-08-04 14:45:44');
+INSERT INTO `node` VALUES ('58', '39', '消息通知', 'notice.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-08-07 15:15:18', '2017-08-07 15:15:18');
+
+-- ----------------------------
+-- Table structure for `notice`
+-- ----------------------------
+DROP TABLE IF EXISTS `notice`;
+CREATE TABLE `notice` (
+  `notice_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `notice_class` varchar(255) NOT NULL,
+  `notice_type` tinyint(1) NOT NULL,
+  `notice_app` int(10) unsigned NOT NULL,
+  `notice_message` text NOT NULL,
+  `notice_remark` text NOT NULL,
+  `notice_user` int(10) NOT NULL,
+  `post_user` int(10) NOT NULL,
+  `notice_value` varchar(255) DEFAULT NULL,
+  `is_see` tinyint(1) NOT NULL,
+  `is_check` tinyint(1) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notice_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of notice
+-- ----------------------------
+INSERT INTO `notice` VALUES ('1', 'reimburse', '1', '20', '报销单据：编号R2017080210153067533。', '', '1', '0', '1', '1', '1', '2017-08-09 16:32:51', '2017-08-09 16:32:51');
+INSERT INTO `notice` VALUES ('107', 'reimburse', '1', '20', '报销单据：编号R2017080210153067533。已付款，请确认收款。', '', '1', '1', '1', '1', '1', '2017-08-09 16:27:09', '2017-08-09 16:27:09');
+INSERT INTO `notice` VALUES ('108', 'reimburse', '0', '20', '报销单据：编号R2017080210153067533。确认收款。', '', '7', '1', null, '0', '0', '2017-08-09 16:12:59', '2017-08-09 16:12:59');
 
 -- ----------------------------
 -- Table structure for `positions`
@@ -625,7 +656,7 @@ CREATE TABLE `sys_config` (
 -- Records of sys_config
 -- ----------------------------
 INSERT INTO `sys_config` VALUES ('1', 'budget', 'subBudget', '4', '预算科目ID');
-INSERT INTO `sys_config` VALUES ('2', 'reimburse', 'posCashier', '7', '费用报销核销岗位ID');
+INSERT INTO `sys_config` VALUES ('2', 'reimburse', 'userCashier', '7', '费用报销核销出纳id');
 
 -- ----------------------------
 -- Table structure for `sys_status`
@@ -638,21 +669,24 @@ CREATE TABLE `sys_status` (
   `text` varchar(255) NOT NULL,
   `html` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of sys_status
 -- ----------------------------
 INSERT INTO `sys_status` VALUES ('1', '-1', '常规', '已删除', '<span style=\"color:red;\">已删除</span>');
-INSERT INTO `sys_status` VALUES ('2', '1', '常规', '使用中', '使用中');
+INSERT INTO `sys_status` VALUES ('2', '1', '常规', '使用中', '<span>使用中</span>');
 INSERT INTO `sys_status` VALUES ('3', '0', '常规', '已停用', '<span style=\"color:red;\">已停用</span>');
 INSERT INTO `sys_status` VALUES ('5', '102', '预算', '更新预算项', '<span style=\"color:green;\">更新预算项</span>');
-INSERT INTO `sys_status` VALUES ('6', '1000', '审批流程', '未审批', '未审批');
-INSERT INTO `sys_status` VALUES ('7', '1001', '审批流程', '已审批', '已审批');
+INSERT INTO `sys_status` VALUES ('6', '1000', '审批流程', '未审批', '<span>未审批</span>');
+INSERT INTO `sys_status` VALUES ('7', '1001', '审批流程', '已审批', '<span>已审批</span>');
 INSERT INTO `sys_status` VALUES ('8', '1002', '审批流程', '批准', '<span style=\"color:green;\">批准</span>');
 INSERT INTO `sys_status` VALUES ('9', '1003', '审批流程', '不批准', '<span style=\"color:red;\">不批准</span>');
-INSERT INTO `sys_status` VALUES ('10', '1009', '审批流程', '审批中', '审批中');
+INSERT INTO `sys_status` VALUES ('10', '1009', '审批流程', '审批中', '<span style=\"color:orange;\">审批中</span>');
 INSERT INTO `sys_status` VALUES ('11', '202', '费用报销', '编辑单据', '<span style=\"color:green;\">编辑中</span>');
+INSERT INTO `sys_status` VALUES ('12', '203', '费用报销', '出纳付款', '<span style=\"color:orange;\">出纳付款</span>');
+INSERT INTO `sys_status` VALUES ('13', '204', '费用报销', '确认收款', '<span style=\"color:orange;\">确认收款</span>');
+INSERT INTO `sys_status` VALUES ('14', '205', '费用报销', '拒绝付款', '<span style=\"color:red;\">拒绝付款</span>');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -678,7 +712,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-08-04 14:59:53', '1', '0', '2016-05-25 05:56:33', '2017-08-04 14:59:53');
+INSERT INTO `users` VALUES ('1', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', '5', '1', '2017-08-09 11:09:05', '1', '0', '2016-05-25 05:56:33', '2017-08-09 11:09:05');
 INSERT INTO `users` VALUES ('2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '6', '0', '2017-06-07 11:46:34', '1', '0', '2016-11-01 15:07:59', '2017-06-07 03:41:18');
 INSERT INTO `users` VALUES ('3', 'IT经理user', 'test@123.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:37', '1', '0', '2017-05-10 08:56:06', '2017-06-07 03:41:41');
 INSERT INTO `users` VALUES ('4', '销售经理user', 'test@1.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', '0', '0', '2017-06-07 11:46:39', '1', '0', '2017-06-07 03:38:00', '2017-06-07 03:45:12');

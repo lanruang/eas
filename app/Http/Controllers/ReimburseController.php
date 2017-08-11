@@ -11,7 +11,6 @@ use App\Http\Models\Expense\ExpEnclosureModel AS ExpEnclosureDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS auditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS auditInfoDb;
 use App\Http\Models\User\UserModel AS userDb;
-use App\Http\Models\AuditProcess\AuditInfoTextModel AS auditITDb;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;
@@ -444,10 +443,9 @@ class ReimburseController extends Common\CommonController
             ->select('ait.audit_res','u.user_name', 'pos.pos_name')
             ->orderby('ait.audit_sort', 'asc')
             ->get()
-            ->first();
-
-        p($audit);
-
+            ->toArray();
+        $data['audit'] = json_encode($audit);
+    
         return view('reimburse.listReimburse', $data);
     }
 

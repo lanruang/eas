@@ -176,7 +176,7 @@ class RoleController extends Common\CommonController
         $rules = [
             'role_name' => 'required|between:1,40',
             'role_sort' => 'required|between:1,4',
-            'role_id' =>  'between:1,11'
+            'role_id' =>  'digits_between:1,11'
         ];
         $message = [
             'role_name.required' => '权限名称未填写',
@@ -184,7 +184,7 @@ class RoleController extends Common\CommonController
             'role_name.between' => '权限名称字符数过多',
             'role_sort.between' => '排序字符数过多',
             'role_id.required' => '参数错误',
-            'role_id.between' => '参数错误',
+            'role_id.digits_between' => '参数错误',
             'role_id.numeric' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
@@ -239,12 +239,12 @@ class RoleController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|between:1,11',
+            'id' => 'required|integer|digits_between:1,11',
         ];
         $message = [
             'id.required' => '参数不存在',
             'id.integer' => '参数类型错误',
-            'id.between' => '参数错误'
+            'id.digits_between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {

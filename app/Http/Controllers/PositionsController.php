@@ -59,7 +59,7 @@ class PositionsController extends Common\CommonController
         $rules = [
             'pos_name' => 'required|between:1,50',
             'pos_sort' => 'required|between:1,4|numeric',
-            'pos_pid' => 'between:0,11|numeric',
+            'pos_pid' => 'digits_between:0,11|numeric',
         ];
         $message = [
             'pos_name.required' => '岗位名称未填写',
@@ -67,7 +67,7 @@ class PositionsController extends Common\CommonController
             'pos_sort.required' => '排序未填写',
             'pos_sort.between' => '排序符数过多',
             'pos_sort.numeric' => '参数错误',
-            'pos_pid.between' => '上级岗位参数错误',
+            'pos_pid.digits_between' => '上级岗位参数错误',
             'pos_pid.numeric' => '上级岗位参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);

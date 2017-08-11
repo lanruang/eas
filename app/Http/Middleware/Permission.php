@@ -46,7 +46,7 @@ class Permission
                 }
             break;
             case '/reimburse':
-                if(session('userInfo.sysConfig.reimburse.posCashier') == '0'){
+                if(session('userInfo.sysConfig.reimburse.userCashier') == '0'){
                     $rel['status'] = base64_encode('-1');
                     $rel['msg'] = base64_encode('出纳岗位未设置，无法使用该功能');
                     $rel['url'] = base64_encode(route('main.index'));

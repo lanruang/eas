@@ -195,8 +195,8 @@ class UserController extends Common\CommonController
         $rules = [
             'user_name' => 'required|between:1,255',
             'user_email' => 'required|between:1,255|email',
-            'department' => 'between:0,11|numeric',
-            'positions' => 'between:0,11|numeric',
+            'department' => 'digits_between:1,11|numeric',
+            'positions' => 'digits_between:1,11|numeric',
         ];
         $message = [
             'user_name.required' => '姓名未填写',
@@ -204,9 +204,9 @@ class UserController extends Common\CommonController
             'user_email.required' => '邮箱未填写',
             'user_email.between' => '邮箱字符数过多',
             'user_email.email' => '邮箱格式不正确',
-            'department.between' => '部门参数错误',
+            'department.digits_between' => '部门参数错误',
             'department.numeric' => '部门参数错误',
-            'positions.between' => '岗位参数错误',
+            'positions.digits_between' => '岗位参数错误',
             'positions.numeric' => '岗位参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
@@ -335,15 +335,15 @@ class UserController extends Common\CommonController
         };
         $rules = [
             'user_name' => 'required|between:1,255',
-            'department' => 'between:0,11|numeric',
-            'positions' => 'between:0,11|numeric',
+            'department' => 'digits_between:1,11|numeric',
+            'positions' => 'digits_between:1,11|numeric',
         ];
         $message = [
             'user_name.required' => '姓名未填写',
             'user_name.between' => '姓名字符数过多',
-            'department.between' => '部门参数错误',
+            'department.digits_between' => '部门参数错误',
             'department.numeric' => '部门参数错误',
-            'positions.between' => '岗位参数错误',
+            'positions.digits_between' => '岗位参数错误',
             'positions.numeric' => '岗位参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
