@@ -151,7 +151,7 @@
                                 "class": "center",
                                 "data": null,
                                 "defaultContent": "", render: function(data, type, row) {
-                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc(\''+row.process_id+'\');"> 审 阅 </button>';
                                 return html;
                             }},
                             {"data": "process_title", "class": "align-middle"},
@@ -193,7 +193,7 @@
                                     "class": "center",
                                     "data": null,
                                     "defaultContent": "", render: function(data, type, row) {
-                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc(\''+row.process_id+'\');"> 审 阅 </button>';
                                     return html;
                                 }},
                                 {"data": "process_title", "class": "align-middle"},
@@ -236,7 +236,7 @@
                                     "class": "center",
                                     "data": null,
                                     "defaultContent": "", render: function(data, type, row) {
-                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc('+row.process_id+');"> 审 阅 </button>';
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc(\''+row.process_id+'\');"> 审 阅 </button>';
                                     return html;
                                 }},
                                 {"data": "process_title", "class": "align-middle"},
@@ -251,7 +251,7 @@
         }
 
         function auditDoc(e){
-            window.location.href = "{{route('auditMy.getAuditInfo')}}" + "/" + e;
+            window.location.href = "{{route('auditMy.getAuditInfo')}}?id=" + e;
         }
     </script>
 @endsection()

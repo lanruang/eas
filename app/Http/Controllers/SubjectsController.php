@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use Validator;
-use App\Http\Models\Subjects\SubjectsModel AS subjectDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 
 
 class SubjectsController extends Common\CommonController
@@ -14,12 +14,12 @@ class SubjectsController extends Common\CommonController
     public function index()
     {
         //树形科目
-        $result = subjectDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
+        $result = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
         //获取最小pid
-        $selectPid = subjectDb::where('status', 1)
+        $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
         $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
 
@@ -31,10 +31,10 @@ class SubjectsController extends Common\CommonController
     {
         //获取参数
         $input = Input::all();
-        $pid = isset($input['pid']) ? intval($input['pid']) : 0;
+        $pid = isset($input['pid']) ? $input['pid'] : '0';
         //获取当前科目名称
-        if($pid > 0){
-            $subject = subjectDb::select('sub_id AS id', 'sub_name AS name', 'sub_pid AS pid')
+        if($pid != '0'){
+            $subject = SubjectsDb::select('sub_id AS id', 'sub_name AS name', 'sub_pid AS pid')
                 ->where('sub_id', $pid)
                 ->first()
                 ->toArray();
@@ -46,10 +46,10 @@ class SubjectsController extends Common\CommonController
         $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
 
         //获取记录总数
-        $total = subjectDb::where('sub_pid', $pid)
+        $total = SubjectsDb::where('sub_pid', $pid)
             ->count();
         //获取数据
-        $result = subjectDb::select('sub_id AS id', 'sub_ip AS sub_ip', 'sub_type AS type', 'sub_name AS name', 'status', 'sub_pid AS pid')
+        $result = SubjectsDb::select('sub_id AS id', 'sub_ip AS sub_ip', 'sub_type AS type', 'sub_name AS name', 'status', 'sub_pid AS pid')
             ->where('sub_pid', $pid)
             ->skip($skip)
             ->take($take)
@@ -71,12 +71,12 @@ class SubjectsController extends Common\CommonController
     //添加权限视图
     public function addSubjects(){
         //下拉菜单信息
-        $result = subjectDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
+        $result = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
         //获取下拉菜单最小pid
-        $selectPid = subjectDb::where('status', 1)
+        $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
         $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
 
@@ -92,14 +92,14 @@ class SubjectsController extends Common\CommonController
         $rules = [
             'subject_name' => 'required|max:100',
             'subject_ip' => 'required|max:120',
-            'subject_pid' => 'digits_between:0,11'
+            'subject_pid' => 'between:0,32'
         ];
         $message = [
             'subject_name.required' => '科目名称未填写',
             'subject_name.max' => '科目名称字符数过多',
             'subject_ip.required' => '科目地址未填写',
             'subject_ip.max' => '科目地址字符数过多',
-            'subject_pid.digits_between' => '上级科目参数错误'
+            'subject_pid.between' => '上级科目参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -107,7 +107,7 @@ class SubjectsController extends Common\CommonController
         }
 
         //科目是否存在
-        $result = subjectDb::Where('sub_ip', $input['subject_ip'])
+        $result = SubjectsDb::Where('sub_ip', $input['subject_ip'])
             ->first();
         if($result){
             return redirectPageMsg('-1', "添加失败，科目地址重复", route('subjects.addSubjects'));
@@ -119,12 +119,12 @@ class SubjectsController extends Common\CommonController
 
         //添加数据
         $subjectDb = new subjectDb;
+        $subjectDb->sub_id = getId();
         $subjectDb->sub_type = $input['subject_type'];
         $subjectDb->sub_ip = $input['subject_ip'];
         $subjectDb->sub_name = $input['subject_name'];
         $subjectDb->sub_pid = $input['subject_pid'];
         $subjectDb->status = $input['subject_status'];
-        $subjectDb->sub_budget = $input['subject_budget'];
         $subjectDb->sort = 0;
         $result = $subjectDb->save();
 
@@ -136,18 +136,28 @@ class SubjectsController extends Common\CommonController
     }
 
     //编辑权限视图
-    public function editSubjects($id = '0')
+    public function editSubjects()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
-        };
-
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('subjects.index'));
+        }
+        $id = $input['id'];
         //获取科目信息
-        $subject = subjectDb::leftjoin('subjects AS sub', 'sub.sub_id','=','subjects.sub_pid')
+        $subject = SubjectsDb::leftjoin('subjects AS sub', 'sub.sub_id','=','subjects.sub_pid')
             ->select('sub.sub_name AS subject_Fname', 'sub.sub_ip AS subject_Fip',
                 'subjects.sub_name', 'subjects.sub_type', 'subjects.status', 'subjects.sub_ip',
-                'subjects.sub_pid', 'subjects.sub_id', 'subjects.sub_budget')
+                'subjects.sub_pid', 'subjects.sub_id')
             ->where('subjects.sub_id', $id)
             ->first()
             ->toArray();
@@ -156,12 +166,12 @@ class SubjectsController extends Common\CommonController
         }
 
         //下拉菜单信息
-        $result = subjectDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
+        $result = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
         //获取下拉菜单最小pid
-        $selectPid = subjectDb::where('status', 1)
+        $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
         $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
 
@@ -175,40 +185,37 @@ class SubjectsController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-
-        //检测id类型是否整数
-        if(!array_key_exists('subject_id', $input)){
-            return redirectPageMsg('-1', '缺少必要参数', route('subjects.index'));
-        };
         $rules = [
             'subject_name' => 'required|max:100',
             'subject_ip' => 'required|max:120',
-            'subject_pid' => 'digits_between:0,11'
+            'subject_pid' => 'between:0,32',
+            'subject_id' => 'required|between:32,32'
         ];
         $message = [
             'subject_name.required' => '科目名称未填写',
             'subject_name.max' => '科目名称字符数过多',
             'subject_ip.required' => '科目地址未填写',
             'subject_ip.max' => '科目地址字符数过多',
-            'subject_pid.digits_between' => '上级科目参数错误'
+            'subject_pid.between' => '上级科目参数错误',
+            'subject_id.required' => '参数不存在',
+            'subject_id.integer' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('subjects.editSubjects')."/".$input['subjects_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('subjects.editSubjects')."?id=".$input['subjects_id']);
         }
 
         //科目是否存在
-        $result = subjectDb::Where('sub_id', '<>', $input['subject_id'])
+        $result = SubjectsDb::Where('sub_id', '<>', $input['subject_id'])
             ->Where('sub_ip', $input['subject_ip'])
             ->first();
 
         if($result){
-            return redirectPageMsg('-1', "添加失败，科目名称或地址重复", route('subjects.editSubjects')."/".$input['subject_id']);
+            return redirectPageMsg('-1', "添加失败，科目名称或地址重复", route('subjects.editSubjects')."?id=".$input['subject_id']);
         }
 
         //格式化状态
         $input['subject_status'] = array_key_exists('subject_status', $input) ? 1 : 0;
-        $input['subject_budget'] = array_key_exists('subject_budget', $input) ? 1 : 0;
 
         //格式化数据
         $data['sub_pid'] = $input['subject_pid'];
@@ -216,15 +223,14 @@ class SubjectsController extends Common\CommonController
         $data['sub_ip'] = $input['subject_ip'];
         $data['sub_type'] = $input['subject_type'];
         $data['status'] = $input['subject_status'];
-        $data['sub_budget'] = $input['subject_status'];
 
         //更新权限
-        $result = subjectDb::where('sub_id', $input['subject_id'])
+        $result = SubjectsDb::where('sub_id', $input['subject_id'])
             ->update($data);
         if($result){
             return redirectPageMsg('1', "编辑成功", route('subjects.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('subjects.editSubjects')."/".$input['subject_id']);
+            return redirectPageMsg('-1', "编辑失败", route('subjects.editSubjects')."?id=".$input['subject_id']);
         }
     }
 

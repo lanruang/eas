@@ -83,16 +83,6 @@
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 预算科目 </label>
-					<div class="col-xs-3 output">
-						<label>
-							<input name="subject_budget" id="subject_budget" class="ace ace-switch ace-switch-6" type="checkbox">
-							<span class="lbl"></span>
-						</label>
-					</div>
-				</div>
-
-				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 状态 </label>
 					<div class="col-xs-3 output">
 						<label>

@@ -52,12 +52,12 @@
 			noticeTable = noticeTable['data'];
 			for(var i in noticeTable){
 				html = '<div class="profile-activity clearfix" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">';
-				if(noticeTable[i].type + noticeTable[i].check == '10' || noticeTable[i].type + noticeTable[i].see == '00'){
+				if(noticeTable[i].see.toString() == '0'){
 					html += '<i class="ace-icon fa fa-star orange2"></i>　';
-					html += '<a class="btn_cp blue" href="{{ route('notice.noticeRead') }}/'+ noticeTable[i].notice_id +'">'+noticeTable[i].notice_message+'</a>';
+					html += '<a class="btn_cp blue" href="{{ route('notice.noticeRead') }}?id='+ noticeTable[i].notice_id +'">'+noticeTable[i].notice_message+'</a>';
 				}else{
 					html += '<i class="ace-icon fa fa-star-o light-grey"></i>　';
-					html += '<a class="btn_cp" href="{{ route('notice.noticeRead') }}/'+ noticeTable[i].notice_id +'">'+noticeTable[i].notice_message+'</a>';
+					html += '<a class="btn_cp" href="{{ route('notice.noticeRead') }}?id='+ noticeTable[i].notice_id +'">'+noticeTable[i].notice_message+'</a>';
 				}
 				html += '</div>';
 				$('#noticeTable').append(html);

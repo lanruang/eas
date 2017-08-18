@@ -8,4 +8,5 @@ class PositionsModel extends Model
 {
     protected $table = 'positions';                      //表名称
     protected $primaryKey = 'pos_id';                   //主键
+    public  $incrementing = false;
 }

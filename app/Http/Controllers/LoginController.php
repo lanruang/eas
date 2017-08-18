@@ -79,7 +79,7 @@ class LoginController extends Common\CommonController
             return redirect(route('login.index'))
                 ->withErrors(array('0'=>'没有登录权限，请联系管理员。'));
         }
-        
+
         //更新登录时间
         loginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
@@ -129,6 +129,7 @@ class LoginController extends Common\CommonController
                 return false;
             }
         }
+   
         $arr['not_permission'] = array();
         //获取非权限类节点
         $res = nodeDb::where('status', 1)
@@ -139,6 +140,7 @@ class LoginController extends Common\CommonController
         foreach ($res as $v) {
             $arr['not_permission'][] = $v['alias'];
         }
+
         //格式化菜单
         if($result){
             foreach ($result as $k => $v) {

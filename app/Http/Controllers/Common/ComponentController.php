@@ -22,6 +22,7 @@ class ComponentController extends CommonController
         $result['status'] = base64_decode($input['status']);
         $result['msg'] = base64_decode($input['msg']);
         $result['url'] = base64_decode($input['url']);
+        $result['btnMsg'] = isset($input['btnMsg']) ? base64_decode($input['btnMsg']) : "返回";
 
         return view('layouts.pageMsg', $result);
     }

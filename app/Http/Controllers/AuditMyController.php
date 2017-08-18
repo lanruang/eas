@@ -87,13 +87,24 @@ class AuditMyController extends Common\CommonController
     }
 
     //获取审核信息详情
-    public function getAuditInfo($id = '0')
+    public function getAuditInfo()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '缺少必要参数', route('auditMy.index'));
-        };
-
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.index'));
+        }
+        $id = $input['id'];
+        
         //获取审核内容信息
         $data['audit'] = AuditInfoDb::leftjoin('users', 'users.user_id', '=', 'audit_info.created_user')
                             ->select('users.user_name', 'audit_info.*')
@@ -147,18 +158,17 @@ class AuditMyController extends Common\CommonController
         $input = Input::all();
 
         $rules = [
-            'process_id' => 'required|digits_between:1,11|numeric',
+            'process_id' => 'required|between:32,32',
             'audit_res' => 'required|digits_between:0,11|numeric',
         ];
         $message = [
             'process_id.required' => '参数不存在',
-            'process_id.digits_between' => '参数错误',
-            'process_id.numeric' => '参数错误',
+            'process_id.between' => '参数错误',
             'audit_res.required' => '请选择审批结果',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."/".$input['process_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditMy.getAuditInfo')."?id=".$input['process_id']);
         }
 
         $audit = AuditInfoDb::where('process_id', $input['process_id'])
@@ -177,6 +187,7 @@ class AuditMyController extends Common\CommonController
             $sort = AuditInfoTextDb::where('process_id', $input['process_id'])
                             ->count();
             $sort++;
+            $text['audit_text_id'] = getId();
             $text['process_id'] = $input['process_id'];
             $text['created_user'] = session('userInfo.user_id');
             $text['audit_text'] = $input['audit_text'];
@@ -200,7 +211,7 @@ class AuditMyController extends Common\CommonController
             //审批人员对应位置
             $userKey = array_search($audit['process_audit_user'], $nextUser);
             $auditUserNum = count($nextUser)-1;
-
+      
             //历史审批人
             if($audit['process_user_res']){
                 $process_user_res = explode(',', $audit['process_user_res']);
@@ -241,7 +252,7 @@ class AuditMyController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', '审批成功', route('auditMy.index'));
         }else{
-            return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."/".$input['process_id']);
+            return redirectPageMsg('-1', '审批失败', route('auditMy.getAuditInfo')."?id=".$input['process_id']);
         }
     }
 
@@ -257,12 +268,11 @@ class AuditMyController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -401,24 +411,39 @@ class AuditMyController extends Common\CommonController
     private function updateReimburse($id, $status){
         //转换状态
         $data['expense_status'] = $status == '1002' ? '203' : $status;
+        $data['expense_cashier'] = $status == '1002' ? session('userInfo.sysConfig.reimburse.userCashier') : '';
         //更新单据状态
         ExpenseDb::where('expense_id', $id)
             ->where('expense_type', 'reimburse')
             ->where('expense_status', '1009')
             ->update($data);
-        //获取单据状态
+        //获取单据信息
         $expense = ExpenseDb::where('expense_id', $id)
             ->where('expense_type', 'reimburse')
-            ->select('expense_num')
+            ->select('expense_num', 'expense_user', 'expense_status')
             ->get()
             ->first();
 
-        //发送出纳通知
-        $notice['notice_class'] = 'reimburse';//分组
-        $notice['notice_type'] = 1;//需要确认操作
-        $notice['notice_app'] = $id;//需要确认操作
-        $notice['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，等待付款。';
-        $notice['notice_user'] = session('userInfo.sysConfig.reimburse.userCashier');
-        $this->createNotice($notice);
+        if($expense['expense_status'] == '203'){
+            //发送出纳通知
+            $notice[0]['notice_id'] = getId();
+            $notice[0]['notice_app'] = $id;//需要确认操作
+            $notice[0]['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，等待付款。';
+            $notice[0]['notice_user'] = session('userInfo.sysConfig.reimburse.userCashier');
+            //发送用户通知
+            $notice[1]['notice_id'] = getId();
+            $notice[1]['notice_app'] = $id;//需要确认操作
+            $notice[1]['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，等待出纳付款。';
+            $notice[1]['notice_user'] = $expense['expense_user'];
+            $this->createNotice($notice, 1);
+        }else{
+            //发送用户通知
+            $notice['notice_id'] = getId();
+            $notice['notice_app'] = $id;//需要确认操作
+            $notice['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，不批准。';
+            $notice['notice_user'] = $expense['expense_user'];
+            $this->createNotice($notice);
+        }
+
     }
 }

@@ -38,9 +38,9 @@
 					</h1>
 
 					<hr />
-					<h3 class="lighter smaller" id="BackList">
+					<h4 class="lighter smaller" id="BackList">
 						{{$msg}}@if($status == '1')，系统将在<span>5</span>秒后自动返回@endif。
-					</h3>
+					</h4>
 
 					<hr />
 					<div class="space"></div>
@@ -48,7 +48,7 @@
 					<div class="center">
 						<a href="{{$url}}" class="btn btn-grey">
 							<i class="ace-icon fa fa-arrow-left"></i>
-							返回
+							{{$btnMsg}}
 						</a>
 					</div>
 				</div>

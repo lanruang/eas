@@ -8,4 +8,5 @@ class SubjectsModel extends Model
 {
     protected $table = 'subjects';                      //表名称
     protected $primaryKey = 'sub_id';                   //主键
+    public  $incrementing = false;
 }

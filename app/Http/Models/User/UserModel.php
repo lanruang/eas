@@ -9,4 +9,5 @@ class UserModel extends Model
 {
     protected $table = 'users';                 //表名称
     protected $primaryKey = 'user_id';          //主键
+    public  $incrementing = false;
 }

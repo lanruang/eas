@@ -96,7 +96,7 @@
 					pHtml = '<div class="col-xs-12">' +
 								'<div class="control-group" id="cg_farm' + pData[i]['id'] + '">' +
 									'<label class="control-label bolder blue" style="cursor: pointer;">' +
-										'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" onclick="c_box('+ pData[i]['id'] +')"/>' +
+										'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" onclick="c_box(\''+ pData[i]['id'] +'\')"/>' +
 										'<span class="lbl">' + pData[i]['name'] + '</span>' +
 									'</label>' +
 								'</div>' +
@@ -109,7 +109,7 @@
 					isS = false;
 					pHtml = '<div class="checkbox" id="ck_farm' + pData[i]['id'] + '" style="padding-left:' + (20*Number(pData[i]["level"])) + 'px; clear: both;">' +
 								'<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<input id="role_'+ pData[i]['id'] +'" name="node[]" value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box(\''+ pData[i]['id'] +'\')"/>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>' +
 							'</div>';
@@ -120,7 +120,7 @@
 					}
 					if (pData[Number(i) - 1]['pid'] == pData[i]['pid'] && !isS) {
 						pHtml = '<label class="col-sm-2">' +
-									'<input id="role_'+ pData[i]['id'] +'" name="node[]"  value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box('+ pData[i]['id'] +')"/>' +
+									'<input id="role_'+ pData[i]['id'] +'" name="node[]"  value="'+ pData[i]['id'] +'" type="checkbox" class="ace" pid="'+ pData[i]['pid'] +'" onclick="c_box(\''+ pData[i]['id'] +'\')"/>' +
 									'<span class="lbl">' + pData[i]['name'] + '</span>' +
 								'</label>';
 						$("#ck_farm" + ck_id).append(pHtml);

@@ -383,7 +383,7 @@
 					'<td class="center align-middle">'+pos_name+'</td>' +
 					'<td class="center align-middle">'+val.name+'</td>' +
 					'<td class="center align-middle">' +
-					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+val.id+');">删除</button>' +
+					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser(\''+val.id+'\');">删除</button>' +
 					'</td></tr>';
 			if(trLength == 0){
 				$('#auditStart').removeClass('hide');

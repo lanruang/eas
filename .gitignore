@@ -6,3 +6,4 @@ Homestead.yaml
 /.env
 /.DS_Store
 /uploads
+/enclosure

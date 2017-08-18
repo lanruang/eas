@@ -8,4 +8,5 @@ class ExpenseModel extends Model
 {
     protected $table = 'expense';                           //表名称
     protected $primaryKey = 'expense_id';                   //主键
+    public  $incrementing = false;
 }

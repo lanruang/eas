@@ -59,7 +59,7 @@ class PositionsController extends Common\CommonController
         $rules = [
             'pos_name' => 'required|between:1,50',
             'pos_sort' => 'required|between:1,4|numeric',
-            'pos_pid' => 'digits_between:0,11|numeric',
+            'pos_pid' => 'between:0,32',
         ];
         $message = [
             'pos_name.required' => '岗位名称未填写',
@@ -67,8 +67,7 @@ class PositionsController extends Common\CommonController
             'pos_sort.required' => '排序未填写',
             'pos_sort.between' => '排序符数过多',
             'pos_sort.numeric' => '参数错误',
-            'pos_pid.digits_between' => '上级岗位参数错误',
-            'pos_pid.numeric' => '上级岗位参数错误',
+            'pos_pid.between' => '上级岗位参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -87,6 +86,7 @@ class PositionsController extends Common\CommonController
 
         //创建员工
         $PositionsDb = new PositionsDb();
+        $PositionsDb->pos_id = getId();
         $PositionsDb->pos_name = $input['pos_name'];
         $PositionsDb->pos_pid = $input['pos_pid'];
         $PositionsDb->sort = $input['pos_sort'];
@@ -102,12 +102,23 @@ class PositionsController extends Common\CommonController
     }
     
     //编辑岗位视图
-    public function editPositions($id = '0')
+    public function editPositions()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('positions.index'));
-        };
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('positions.index'));
+        }
+        $id = $input['id'];
 
         //获取岗位信息
         $positions = PositionsDb::select('pos_id AS id', 'pos_name AS name', 'pos_pid AS pid', 'sort', 'status')
@@ -138,15 +149,11 @@ class PositionsController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-        //检测id类型是否整数
-        if(!array_key_exists('pos_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('positions.index'));
-        };
-
         $rules = [
             'pos_name' => 'required|between:1,50',
             'pos_sort' => 'required|between:1,4|numeric',
-            'pos_pid' => 'between:0,11|numeric',
+            'pos_pid' => 'between:0,32',
+            'pos_id' => 'required|between:32,32',
         ];
         $message = [
             'pos_name.required' => '岗位名称未填写',
@@ -155,11 +162,12 @@ class PositionsController extends Common\CommonController
             'pos_sort.between' => '排序符数过多',
             'pos_sort.numeric' => '参数错误',
             'pos_pid.between' => '上级岗位参数错误',
-            'pos_pid.numeric' => '上级岗位参数错误',
+            'pos_id.required' => '参数不存在',
+            'pos_id.integer' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('positions.editPositions')."?id=".$input['pos_id']);
         }
 
         //格式化数据
@@ -173,7 +181,7 @@ class PositionsController extends Common\CommonController
                             ->where('pos_id', '<>', $input['pos_id'])
                             ->first();
         if($result){
-            return redirectPageMsg('-1', "修改失败，岗位名称重复", route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', "修改失败，岗位名称重复", route('positions.editPositions')."?id=".$input['pos_id']);
         }
 
         //更新数据
@@ -183,7 +191,7 @@ class PositionsController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', "编辑成功", route('positions.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('positions.editPositions')."/".$input['pos_id']);
+            return redirectPageMsg('-1', "编辑失败", route('positions.editPositions')."?id=".$input['pos_id']);
         }
     }
 

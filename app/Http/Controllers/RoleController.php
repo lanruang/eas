@@ -66,6 +66,7 @@ class RoleController extends Common\CommonController
             ->toArray();
         //树形排序
         $result = sortTree($result);
+
         $data['data'] = json_encode($result);
         return view('role.addRole', $data);
     }
@@ -97,14 +98,15 @@ class RoleController extends Common\CommonController
 
         //事务
         $result = DB::transaction(function () use($input, $node) {
+            $role_id = getId();
             //初始化数据
             $roleDb = new roleDb();
+            $roleDb->id = $role_id;
             $roleDb->name = $input['role_name'];
             $roleDb->sort = $input['role_sort'];
             $roleDb->status = $input['role_status'];
             $roleDb->save();
-            //创建角色
-            $role_id = $roleDb->id;
+
             //判断权限变动
             if($node){
                 foreach($node as $k => $v){
@@ -125,13 +127,22 @@ class RoleController extends Common\CommonController
     }
 
     //编辑权限视图
-    public function editRole($id = '0')
+    public function editRole()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('role.index'));
-        };
-
+        //验证表单
+        $input = Input::all();
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            return redirectPageMsg('-1', $validator->errors()->first(), route('role.index'));
+        }
+        $id = $input['id'];
         //获取角色信息
         $role = roleDb::select('id', 'name', 'sort', 'status')
                         ->where('id', $id)
@@ -176,20 +187,19 @@ class RoleController extends Common\CommonController
         $rules = [
             'role_name' => 'required|between:1,40',
             'role_sort' => 'required|between:1,4',
-            'role_id' =>  'digits_between:1,11'
+            'role_id' =>  'required|between:32,32'
         ];
         $message = [
             'role_name.required' => '权限名称未填写',
             'role_sort.required' => '排序未填写',
             'role_name.between' => '权限名称字符数过多',
             'role_sort.between' => '排序字符数过多',
-            'role_id.required' => '参数错误',
-            'role_id.digits_between' => '参数错误',
-            'role_id.numeric' => '参数错误',
+            'role_id.required' => '参数不存在',
+            'role_id.between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('role.editRole')."/".$input['role_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('role.editRole')."?id=".$input['role_id']);
         }
 
         //格式化状态
@@ -223,7 +233,7 @@ class RoleController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', "编辑成功", route('role.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('role.editRole')."/".$input['role_id']);
+            return redirectPageMsg('-1', "编辑失败", route('role.editRole')."?id=".$input['role_id']);
         }
     }
 
@@ -239,12 +249,11 @@ class RoleController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.integer' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {
@@ -272,13 +281,23 @@ class RoleController extends Common\CommonController
     }
 
     //角色详情
-    public function roleInfo($id = '0')
+    public function roleInfo()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('role.index'));
-        };
-
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('role.index'));
+        }
+        $id = $input['id'];
         //获取角色信息
         $role = roleDb::select('id', 'name', 'sort', 'status')
             ->where('id', $id)

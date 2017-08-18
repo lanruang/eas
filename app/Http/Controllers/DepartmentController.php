@@ -58,20 +58,18 @@ class DepartmentController extends Common\CommonController
         $input = Input::all();
         $rules = [
             'dep_name' => 'required|between:1,50',
-            'dep_leader' => 'between:0,11|numeric',
+            'dep_leader' => 'between:32,32',
             'dep_sort' => 'required|between:1,4|numeric',
-            'dep_pid' => 'digits_between:0,11|numeric',
+            'dep_pid' => 'between:0,32',
         ];
         $message = [
             'dep_name.required' => '部门名称未填写',
             'dep_name.between' => '部门名称字符数过多',
             'dep_leader.between' => '部门负责人参数错误',
-            'dep_leader.numeric' => '部门负责人参数错误',
             'dep_sort.required' => '排序未填写',
             'dep_sort.between' => '排序符数过多',
             'dep_sort.numeric' => '参数错误',
-            'dep_pid.digits_between' => '上级部门参数错误',
-            'dep_pid.numeric' => '上级部门参数错误',
+            'dep_pid.between' => '上级部门参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -91,6 +89,7 @@ class DepartmentController extends Common\CommonController
 
         //创建员工
         $departmentDb = new DepartmentDb();
+        $departmentDb->dep_id = getId();
         $departmentDb->dep_name = $input['dep_name'];
         $departmentDb->dep_leader = $input['dep_leader'];
         $departmentDb->dep_pid = $input['dep_pid'];
@@ -107,13 +106,23 @@ class DepartmentController extends Common\CommonController
     }
     
     //编辑部门视图
-    public function editDepartment($id = '0')
+    public function editDepartment()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('department.index'));
-        };
-
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('department.index'));
+        }
+        $id = $input['id'];
         //获取部门信息
         $department = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
             ->select('dep_id AS id', 'dep_name AS name', 'dep_pid AS pid', 'department.status', 'dep_leader AS u_id',  'sort',  'user_name AS u_name')
@@ -154,7 +163,8 @@ class DepartmentController extends Common\CommonController
             'dep_name' => 'required|between:1,50',
             'dep_leader' => 'between:0,11|numeric',
             'dep_sort' => 'required|between:1,4|numeric',
-            'dep_pid' => 'digits_between:0,11|numeric',
+            'dep_pid' => 'between:0,32',
+            'dep_id' => 'required|between:32,32',
         ];
         $message = [
             'dep_name.required' => '部门名称未填写',
@@ -163,13 +173,14 @@ class DepartmentController extends Common\CommonController
             'dep_leader.numeric' => '部门负责人参数错误',
             'dep_sort.required' => '排序未填写',
             'dep_sort.between' => '排序符数过多',
-            'dep_sort.numeric' => '参数错误',
-            'dep_pid.digits_between' => '上级部门参数错误',
-            'dep_pid.numeric' => '上级部门参数错误',
+            'dep_sort.numeric' => '排序参数错误',
+            'dep_pid.between' => '上级部门参数错误',
+            'dep_id.required' => '参数不存在',
+            'dep_id.integer' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('department.editDepartment')."/".$input['dep_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('department.editDepartment')."?id=".$input['dep_id']);
         }
 
         //部门是否存在
@@ -177,7 +188,7 @@ class DepartmentController extends Common\CommonController
                             ->where('dep_id', '<>', $input['dep_id'])
                             ->first();
         if($result){
-            return redirectPageMsg('-1', "修改失败，部门名称重复", route('department.editDepartment')."/".$input['dep_id']);
+            return redirectPageMsg('-1', "修改失败，部门名称重复", route('department.editDepartment')."?id=".$input['dep_id']);
         }
 
         //格式化数据
@@ -194,7 +205,7 @@ class DepartmentController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', "编辑成功", route('department.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('department.editDepartment')."/".$input['dep_id']);
+            return redirectPageMsg('-1', "编辑失败", route('department.editDepartment')."?id=".$input['dep_id']);
         }
     }
 

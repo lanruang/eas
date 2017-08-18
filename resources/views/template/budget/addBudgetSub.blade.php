@@ -180,7 +180,7 @@
                                 return status;
                             }
                             },
-                            {"data": "null"},
+                            {"data": "null", "class": "center"},
                         ],
                         "columnDefs": [{
                             "targets": 5,
@@ -188,21 +188,10 @@
                                 html = '';
                                 if (row.parent == '0') {
                                     var row = "'"+JSON.stringify(row)+"'";
-                                    html = '<div class="hidden-sm hidden-xs action-buttons">' +
+                                    html = '<div class="action-buttons">' +
                                             '<a class="green" href="#" onclick=editBudgetSD(' + row + ')>' +
                                             '<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-                                            '</a></div>' +
-                                            '<div class="hidden-md hidden-lg">' +
-                                            '<div class="inline pos-rel">' +
-                                            '<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-                                            '<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-                                            '</button>' +
-                                            '<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-                                            '<li>' +
-                                            '<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-                                            '<span class="green" onclick=editBudgetSD(' + row + ')>' +
-                                            '<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-                                            '</span></a></li></ul></div></div>';
+                                            '</a></div>';
                                 }
                                 return html;
                             }

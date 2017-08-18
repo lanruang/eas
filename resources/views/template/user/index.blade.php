@@ -112,7 +112,7 @@
 								},
 								"columns": [
 									{ "data": "name", render: function(data, type, row, meta) {
-										return '<a style="cursor:pointer" onclick="userInfo(' + row.id + ')">' + row.name + '</a>';
+										return '<a style="cursor:pointer" onclick="userInfo(\'' + row.id + '\')">' + row.name + '</a>';
 									}},
 									{ "data": "email"},
 									{ "data": "status", "class": "center", render: function(data, type, row) {
@@ -123,37 +123,14 @@
 								"columnDefs": [{
 									"targets": 3,
 									"render": function(data, type, row) {
-										html = '<div class="hidden-sm hidden-xs action-buttons">' +
-													'<a class="green" href="#" onclick="editUser(' + row.id + ')">' +
+										html = '<div class="action-buttons">' +
+													'<a class="green" href="#" onclick="editUser(\'' + row.id + '\')">' +
 														'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>';
-										html +='<a class="red" href="#" onclick="delUser(' + row.id + ')">' +
+										html +='<a class="red" href="#" onclick="delUser(\'' + row.id + '\')">' +
 												'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 												'</a>';
-										html +='</div>' +
-												'<div class="hidden-md hidden-lg">' +
-													'<div class="inline pos-rel">' +
-														'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-															'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-														'</button>' +
-														'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-															'<li>' +
-																'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-																	'<span class="green" onclick="editUser(' + row.id + ')">' +
-																		'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-																	'</span>' +
-																'</a>' +
-															'</li>';
-										html += '<li>' +
-													'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delUser(' + row.id + ')">' +
-													'<span class="red">' +
-													'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
-													'</span>' +
-													'</a>' +
-													'</li>';
-										html += '</ul>' +
-												'</div>' +
-												'</div>';
+										html +='</div>';
 										return html;
 									}
 								}]
@@ -204,11 +181,11 @@
 		}
 
 		function editUser(e){
-			window.location.href = "{{route('user.editUser')}}" + "/" + e;
+			window.location.href = "{{route('user.editUser')}}?id=" + e;
 		}
 
 		function userInfo(e){
-			window.location.href = "{{route('user.userInfo')}}" + "/" + e;
+			window.location.href = "{{route('user.userInfo')}}?id=" + e;
 		}
 
 		function searchUser() {

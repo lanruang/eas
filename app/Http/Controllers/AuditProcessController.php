@@ -86,6 +86,7 @@ class AuditProcessController extends Common\CommonController
 
         //创建审核流程
         $auditProcessDb = new auditProcessDb();
+        $auditProcessDb->audit_id = getId();
         $auditProcessDb->audit_dep = $input['dep_id'];
         $auditProcessDb->audit_type = $input['audit_type'];
         $auditProcessDb->audit_name = $input['audit_name'];
@@ -101,13 +102,23 @@ class AuditProcessController extends Common\CommonController
     }
 
     //编辑审核流程视图
-    public function editAudit($id = '0')
+    public function editAudit()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt")){
-            return redirectPageMsg('-1', '参数错误', route('auditProcess.index'));
-        };
-
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.index'));
+        }
+        $id = $input['id'];
         //获取数据
         $data['audit'] = auditProcessDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'audit_process.audit_dep')
             ->select('audit_process.*', 'dep.dep_name AS department')
@@ -142,26 +153,21 @@ class AuditProcessController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-
-        //检测id类型是否整数
-        if(!array_key_exists('audit_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('auditProcess.editAudit')."/".$input['audit_id']);
-        };
         $rules = [
             'audit_name' => 'required|between:1,100',
             'audit_user' => 'required',
-            'audit_id' => 'required|digits_between:0,11',
+            'audit_id' => 'required|between:32,32',
         ];
         $message = [
             'audit_name.required' => '请填写审核流程名称',
             'audit_name.between' => '审核流程名称字符数过多',
             'audit_user.required' => '请添加审核流程人员',
-            'audit_id.required' => '参数错误',
-            'audit_id.digits_between' => '参数格式错误',
+            'audit_id.required' => '参数不存在',
+            'audit_id.between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('auditProcess.editAudit')."?id=".$input['audit_id']);
         }
 
         //判断审核流程是否存在
@@ -177,7 +183,7 @@ class AuditProcessController extends Common\CommonController
                                 ->where('audit_dep', $input['dep_id'])
                                 ->first();
         if($result){
-            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', '审核流程已存在', route('auditProcess.editAudit')."?id=".$input['audit_id']);
         }
 
         //格式化数据
@@ -197,7 +203,7 @@ class AuditProcessController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', "编辑成功", route('auditProcess.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('auditProcess.editAudit')."/".$input['audit_id']);
+            return redirectPageMsg('-1', "编辑失败", route('auditProcess.editAudit')."?id=".$input['audit_id']);
         }
     }
     
@@ -212,7 +218,19 @@ class AuditProcessController extends Common\CommonController
 
         //获取参数
         $input = Input::all();
-
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        
         //获取数据
         $result = auditProcessDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'audit_process.audit_dep')
             ->select('audit_process.*', 'dep.dep_name AS department')

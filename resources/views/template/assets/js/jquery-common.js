@@ -1,16 +1,17 @@
 // JavaScript Document
 	statusArr = new Array();
+	statusArr['sub_0'] = '<span></span>';
 	statusArr['sub_1'] = '<span>借</span>';
-	statusArr['sub_0'] = '<span>贷</span>';
+	statusArr['sub_-1'] = '<span>贷</span>';
 	statusArr['-1'] = '<span style="color:red;">已删除</span>';
 	statusArr['1'] = '<span>使用中</span>';
 	statusArr['0'] = '<span style="color:red;">已停用</span>';
 	statusArr['102'] = '<span style="color:green;">更新预算项</span>';
+	statusArr['200'] = '<span style="color:red;">拒绝付款</span>';
 	statusArr['201'] = '<span>完结</span>';
 	statusArr['202'] = '<span style="color:green;">编辑单据</span>';
 	statusArr['203'] = '<span style="color:orange;">出纳付款</span>';
 	statusArr['204'] = '<span style="color:orange;">确认收款</span>';
-	statusArr['205'] = '<span style="color:red;">拒绝付款</span>';
 	statusArr['1000'] = '<span>未审批</span>';
 	statusArr['1001'] = '<span>已审批</span>';
 	statusArr['1002'] = '<span style="color:green;">批准</span>';

@@ -14,13 +14,14 @@
 				<div class="grid2 new_grid2">
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addReimburse();">我要报销</button>
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listReimburse();">查看单据</button>
+					<button type="button" class="btn btn-white btn-sm btn-round btn-warning" onclick="confirmAmount();">确认收款</button>
 				</div>
 
 				<div class="grid2 new_grid2">
 					<button type="button" class="btn btn-white btn-sm btn-round" data-toggle="modal" onclick="listAuditReimFarm();">提交单据</button>
 					<button type="button" class="btn btn-white btn-sm btn-round"  onclick="listAuditFarm();">审批进度</button>
-					<button id="reimFarmBtn"  href="#reimburse-form" data-toggle="modal" type="button" class="hide">提交预算视图</button>
-					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审核进度视图</button>
+					<button id="reimFarmBtn"  href="#reimburse-form" data-toggle="modal" type="button" class="hide">提交单据视图</button>
+					<button id="listAuditBtn"  href="#listAudit-form" data-toggle="modal" type="button" class="hide">查看审批进度视图</button>
 				</div>
 			</div>
 			<p></p>
@@ -46,7 +47,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" id="farmClose" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="blue bigger">提交预算</h4>
+					<h4 class="blue bigger">提交单据</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
@@ -57,7 +58,7 @@
 									<div class="col-sm-6">
 										<textarea class="input-xlarge" name="process_text" id="process_text"></textarea>
 										<br>
-										<span class="help-block">提交后在审核过程中将无法修改.</span>
+										<span class="help-block">提交后在审批过程中将无法修改.</span>
 									</div>
 								</div>
 
@@ -87,7 +88,7 @@
 						<div class="col-xs-12">
 
 							<div class="widget-box widget-color-blue3">
-								<div class="widget-header center"><h5 class="widget-title bigger lighter">预览审核流程</h5>
+								<div class="widget-header center"><h5 class="widget-title bigger lighter" id="lAFTitle">审批流程</h5>
 								</div>
 								<div class="widget-body">
 									<div id="auditStart" class="center" style="padding:8px; border-top:1px solid #ddd;">
@@ -101,6 +102,7 @@
 											<th class="center">部门</th>
 											<th class="center">岗位</th>
 											<th class="center">姓名</th>
+											<th class="center">审批意见</th>
 										</tr>
 										</thead>
 										<tbody id="auditTable">
@@ -179,27 +181,12 @@
 							"render": function(data, type, row) {
 								html = '';
 								if(row.exp_status == '202'){
-									html = '<div class="hidden-sm hidden-xs action-buttons">' +
-											'<a class="green" href="#" onclick="editReimburse(' + row.exp_id + ')">' +
+									html = '<div class="action-buttons">' +
+											'<a class="green" href="#" onclick="editReimburse(\'' + row.exp_id + '\')">' +
 											'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
-											'</a><a class="red" href="#" onclick="delReimburse(' + row.exp_id + ')">' +
+											'</a><a class="red" href="#" onclick="delReimburse(\'' + row.exp_id + '\')">' +
 											'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
-											'</a></div>' +
-											'<div class="hidden-md hidden-lg">' +
-											'<div class="inline pos-rel">' +
-											'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-											'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-											'</button>' +
-											'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-											'<li>' +
-											'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-											'<span class="green" onclick="editReimburse(' + row.exp_id + ')">' +
-											'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-											'</span></a></li><li>' +
-											'<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete"  onclick="delReimburse(' + row.exp_id + ')">' +
-											'<span class="red">' +
-											'<i class="ace-icon fa fa-trash-o bigger-120"></i>' +
-											'</span></a></li></ul></div></div>';
+											'</a></div>';
 								}
 								return html;
 							}
@@ -227,15 +214,15 @@
 		}
 
 		function editReimburse(e){
-			window.location.href = "{{ route('reimburse.editReimburse') }}" + "/" + e;
+			window.location.href = "{{ route('reimburse.editReimburse') }}?id=" + e;
 		}
 
 		function listReimburse(){
 			if(select_id == ''){
-				alertDialog('-1', '请选择一个预算！');
+				alertDialog('-1', '请选择单据！');
 				return false;
 			}
-			window.location.href = "{{route('reimburse.listReimburse')}}" + "/" + select_id;
+			window.location.href = "{{route('reimburse.listReimburse')}}?id=" + select_id;
 		}
 
 		//删除单据
@@ -280,16 +267,16 @@
 		//提交审批视图
 		function listAuditReimFarm(){
 			if(select_id == ''){
-				alertDialog('-1', '请选择一个单据！');
+				alertDialog('-1', '请选择单据！');
 				return false;
 			}
 			$('#reimFarmBtn').click();
 		}
 
-		//提交预算
+		//提交单据
 		function subBudget(){
 			if(select_id == ''){
-				alertDialog('-1', '请选择一个预算！');
+				alertDialog('-1', '请选择单据！');
 				return false;
 			}
 			if($('#validation-form').valid()){
@@ -334,10 +321,10 @@
 			};
 		}
 
-		//查看审核进度
+		//查看审批进度
 		function listAuditFarm(){
 			if(select_id == ''){
-				alertDialog('-1', '请选择一个预算！');
+				alertDialog('-1', '请选择单据！');
 				return false;
 			}
 			var data = {
@@ -349,6 +336,9 @@
 				var audit_data = res.auditProcess;
 				var sort = 1;
 				$('#auditTable').html('');
+				if(res.audit_status == '1001'){
+					$('#lAFTitle').text('审批流程—完结');
+				}
 				$.each(audit_data, function(i, v){
 					if(v.uid == res.audit_user){
 						html = '<tr style="background-color:#E7E7E7!important;">' +
@@ -356,13 +346,26 @@
 					}else{
 						html = '<tr><td></td>';
 					}
-					html += '<td class="center align-middle">第'+(i+1)+'审核</td>' +
+					html += '<td class="center align-middle">第'+(i+1)+'审批</td>' +
 							'<td class="center align-middle">'+v.dep_name+'</td>' +
 							'<td class="center align-middle">'+v.pos_name+'</td>' +
-							'<td class="center align-middle">'+v.user_name+'</td>' +
-							'</tr>';
+							'<td class="center align-middle">'+v.user_name+'</td>';
+					if(v.audit_res != null){
+						html += '<td class="center align-middle">' +
+								'<button type="button" class="btn btn-success btn-minier" onclick="listAuditInfo('+ i +', this);"> 查 看 </button>' +
+								'</td>' +
+								'</tr>'+
+								'<tr id="lAI'+ i +'" class="hide"><td colspan="6" style="word-break:break-all; word-wrap:break-all;">' +
+								'<div style="padding-left: 5%;">' +
+								'<p><a>审批结果：</a>'+ formatStatus(v.audit_res) + '</p>'+
+								'<p>　　' + v.audit_text + '</p>' +
+								'<p><i class="ace-icon fa fa-clock-o bigger-110"></i>'+ v.audit_time + '</p>'+
+								'</div></td></tr>';
+					}else{
+						html += '<td class="center align-middle">&nbsp;</td></tr>';
+					}
 					if(audit_data.length > sort){
-						html += '<tr><td colspan="5" class="center">' +
+						html += '<tr><td colspan="6" class="center">' +
 								'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
 								'</td></tr>';
 					}
@@ -373,6 +376,61 @@
 			}else{
 				alertDialog(res.status, res.msg);
 			}
+		}
+
+		//查看审批详情
+		function listAuditInfo(id, e){
+			if($('#lAI'+id).attr('class') == 'hide'){
+				$('#lAI'+id).removeClass('hide');
+				e.innerHTML = '关 闭';
+			}else{
+				$('#lAI'+id).addClass('hide');
+				e.innerHTML = '查 看';
+			}
+
+		}
+
+		//确认收款
+		function confirmAmount(e){
+			if(select_id == ''){
+				alertDialog('-1', '请选择单据！');
+				return false;
+			};
+			bootbox.confirm({
+				message: '<h4 class="header smaller lighter orange bolder"><i class="ace-icon fa fa-bullhorn"></i>提示信息</h4>　　请确认操作!',
+				buttons: {
+					confirm: {
+						label: "确定",
+						className: "btn-primary btn-sm",
+					},
+					cancel: {
+						label: "取消",
+						className: "btn-sm",
+					}
+				},
+				callback: function(result) {
+					if(result && select_id) {
+						$.ajax({
+							type: "post",
+							async:false,
+							dataType: "json",
+							url: '{{route('reimburse.confirmPay')}}',
+							data: {
+								"id": select_id,
+								"_token": '{{csrf_token()}}',
+							},
+							success: function(res){
+								if(res.status == true){
+									reimburseTable.ajax.reload(null, true);
+									alertDialog(res.status, res.msg);
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						});
+					}
+				}
+			});
 		}
 	</script>
 @endsection()

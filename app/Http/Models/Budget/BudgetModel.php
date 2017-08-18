@@ -8,5 +8,6 @@ class BudgetModel extends Model
 {
     protected $table = 'budget';                            //表名称
     protected $primaryKey = 'budget_id';                   //主键
+    public  $incrementing = false;
     
 }

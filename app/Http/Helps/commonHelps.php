@@ -62,12 +62,13 @@
      * @return	json
      *
      */
-    function redirectPageMsg($status = '1', $msg = '', $url = '')
+    function redirectPageMsg($status = '1', $msg = '', $url = '', $btnMsg = '返回')
     {
         //1-正常，0-提示，-1-错误
         $result['status'] = $status;
         $result['msg'] = $msg;
         $result['url'] = $url;
+        $result['btnMsg'] = $btnMsg;
 
         return view('layouts.pageMsg', $result);
         exit();
@@ -96,13 +97,12 @@
     /**
      * 树形排序
      * @param	array		$array
-     * @param	int			$pid
+     * @param	string		$pid
      * @return	array
      */
-    function sortTree($array, $pid = 0, $level = 0)
+    function sortTree($array, $pid = '0', $level = 0)
     {
         $arr = array();
-
         foreach ($array as $v) {
             if ($v['pid'] == $pid) {
                 $v['level'] = $level;
@@ -120,10 +120,10 @@
      * 转成树形结构
      *
      * @param	array		$data
-     * @param	int			$pid
+     * @param	string		$pid
      * @return	array
      */
-    function getTree($data, $pid = 0)
+    function getTree($data, $pid = '0')
     {
         $tree = '';
         foreach($data as $k => $v)
@@ -141,16 +141,17 @@
      * 转成树形结构(特殊)
      *
      * @param	array		$data
-     * @param	int			$pid
+     * @param	string		$pid
      * @return	array
      */
-    function getTreeT($data, $pid = 0)
+    function getTreeT($data, $pid = '0')
     {
-        $tree = '';
+        $tree = array();
         foreach($data as $k => $v)
         {
             if($v['pid'] == $pid)
             {
+                $v['oText'] = $v['text'];
                 $type = 'item';
                 $rel = getTreeT($data, $v['id']);
                 if($rel){
@@ -167,15 +168,15 @@
     /**
      * 树形排序预算用
      * @param	array		$array
-     * @param	int			$pid
+     * @param	string		$pid
      * @return	array
      */
-    function sortTreeBudget($array, $pid = 0, $level = 0, $budget = 0)
+    function sortTreeBudget($array, $pid = '0', $level = 0, $budget = 0)
     {
         $arr = array();
         if($budget != '0'){
             foreach($array as $v){
-                if($v['pid']==$pid && $v['sub_id'] == $budget){
+                if($v['pid']==$pid && $v['id'] == $budget){
                     $v['level'] = $level;
                     $arr[] = $v;
                     $v['level'] = $level + 1;
@@ -269,6 +270,15 @@
         return $key;
     }
 
+    /**
+     * 随机数
+     *
+     * @return	string
+     */
+    function getId(){
+        $id = strtoupper(md5(uniqid(mt_rand(), true)));
+        return $id;
+    }
     /**
      * 邮件发送
      *

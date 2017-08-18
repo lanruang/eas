@@ -66,15 +66,24 @@ class UserController extends Common\CommonController
     }
 
     //员工详情
-    public function userInfo($id = '0')
+    public function userInfo()
     {
         $isSession = 0;
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt")){
-            return redirectPageMsg('-1', '参数错误', route('user.index'));
-        };
-
-        if($id == '0'){
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'between:32,32',
+        ];
+        $message = [
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.index'));
+        }
+        $id = isset($input['id']) ? $input['id'] : '';
+        if(!$id){
             $id = session('userInfo.user_id');
             $isSession = '1';
         }
@@ -95,7 +104,9 @@ class UserController extends Common\CommonController
             ->where('department.dep_id', $data['userInfo']->department)
             ->get()
             ->first();
-        $data['userInfo']->dep_leader = $dep_leader->dep_leader;
+        if($dep_leader){
+            $data['userInfo']->dep_leader = $dep_leader->dep_leader;
+        }
         
         if(!$data['userInfo'] || ($data['userInfo']['supper_admin'] == '1' && session('userInfo.user_id') != $data['userInfo']['user_id'])){
             return redirectPageMsg('-1', "员工不存在", route('user.index'));
@@ -146,7 +157,7 @@ class UserController extends Common\CommonController
         echoAjaxJson(0, '修改失败');
     }
 
-    //添加角色视图
+    //添加用户视图
     public function addUser()
     {
         //获取角色
@@ -195,8 +206,8 @@ class UserController extends Common\CommonController
         $rules = [
             'user_name' => 'required|between:1,255',
             'user_email' => 'required|between:1,255|email',
-            'department' => 'digits_between:1,11|numeric',
-            'positions' => 'digits_between:1,11|numeric',
+            'department' => 'between:32,32',
+            'positions' => 'between:32,32',
         ];
         $message = [
             'user_name.required' => '姓名未填写',
@@ -204,10 +215,8 @@ class UserController extends Common\CommonController
             'user_email.required' => '邮箱未填写',
             'user_email.between' => '邮箱字符数过多',
             'user_email.email' => '邮箱格式不正确',
-            'department.digits_between' => '部门参数错误',
-            'department.numeric' => '部门参数错误',
-            'positions.digits_between' => '岗位参数错误',
-            'positions.numeric' => '岗位参数错误',
+            'department.between' => '部门参数错误',
+            'positions.between' => '岗位参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -227,7 +236,9 @@ class UserController extends Common\CommonController
         //创建员工---事务处理
         $result = DB::transaction(function () use($input) {
             //创建用户登录表数据
+            $user_id = getId();
             $userDb = new UserDb();
+            $userDb->user_id = $user_id;
             $userDb->user_name = $input['user_name'];
             $userDb->user_email = $input['user_email'];
             $userDb->user_img = "resources/views/template/assets/avatars/user.jpg";
@@ -238,13 +249,13 @@ class UserController extends Common\CommonController
             $userDb->save();
             //创建用户基础信息表数据
             $userBsDb = new UsersBaseDb();
-            $userBsDb->user_id = $userDb->user_id;
+            $userBsDb->user_id = $user_id;
             $userBsDb->department = $input['department'];
             $userBsDb->positions = $input['positions'];
             $userBsDb->save();
             //创建用户详情表数据
             $userIoDb = new UsersInfoDb();
-            $userIoDb->user_id = $userDb->user_id;
+            $userIoDb->user_id = $user_id;
             $userIoDb->save();
             return true;
         });
@@ -257,12 +268,23 @@ class UserController extends Common\CommonController
     }
 
     //编辑员工视图
-    public function editUser($id = '0')
+    public function editUser()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('user.index'));
-        };
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.index'));
+        }
+        $id = $input['id'];
 
         //获取员工信息
         $user = UserDb::join('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
@@ -279,7 +301,9 @@ class UserController extends Common\CommonController
             ->where('department.dep_id', $user->department)
             ->get()
             ->first();
-        $user->dep_leader = $dep_leader->dep_leader;
+        if($dep_leader){
+            $user->dep_leader = $dep_leader->dep_leader;
+        }
 
         if(!$user){
             return redirectPageMsg('-1', "参数错误", route('user.index'));
@@ -329,26 +353,24 @@ class UserController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-        //检测id是否存在
-        if(!array_key_exists('user_id', $input)){
-            return redirectPageMsg('-1', '参数错误', route('user.index'));
-        };
+
         $rules = [
             'user_name' => 'required|between:1,255',
-            'department' => 'digits_between:1,11|numeric',
-            'positions' => 'digits_between:1,11|numeric',
+            'department' => 'between:32,32',
+            'positions' => 'between:32,32',
+            'user_id' => 'required|between:32,32',
         ];
         $message = [
             'user_name.required' => '姓名未填写',
             'user_name.between' => '姓名字符数过多',
-            'department.digits_between' => '部门参数错误',
-            'department.numeric' => '部门参数错误',
-            'positions.digits_between' => '岗位参数错误',
-            'positions.numeric' => '岗位参数错误',
+            'department.between' => '部门参数错误',
+            'positions.between' => '岗位参数错误',
+            'user_id.required' => '参数不存在',
+            'user_id.integer' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."/".$input['user_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('user.editRole')."?id=".$input['user_id']);
         }
 
         //格式化数据
@@ -378,7 +400,7 @@ class UserController extends Common\CommonController
         if($result){
             return redirectPageMsg('1', "编辑成功", route('user.index'));
         }else{
-            return redirectPageMsg('-1', "编辑失败", route('user.editUser')."/".$uid);
+            return redirectPageMsg('-1', "编辑失败", route('user.editUser')."?id=".$uid);
         }
     }
 
@@ -394,12 +416,11 @@ class UserController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -431,11 +452,11 @@ class UserController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {

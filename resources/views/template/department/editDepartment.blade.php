@@ -8,7 +8,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('deparment.index')}}">部门列表</a></li>
+	<li><a href="{{route('department.index')}}">部门列表</a></li>
 	<li>添加部门</li>
 @endsection()
 
@@ -235,12 +235,10 @@
 				ignore: "",
 				rules: {
 					dep_name: {required: true, maxlength:50},
-					dep_leader: {number: true},
 					dep_sort: {required: true, maxlength: 4, number: true}
 				},
 				messages: {
 					dep_name: {required: "请填写部门名称.", maxlength: "字符数超出范围."},
-					dep_leader: {number: "请重新选择部分负责人."},
 					dep_sort: {required: "请填写排序.", number: "必须未数字.", maxlength: "字符数超出范围."}
 				},
 				highlight: function (e) {

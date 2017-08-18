@@ -82,25 +82,9 @@
 									"targets": 2,
 									"render": function(data, type, row) {
 											html = '<div class="hidden-sm hidden-xs action-buttons">' +
-													'<a class="green" href="#" onclick="editPositions(' + row.id + ')">' +
+													'<a class="green" href="#" onclick="editPositions(\'' + row.id + '\')">' +
 													'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 													'</a>'+
-													'</div>' +
-													'<div class="hidden-md hidden-lg">' +
-													'<div class="inline pos-rel">' +
-													'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-													'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-													'</button>' +
-													'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-													'<li>' +
-													'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-													'<span class="green" onclick="editPositions(' + row.id + ',1)">' +
-													'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-													'</span>' +
-													'</a>' +
-													'</li>'+
-													'</ul>' +
-													'</div>' +
 													'</div>';
 										return html;
 									}
@@ -113,7 +97,7 @@
 		}
 
 		function editPositions(e){
-			window.location.href = "{{route('positions.editPositions')}}" + "/" + e;
+			window.location.href = "{{route('positions.editPositions')}}?id=" + e;
 		}
 
 	</script>

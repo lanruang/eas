@@ -325,7 +325,7 @@
 						'<td class="center align-middle">'+v.dep_name+'</td>' +
 						'<td class="center align-middle">'+v.pos_name+'</td>' +
 						'<td class="center align-middle">'+v.user_name+'</td>' +
-						'<td class="center align-middle">'+'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+v.uid+');">删除</button>'+'</td>' +
+						'<td class="center align-middle">'+'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser(\''+v.uid+'\');">删除</button>'+'</td>' +
 						'</tr>';
 				if(audit_data.length > sort){
 					html += '<tr><td colspan="5" class="center">' +

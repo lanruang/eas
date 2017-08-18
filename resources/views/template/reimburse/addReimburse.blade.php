@@ -63,38 +63,15 @@
 								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
 							</td>
 							<td class="align-right col-xs-1">
-								<div class="hidden-sm hidden-xs action-buttons">
+								<div class="action-buttons">
 									@if ($v['enclosure'])
-										<a href="{{ asset($v['url']) }}" class="green cboxElement" title="查看附件">
+										<a href="{{ asset('enclosure/'.$v['url']) }}" class="green cboxElement" title="查看附件">
 											<i class="ace-icon fa fa-search-plus bigger-130"></i>
 										</a>
 									@endif
 									<a class="red" href="#" onclick="delReimburseMain(this ,'{{ $v['exp_id'] }}')">
 										<i class="ace-icon fa fa-trash-o bigger-130"></i>
 									</a>
-								</div>
-								<div class="hidden-md hidden-lg">
-									<div class="inline pos-rel">
-										<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">
-											<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
-										</button>
-										<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
-											@if ($v['enclosure'])
-											<li>
-												<a href="{{ asset($v['url']) }}" class="green cboxElement" title="查看附件">
-													<i class="ace-icon fa fa-search-plus bigger-120"></i>
-												</a>
-											</li>
-											@endif
-											<li>
-												<a href="#" class="tooltip-error" data-rel="tooltip" title="Delete" onclick="delReimburseMain(this ,'{{ $v['exp_id'] }}')">
-												<span class="red">
-													<i class="ace-icon fa fa-trash-o bigger-120"></i>
-												</span>
-												</a>
-											</li>
-										</ul>
-									</div>
 								</div>
 							</td>
 						</tr>
@@ -112,6 +89,7 @@
 					</tr>
 				</table>
 			</div>
+
 			<div id="reimburseForm" class="hide col-sm-offset-2 col-sm-8">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -335,26 +313,13 @@
 							'<td class="center col-xs-1">' +
 							'<i class="ace-icon fa fa-check '+enclosure+' bigger-130"></i></td>' +
 							'<td class="align-right col-xs-1">'+
-							'<div class="hidden-sm hidden-xs action-buttons">';
+							'<div class="action-buttons">';
 				if(rel.data.url){
 					html += '<a href="'+ rel.data.url +'" class="green cboxElement" title="查看附件">'+
 							'<i class="ace-icon fa fa-search-plus bigger-130"></i></a>';
 				}
-					html += '<a class="red" href="#" onclick="delReimburseMain(this, '+ rel.data.id+')">' +
-							'<i class="ace-icon fa fa-trash-o bigger-130"></i></a></div>' +
-							'<div class="hidden-md hidden-lg">' +
-							'<div class="inline pos-rel">' +
-							'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto"> ' +
-							'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i></button> ' +
-							'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">';
-				if(rel.data.url){
-					html += '<li><a href="'+ rel.data.url +'" class="green cboxElement" title="查看附件">'+
-							'<i class="ace-icon fa fa-search-plus bigger-120"></i></a></li>';
-				}
-					html += '<li><a href="#" class="tooltip-error testasdt" data-rel="tooltip" title="Delete" onclick="delReimburseMain(this, '+ rel.data.id+')"> ' +
-							'<span class="red">' +
-							'<i class="ace-icon fa fa-trash-o bigger-120"></i> ' +
-							'</span></a></li></ul></div></div></td></tr>'
+					html += '<a class="red" href="#" onclick="delReimburseMain(this, \''+ rel.data.id+'\')">' +
+							'<i class="ace-icon fa fa-trash-o bigger-130"></i></a></div></td></tr>';
 				$('#expMainTable tr:eq(-1):last').before(html);
 				alertDialog('1', rel.msg);
 				getExpMainAmount();

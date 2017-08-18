@@ -8,4 +8,5 @@ class AuditInfoModel extends Model
 {
     protected $table = 'audit_info';                   //表名称
     protected $primaryKey = 'process_id';              //主键
+    public  $incrementing = false;
 }

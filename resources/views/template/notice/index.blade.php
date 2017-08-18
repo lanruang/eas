@@ -61,16 +61,14 @@
 						"columns": [
 							{"data": "notice_message", "class": "align-middle", render: function(data, type, row) {
 								var html;
-								var type = row.type.toString();
-								var check = row.check.toString();
 								var see = row.see.toString();
 
-								if(type + check == '10' || type + see == '00'){
+								if(see == '0'){
 									html = '<i class="ace-icon fa fa-star orange2"></i>　';
-									html += '<span class="btn_cp blue" onclick="noticeRead('+ row.notice_id +');">'+row.notice_message+'</span>';
+									html += '<span class="btn_cp blue" onclick="noticeRead(\''+ row.notice_id +'\');">'+row.notice_message+'</span>';
 								}else{
 									html = '<i class="ace-icon fa fa-star-o light-grey"></i>　';
-									html += '<span class="btn_cp" onclick="noticeRead('+ row.notice_id +');">'+row.notice_message+'</span>';
+									html += '<span class="btn_cp" onclick="noticeRead(\''+ row.notice_id +'\');">'+row.notice_message+'</span>';
 								}
 								return html;
 							}},
@@ -80,7 +78,7 @@
 		});
 
 		function noticeRead(e){
-			window.location.href = "{{route('notice.noticeRead')}}" + "/" + e;
+			window.location.href = "{{route('notice.noticeRead')}}?id=" + e;
 		}
 	</script>
 @endsection()

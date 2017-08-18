@@ -9,8 +9,8 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('budget.index')}}">预算列表</a></li>
-	<li>编辑预算</li>
+	<li><a href="{{route('budgetSum.index')}}">汇总预算列表</a></li>
+	<li>编辑汇总预算</li>
 @endsection()
 
 {{--页面内容--}}

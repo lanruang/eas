@@ -40,7 +40,7 @@
 					<th class="center col-xs-1">操作</th>
 				</tr>
 				@foreach ($data['expMain'] as $k => $v)
-					<tr title="qwer">
+					<tr>
 						<td class="center col-xs-1 align-middle">{{ $k+1 }}</td>
 						<td class="align-middle">{{ $v['exp_remark'] }}</td>
 						<td class="align-right col-xs-2 align-middle">{{ $v['exp_amount'] }}</td>
@@ -51,7 +51,7 @@
 						</td>
 						<td class="center col-xs-1 align-middle">
 							@if ($v['enclosure'])
-								<button href="{{ asset($v['url']) }}" type="button"
+								<button href="{{ asset('enclosure/'.$v['url']) }}" type="button"
 										class="btn btn-success btn-minier cboxElement">查 看
 								</button>
 							@endif

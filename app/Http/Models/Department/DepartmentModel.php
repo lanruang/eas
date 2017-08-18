@@ -8,4 +8,5 @@ class DepartmentModel extends Model
 {
     protected $table = 'department';                      //表名称
     protected $primaryKey = 'dep_id';                   //主键
+    public  $incrementing = false;
 }

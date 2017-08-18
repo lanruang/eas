@@ -109,7 +109,7 @@ class Encrypter implements EncrypterContract
         if ($decrypted === false) {
             throw new DecryptException('Could not decrypt the data.');
         }
-
+      
         return unserialize($decrypted);
     }
 

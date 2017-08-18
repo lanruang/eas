@@ -239,14 +239,14 @@
 				rules: {
 					user_name: {required: true, maxlength:200},
 					user_email: {required: true, email: true, maxlength:200},
-					department: {required: true, number: true, maxlength:10},
-					positions: {required: true, number: true, maxlength:10}
+					department: {required: true, maxlength:32},
+					positions: {required: true,  maxlength:32}
 				},
 				messages: {
 					user_name: {required: "请填写姓名.", maxlength: "字符数超出范围."},
 					user_email: {required: "请填写邮箱.", email: "邮箱格式不正确", maxlength: "字符数超出范围."},
-					department: {required: "请选择部门.", maxlength: "部门参数错误.", number: "部门参数错误."},
-					positions: {required: "请选择岗位.", maxlength: "岗位参数错误.", number: "岗位参数错误."}
+					department: {required: "请选择部门.", maxlength: "部门参数错误."},
+					positions: {required: "请选择岗位.", maxlength: "岗位参数错误."}
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');

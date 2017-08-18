@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Models\Expense\ExpenseModel AS ExpenseDb;
 use App\Http\Models\Expense\ExpenseMainModel AS ExpenseMainDb;
 use App\Http\Models\Expense\ExpEnclosureModel AS ExpEnclosureDb;
-use App\Http\Models\AuditProcess\AuditProcessModel AS auditProcessDb;
-use App\Http\Models\AuditProcess\AuditInfoModel AS auditInfoDb;
-use App\Http\Models\User\UserModel AS userDb;
+use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
+use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
+use App\Http\Models\User\UserModel AS UserDb;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;
@@ -101,6 +101,7 @@ class ReimburseController extends Common\CommonController
 
             //创建单号
             $expenseDb = new ExpenseDb();
+            $expenseDb['expense_id'] = getId();
             $expenseDb['expense_type'] = 'reimburse';//费用报销
             $expenseDb['expense_dep'] = session('userInfo.dep_id');//部门id
             $expenseDb['expense_user'] = session('userInfo.user_id');//用户id
@@ -129,12 +130,23 @@ class ReimburseController extends Common\CommonController
     }
 
     //编辑报销单据视图
-    public function editReimburse($id = 0)
+    public function editReimburse()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('reimburse.index'));
-        };
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('reimburse.index'));
+        }
+        $id = $input['id'];
 
         //获取编辑状态单据
         $data = ExpenseDb::from('expense AS exp')
@@ -172,12 +184,12 @@ class ReimburseController extends Common\CommonController
 
         $input = Input::all();
         $rules = [
-            'exp_id' => 'required|digits_between:1,11',
+            'exp_id' => 'required|between:32,32',
             'exp_date' => 'required|date',
         ];
         $message = [
             'exp_id.required' => '缺少必要参数',
-            'exp_id.digits_between' => '参数错误',
+            'exp_id.between' => '参数错误',
             'exp_date.required' => '日期获取失败',
             'exp_date.date' => '日期格式错误',
         ];
@@ -233,7 +245,24 @@ class ReimburseController extends Common\CommonController
         if(!$expense){
             echoAjaxJson('-1', '保存失败，单据信息获取失败，请刷新后重试！');
         }
+
+        //移动单据文件
+        if($input['enclosure']){
+            $directory = 'reimburse/'.$expense['expense_id'].'/'.$input['enclosure'];
+            $exists = Storage::disk('storageTemp')->exists($directory);
+            if(!$exists){
+                echoAjaxJson('-1', '保存失败，附件获取失败，请刷新后重试！');
+            }
+            $oldFile = 'uploads/reimburse/'.$expense['expense_id'].'/'.$input['enclosure'];
+            $newFile = 'enclosure/reimburse/'.$expense['expense_id'].'/'.$input['enclosure'];
+            $result = Storage::move($oldFile, $newFile);
+            if(!$result){
+                echoAjaxJson('-1', '保存失败，附件保存失败，请刷新后重试！');
+            }
+        }
+
         //创建数据
+        $data['exp_id'] = getId();
         $data['expense_id'] = $expense['expense_id'];
         $data['exp_remark'] = $input['exp_remark'];
         $data['exp_amount'] = $input['exp_amount'];
@@ -245,16 +274,17 @@ class ReimburseController extends Common\CommonController
         //事物创建数据
         $result = DB::transaction(function () use($data, $input) {
             //创建明细
-            $expId = ExpenseMainDb::insertGetId($data);
+            ExpenseMainDb::insert($data);
             //创建附件
             if($input['enclosure']){
                 $num = explode(',', $input['enclosure']);
                 foreach($num as $v){
+                    $dataEnclo['enclo_id'] = getId();
                     $dataEnclo['expense_id'] = $data['expense_id'];
-                    $dataEnclo['exp_id'] = $expId;
+                    $dataEnclo['exp_id'] = $data['exp_id'];
                     $dataEnclo['enclo_type'] = 'reimburse';
                     $dataEnclo['enclo_user'] = session('userInfo.user_id');
-                    $dataEnclo['enclo_url'] = 'uploads/reimburse/'.$data['expense_id'].'/'.$v;
+                    $dataEnclo['enclo_url'] = 'reimburse/'.$data['expense_id'].'/'.$v;
                     $dataEnclo['created_at'] = date('Y-m-d H:i:s', time());
                     $dataEnclo['updated_at'] = date('Y-m-d H:i:s', time());
                     ExpEnclosureDb::insert($dataEnclo);
@@ -262,8 +292,8 @@ class ReimburseController extends Common\CommonController
             }
 
             $rel['result'] = true;
-            $rel['expId'] = $expId;
-            $rel['url'] = $input['enclosure'] ? asset($dataEnclo['enclo_url']) : '';
+            $rel['expId'] = $data['exp_id'];;
+            $rel['url'] = $input['enclosure'] ? asset('enclosure/'.$dataEnclo['enclo_url']) : '';
             return $rel;
         });
 
@@ -287,12 +317,11 @@ class ReimburseController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -323,6 +352,7 @@ class ReimburseController extends Common\CommonController
         //删除上传的图片
         $directory = 'reimburse/'.$id;
         Storage::disk('storageTemp')->deleteDirectory($directory);
+        Storage::disk('storage')->deleteDirectory($directory);
         if($result){
             echoAjaxJson('1', "删除成功");
         }else{
@@ -342,12 +372,11 @@ class ReimburseController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -394,7 +423,7 @@ class ReimburseController extends Common\CommonController
         if($expEnclo) {
             //删除上传的图片
             $directory = mb_substr($expEnclo['enclo_url'], 8, mb_strlen($expEnclo['enclo_url']));
-            Storage::disk('storageTemp')->delete($directory);
+            Storage::disk('storage')->delete($directory);
         }
         if($result){
             echoAjaxJson('1', "删除成功");
@@ -404,14 +433,25 @@ class ReimburseController extends Common\CommonController
     }
 
     //查看单据详情
-    public function listReimburse($id = 0)
+    public function listReimburse()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('reimburse.index'));
-        };
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('reimburse.index'));
+        }
+        $id = $input['id'];
 
-        //获取编辑状态单据
+        //获取单据
         $data = ExpenseDb::from('expense AS exp')
             ->leftJoin('department AS dep', 'dep.dep_id','=','exp.expense_dep')
             ->leftJoin('users AS u', 'u.user_id','=','exp.expense_user')
@@ -433,7 +473,7 @@ class ReimburseController extends Common\CommonController
             ->toArray();
 
         //获取审批进度
-        $audit = auditInfoDb::from('audit_info AS ai')
+        $audit = AuditInfoDb::from('audit_info AS ai')
             ->leftjoin('audit_info_text AS ait', 'ai.process_id', '=', 'ait.process_id')
             ->leftjoin('users AS u', 'u.user_id', '=', 'ait.created_user')
             ->leftjoin('users_base AS ub', 'ub.user_id', '=', 'ait.created_user')
@@ -449,6 +489,54 @@ class ReimburseController extends Common\CommonController
         return view('reimburse.listReimburse', $data);
     }
 
+    //确认收款
+    public function confirmPay(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        //获取post数据
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32'
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        //单据号是否存在
+        $exp = ExpenseDb::where('expense_id', $input['id'])
+            ->where('expense_status', '204')
+            ->where('expense_user', session('userInfo.user_id'))
+            ->select('expense_id', 'expense_user', 'expense_num')
+            ->get()
+            ->first();
+        if(!$exp){
+            echoAjaxJson('-1', '单据获取失败或未到确认付款步骤，请重试');
+        }
+
+        //更新状态
+        $result = ExpenseDb::where('expense_id', $input['id'])
+            ->where('expense_status', '204')
+            ->where('expense_user', session('userInfo.user_id'))
+            ->select('expense_id', 'expense_user', 'expense_num')
+            ->update(array('expense_status'=>'201'));
+        if($result){
+            echoAjaxJson('1', '操作成功');
+        }else{
+            echoAjaxJson('-1', '操作失败，请刷新重试');
+        }
+    }
+    
     //提交审批
     public function addAudit(Request $request)
     {
@@ -461,12 +549,11 @@ class ReimburseController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -484,10 +571,14 @@ class ReimburseController extends Common\CommonController
         //获取预算审批流程
         $whereIn[] = 0;
         $whereIn[] = session('userInfo.dep_id');
-        $auditArr = auditProcessDb::where('audit_type', 'reimburse')
+        $auditArr = AuditProcessDb::where('audit_type', 'reimburse')
             ->whereIn('audit_dep', $whereIn)
             ->get()
             ->toArray();
+
+        //删除临时上传的图片
+        $directory = 'reimburse/'.$id;
+        Storage::disk('storageTemp')->deleteDirectory($directory);
 
         if($auditArr){
             //审批流程大于1则获取对应部门预算
@@ -506,7 +597,8 @@ class ReimburseController extends Common\CommonController
             $result = DB::transaction(function () use($id, $reimburse, $input, $auditArr) {
                 $process_users = explode(',', $auditArr['audit_process']);
                 //审批内容参数
-                $auditInfoDb = new auditInfoDb();
+                $auditInfoDb = new AuditInfoDb();
+                $auditInfoDb->process_id = getId();
                 $auditInfoDb->process_type = 'reimburse';
                 $auditInfoDb->process_app = $reimburse['expense_id'];
                 $auditInfoDb->process_title = '单据号：'.$reimburse['expense_num'];
@@ -531,20 +623,30 @@ class ReimburseController extends Common\CommonController
             }
         }else{
             $result = DB::transaction(function () use($id) {
-                //更新预算
-                BudgetDb::where('budget_id', $id)
-                    ->where('budget_sum', '0')
-                    ->update(array('status'=>1));
-                //更新预算项目
-                BudgetSubjectDb::where('budget_id', $id)
-                    ->where('status','102')
-                    ->update(array('status'=>1));
-                //更新预算项目金额
-                BudgetSubjectDateDb::where('budget_id', $id)
-                    ->where('status','102')
-                    ->update(array('status'=>1));
+                //转换状态
+                $data['expense_status'] = '203';
+                $data['expense_cashier'] = session('userInfo.sysConfig.reimburse.userCashier');
+                //更新单据状态
+                ExpenseDb::where('expense_id', $id)
+                    ->where('expense_type', 'reimburse')
+                    ->where('expense_status', '202')
+                    ->update($data);
+                //获取单据状态
+                $expense = ExpenseDb::where('expense_id', $id)
+                    ->where('expense_type', 'reimburse')
+                    ->select('expense_num')
+                    ->get()
+                    ->first();
+
+                //发送出纳通知
+                $notice['notice_id'] = getId();
+                $notice['notice_app'] = $id;//需要确认操作
+                $notice['notice_message'] = '报销单据：编号'.$expense['expense_num'].'。已通过审批，等待付款。';
+                $notice['notice_user'] = session('userInfo.sysConfig.reimburse.userCashier');
+                $this->createNotice($notice);
                 return true;
             });
+
 
             if($result){
                 echoAjaxJson('1', '审批通过，因未匹配到相应审批流程，预算将直接通过审批！');
@@ -566,12 +668,11 @@ class ReimburseController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|between:32,32',
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数类型错误',
-            'id.digits_between' => '参数错误'
+            'id.between' => '参数错误'
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -588,34 +689,40 @@ class ReimburseController extends Common\CommonController
         }
 
         //获取审批流程信息
-        $audit = auditInfoDb::where('process_type', 'reimburse')
+        $audit = AuditInfoDb::where('process_type', 'reimburse')
             ->where('process_app', $id)
+            ->select('process_audit_user', 'process_users', 'process_id', 'status')
             ->get()
             ->first();
-        if($audit['status'] == '1001'){
-            echoAjaxJson('-1', '该项目已经结束审审批!');
+        if(!$audit){
+            echoAjaxJson('-1', '该项目未提交审批!');
         }
-        $data['audit_user'] = $audit['process_audit_user'];
+
         //格式化流程
-        $audit = explode(',', $audit['process_users']);
+        $data['audit_user'] = $audit['process_audit_user'];
+        $auditUser = explode(',', $audit['process_users']);
 
         $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
             ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
             ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
-            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
-            ->whereIn('users.user_id', $audit)
+            ->leftjoin('audit_info_text AS aif', 'users.user_id', '=', 'aif.created_user')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid',
+                'aif.audit_text', 'aif.audit_res', 'aif.created_at AS audit_time')
+            ->whereIn('users.user_id', $auditUser)
+            ->where('aif.process_id', $audit['process_id'])
             ->get()
             ->toArray();
 
         //格式化数据
         $data['auditProcess'] = array();
+        $data['audit_status'] = $audit['status'];
         $data['status'] = 1;
-        foreach($audit as $k => $v){
+        foreach($auditUser as $k => $v){
             foreach($result as $u => $d){
                 if($v == $d['uid']) $data['auditProcess'][] = $d;
             }
         }
-
+ 
         //返回结果
         ajaxJsonRes($data);
     }

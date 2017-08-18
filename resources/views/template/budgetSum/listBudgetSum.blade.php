@@ -114,6 +114,7 @@
                         "lengthChange": false,
                         "ordering": false,
                         "searching": false,
+                        "info": false,
                         "serverSide": true,
                         "scrollY": '80vh',
                         "scrollCollapse": true,

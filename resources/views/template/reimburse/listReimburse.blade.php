@@ -40,19 +40,17 @@
 					<th class="center col-xs-1">操作</th>
 				</tr>
 				@foreach ($expMain as $k => $v)
-					<tr title="qwer">
+					<tr>
 						<td class="center col-xs-1 align-middle">{{ $k+1 }}</td>
 						<td class="align-middle">{{ $v['exp_remark'] }}</td>
 						<td class="align-right col-xs-2 align-middle">{{ $v['exp_amount'] }}</td>
 						<td class="center col-xs-1 align-middle">
-							<a>
-								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
-							</a>
+							<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
 						</td>
 						<td class="center col-xs-1 align-middle">
 							@if ($v['enclosure'])
-								<button href="{{ asset($v['url']) }}" type="button"
-										class="btn btn-success btn-minier cboxElement">查 看
+								<button href="{{ asset('enclosure/'.$v['url']) }}" type="button"
+										class="btn btn-success btn-minier cboxElement">查看附件
 								</button>
 							@endif
 						</td>
@@ -96,7 +94,7 @@
 
 			var auditDate = JSON.parse('{!! $audit !!}');
 			var html;
-			if(auditDate[0].audit_res != null){
+			if(auditDate){
 				var vv;
 				html = '<tr>';
 				for(var v in auditDate){

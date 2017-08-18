@@ -97,7 +97,7 @@
 						},
 						"columns": [
 							{"data": "sub_ip", render: function(data, type, row, meta) {
-								return '<a style="cursor:pointer" onclick="getParameter(' + row.id + ')">' + row.sub_ip + '</a>';
+								return '<a style="cursor:pointer" onclick="getParameter(\'' + row.id + '\')">' + row.sub_ip + '</a>';
 							}},
 							{"data": "name"},
 							{"data": "type", "class": "center", render: function(data, type, row) {
@@ -112,25 +112,9 @@
 							"targets": 4,
 							"render": function(data, type, row) {
 								html = '<div class="hidden-sm hidden-xs action-buttons">' +
-										'<a class="green" href="#" onclick="editSubjects(' + row.id + ')">' +
+										'<a class="green" href="#" onclick="editSubjects(\'' + row.id + '\')">' +
 										'<i class="ace-icon fa fa-pencil bigger-130"></i>' +
 										'</a>'+
-										'</div>' +
-										'<div class="hidden-md hidden-lg">' +
-										'<div class="inline pos-rel">' +
-										'<button class="btn btn-minier btn-yellow dropdown-toggle" data-toggle="dropdown" data-position="auto">' +
-										'<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>' +
-										'</button>' +
-										'<ul class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">' +
-										'<li>' +
-										'<a href="#" class="tooltip-success" data-rel="tooltip" title="Edit">' +
-										'<span class="green" onclick="editSubjects(' + row.id + ',1)">' +
-										'<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>' +
-										'</span>' +
-										'</a>' +
-										'</li>'+
-										'</ul>' +
-										'</div>' +
 										'</div>';
 								return html;
 							}
@@ -184,7 +168,7 @@
 					per_pid = e.subject.pid;
 					per_id = e.subject.id;
 					//面包削导航
-					$('.breadcrumb li').last().html('<a href="#" onclick="goBack('+per_pid+', this)">' +$('.breadcrumb li').last().text()+ '</a>');
+					$('.breadcrumb li').last().html('<a href="#" onclick="goBack(\''+per_pid+'\', this)">' +$('.breadcrumb li').last().text()+ '</a>');
 					$('.breadcrumb').append('<li>' + e.subject.name + '</li>');
 				}
 				$('#btn_goBack').removeClass('hide');
@@ -236,7 +220,7 @@
 		}
 
 		function editSubjects(e){
-			window.location.href = "{{route('subjects.editSubjects')}}/" + e;
+			window.location.href = "{{route('subjects.editSubjects')}}?id=" + e;
 		}
 
 
