@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-08-18 17:04:17
+Date: 2017-08-21 17:54:09
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -218,9 +218,8 @@ INSERT INTO `budget_subject_date` VALUES ('600408118A6023AB586DF59FE0EC1C91', 'A
 DROP TABLE IF EXISTS `contract`;
 CREATE TABLE `contract` (
   `cont_id` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `cont_class` varchar(8) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_type` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `cont_period` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `cont_class` varchar(8) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_num` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_cust` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -229,6 +228,7 @@ CREATE TABLE `contract` (
   `cont_status` int(4) NOT NULL,
   `cont_amount` decimal(10,0) NOT NULL,
   `cont_remark` text CHARACTER SET utf8 COLLATE utf8_bin,
+  `cont_auto` tinyint(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`cont_id`)
@@ -680,6 +680,26 @@ CREATE TABLE `supplier` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `sys_assembly`
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_assembly`;
+CREATE TABLE `sys_assembly` (
+  `ass_id` char(32) COLLATE utf8_bin NOT NULL,
+  `ass_type` varchar(50) COLLATE utf8_bin NOT NULL,
+  `ass_text` varchar(50) COLLATE utf8_bin NOT NULL,
+  `ass_value` varchar(50) COLLATE utf8_bin NOT NULL,
+  `created_at` timestamp NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`ass_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- ----------------------------
+-- Records of sys_assembly
+-- ----------------------------
+INSERT INTO `sys_assembly` VALUES ('32EC256B4CB7F91EEABB7669225882D6', 'contract_type', '会计收入', '32EC256B4CB7F91EEABB7669225882D6', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `sys_assembly` VALUES ('3B6AB1B587733F9AFA7D37C0AEADCE7F', 'contract_type', '其他收入', '3B6AB1B587733F9AFA7D37C0AEADCE7F', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+
+-- ----------------------------
 -- Table structure for `sys_config`
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_config`;
@@ -753,7 +773,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '0', '2017-08-17 10:20:52', '1', '0', '2017-08-17 10:19:20', '2017-08-17 10:20:52');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2017-08-18 10:18:08', '1', '0', '2016-05-25 05:56:33', '2017-08-18 10:18:08');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2017-08-21 14:14:56', '1', '0', '2016-05-25 05:56:33', '2017-08-21 14:14:56');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '0', '2017-08-17 10:20:57', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------

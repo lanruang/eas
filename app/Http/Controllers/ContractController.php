@@ -42,10 +42,10 @@ class ContractController extends Common\CommonController
         ajaxJsonRes($data);
     }
 
-    //添加供应商视图
-    public function addSupplier()
+    //添加合同视图
+    public function addContract()
     {
-        return view('supplier.addSupplier');
+        return view('contract.addContract');
     }
 
     //添加部门

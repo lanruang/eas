@@ -186,6 +186,7 @@ Route::group(['middleware' => ['permission']], function () {
     //合同列表
     Route::group(['prefix' => 'contract'], function () {
         Route::get('index', ['as' => 'contract.index', 'uses' => 'ContractController@index']);//合同列表
+        Route::get('addContract', ['as' => 'contract.addContract', 'uses' => 'ContractController@addContract']);//添加合同视图
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销

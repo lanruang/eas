@@ -70,7 +70,6 @@
 					<button type="button" class="btn btn-warning btn-xs" href="#user-table" data-toggle="modal">
 						<i class="ace-icon glyphicon glyphicon-plus  bigger-110 icon-only"></i>
 					</button>
-
 				</div>
 
 				<div class="form-group">
