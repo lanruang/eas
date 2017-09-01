@@ -53,6 +53,14 @@ class Permission
                     return redirect(route('component.ctRedirectMsg', $rel));
                 }
             break;
+            case '/reimbursePay':
+                if(!session('userInfo.sysConfig.reimbursePay.subPay')){
+                    $rel['status'] = base64_encode('-1');
+                    $rel['msg'] = base64_encode('费用报销付款方式未设置，无法使用该功能');
+                    $rel['url'] = base64_encode(route('main.index'));
+                    return redirect(route('component.ctRedirectMsg', $rel));
+                }
+            break;
         }
 
         return $next($request);

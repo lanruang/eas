@@ -36,6 +36,16 @@
 				</div>
 
 				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 预算部门 </label>
+					<div class="col-sm-4">
+						<label class="col-sm-8 output" id="dep_pid_list"></label>
+						<button type="button" href="#modal-tree" data-toggle="modal"  class="btn btn-white btn-sm btn-primary">选择</button>
+						<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree();">清除</button>
+						<input type="hidden" name="department" id="department" value=""/>
+					</div>
+				</div>
+
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 预算期间类型 </label>
 					<div class="col-sm-3">
 						<label>
@@ -79,6 +89,24 @@
 		</div>
 	</div>
 
+	<div id="modal-tree" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="widget-box widget-color-blue2">
+				<div class="widget-header">
+					<h4 class="widget-title lighter smaller">选择上级部门</h4>
+					<span class="widget-toolbar">
+						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+					</span>
+				</div>
+
+				<div class="widget-body">
+					<div class="widget-main padding-8">
+						<ul id="tree1"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -91,6 +119,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/chosen.jquery.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/moment.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.daterangepicker.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -107,13 +136,15 @@
 					budget_num: {required: true, maxlength:200},
 					budget_name: {required: true, maxlength:200},
 					budget_period: {required: true},
-					budget_date: {required: true}
+					budget_date: {required: true},
+					department: {required: true}
 				},
 				messages: {
 					budget_num: {required: "请填写预算编号.", maxlength: "字符数超出范围."},
 					budget_name: {required: "请填写预算名称.", maxlength: "字符数超出范围."},
 					budget_period: {required: "请选择预算期间类型."},
-					budget_date: {required: "请选择预算期间."}
+					budget_date: {required: "请选择预算期间."},
+					department: {required: "请选择预算部门"}
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
@@ -123,7 +154,53 @@
 					$(e).remove();
 				},
 			});
+
+			//选择上级部门
+			var sampleData = initiateDemoData();//see below
+			$('#tree1').ace_tree({
+				dataSource: sampleData['dataSource1'],
+				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+				'itemSelect' : true,
+				'folderSelect': true,
+				'multiSelect': false,
+				'open-icon' : 'tree_null_icon_open',
+				'close-icon' : 'tree_null_icon_close',
+				'folder-open-icon' : 'ace-icon tree-plus',
+				'folder-close-icon' : 'ace-icon tree-minus',
+				'selected-icon' : 'null',
+				'unselected-icon' : 'null',
+			}).on('selected.fu.tree', function(e, item) {
+				$('#dep_pid_list').html(item.target.text);
+				$('#department').val(item.target.id);
+				$('#close_tree').click();
+			})
 		})
+
+		function initiateDemoData(){
+			var tree_data = ajaxPost({"_token": '{{csrf_token()}}'}, '{{route('component.ctGetDep')}}');
+			var dataSource1 = function(options, callback){
+				var $data = null
+				if(!("text" in options) && !("type" in options)){
+					$data = tree_data;//the root tree
+					callback({ data: $data });
+					return;
+				}
+				else if("type" in options && options.type == "folder") {
+					if("additionalParameters" in options && "children" in options.additionalParameters)
+						$data = options.additionalParameters.children || {};
+					else $data = {}
+				}
+
+				if($data != null)//this setTimeout is only for mimicking some random delay
+					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}
+			return {'dataSource1': dataSource1}
+		}
+		//清除选项
+		function delTree(){
+			$('#dep_pid_list').html('');
+			$('#dep_pid').val('');
+		}
 
 		//返回
 		function goBack(){

@@ -22,6 +22,13 @@
                 <div class="col-sm-5 row">
                     <div class="profile-user-info profile-user-info-striped">
                         <div class="profile-info-row">
+                            <div class="profile-info-name"> 预算部门</div>
+                            <div class="profile-info-value">
+                                {{ $dep_name }}
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
                             <div class="profile-info-name"> 预算编号</div>
                             <div class="profile-info-value">
                                 {{ $budget_num }}

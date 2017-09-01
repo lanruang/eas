@@ -89,15 +89,26 @@ class ContractController extends Common\CommonController
         }
     }
     
-    //编辑部门视图
-    public function editSupplier ($id = '0')
+    //编辑供应商视图
+    public function editSupplier ()
     {
-        //检测id类型是否整数
-        if(!validateParam($id, "nullInt") || $id == '0'){
-            return redirectPageMsg('-1', '参数错误', route('supplier.index'));
-        };
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('supplier.index'));
+        }
+        $id = $input['id'];
 
-        //获取部门信息
+        //获取供应商信息
         $supplier = SupplierDb::get()
             ->first()
             ->toArray();

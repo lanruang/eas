@@ -15,6 +15,7 @@ use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
 use App\Http\Models\User\UserModel AS UserDb;
+use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
 use Illuminate\Support\Facades\DB;
 
 class BudgetController extends Common\CommonController
@@ -35,11 +36,23 @@ class BudgetController extends Common\CommonController
         //获取参数
         $input = Input::all();
 
+        //获取岗位
+        $depData = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
+            ->where('status', 1)
+            ->orderBy('sort', 'asc')
+            ->get()
+            ->toArray();
+        $arr = sortTree($depData, session('userInfo.dep_id'));
+        foreach($arr as $v){
+            $depIds[] = $v['id'];
+        }
+        $depIds[] = session('userInfo.dep_id');
+
         //检索参数
         $searchSql = array();
-        $searchSql['budget_sum'] = 0;
+        $searchSql[] = array('budget.budget_sum', 0);
         if(array_key_exists('status', $input)){
-            $searchSql[] = array('status', $input['status']);
+            $searchSql[] = array('budget.status', $input['status']);
         }
 
         //分页
@@ -49,12 +62,15 @@ class BudgetController extends Common\CommonController
         //获取记录总数
         $total = BudgetDb::where($searchSql)->count();
         //获取数据
-        $result = BudgetDb::where($searchSql)
-            ->select('budget_id AS id', 'budget_num AS bd_num', 'budget_name AS bd_name',
-                                'budget_start AS bd_start', 'budget_end AS bd_end' , 'status')
+        $result = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->whereIn('budget.department', $depIds)
+            ->where($searchSql)
+            ->select('budget.budget_id AS id', 'budget.budget_num AS bd_num', 'budget.budget_name AS bd_name',
+                'budget.budget_start AS bd_start', 'budget.budget_end AS bd_end' , 'budget.status',
+                'dep.dep_name')
             ->skip($skip)
             ->take($take)
-            ->orderBy('status', 'Desc')
+            ->orderBy('budget.status', 'Desc')
             ->get()
             ->toArray();
 
@@ -90,12 +106,15 @@ class BudgetController extends Common\CommonController
         $input = Input::all();
 
         $rules = [
+            'department' => 'required|between:32,32',
             'budget_num' => 'required|between:1,200',
             'budget_name' => 'required|between:1,200',
             'budget_period' => 'required',
             'budget_date' => 'required',
         ];
         $message = [
+            'department.required' => '请选择部门',
+            'department.between' => '部门参数错误',
             'budget_num.required' => '请填写预算编号',
             'budget_num.between' => '预算编号字符数超出范围',
             'budget_name.required' => '请填写预算名称',
@@ -145,6 +164,7 @@ class BudgetController extends Common\CommonController
         $data['budget_id'] = $budget_id;
         $data['budget_num'] = $input['budget_num'];
         $data['budget_name'] = $input['budget_name'];
+        $data['department'] = $input['department'];
         $data['budget_period'] = $input['budget_period'];
         $data['budget_start'] = $input['budget_start'];
         $data['budget_end'] = $input['budget_end'];
@@ -180,8 +200,10 @@ class BudgetController extends Common\CommonController
         $id = $input['id'];
 
         //获取预算信息
-        $budget = BudgetDb::where('budget_id', $id)
-            ->where('budget_sum', '0')
+        $budget = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->where('budget.budget_id', $id)
+            ->where('budget.budget_sum', '0')
+            ->select('budget.*', 'dep.dep_name', 'dep.dep_id')
             ->get()
             ->first()
             ->toArray();
@@ -201,6 +223,7 @@ class BudgetController extends Common\CommonController
         //验证表单
         $input = Input::all();
         $rules = [
+            'department' => 'required|between:32,32',
             'budget_num' => 'required|between:1,200',
             'budget_name' => 'required|between:1,200',
             'budget_period' => 'required',
@@ -208,6 +231,8 @@ class BudgetController extends Common\CommonController
             'id' => 'required|between:32,32',
         ];
         $message = [
+            'department.required' => '请选择部门',
+            'department.between' => '部门参数错误',
             'budget_num.required' => '请填写预算编号',
             'budget_num.between' => '预算编号字符数超出范围',
             'budget_name.required' => '请填写预算名称',
@@ -215,7 +240,7 @@ class BudgetController extends Common\CommonController
             'budget_period.required' => '请选择预算期间类型',
             'budget_date.required' => '请选择预算期间',
             'id.required' => '参数不存在',
-            'id.integer' => '参数错误',
+            'id.between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -255,8 +280,10 @@ class BudgetController extends Common\CommonController
         $input['budget_end'] = $date[1];
 
         //更新预算数据
+        $data['department'] = $input['department'];
         $data['budget_num'] = $input['budget_num'];
         $data['budget_name'] = $input['budget_name'];
+        $data['department'] = $input['department'];
         $data['budget_period'] = $input['budget_period'];
         $data['budget_start'] = $input['budget_start'];
         $data['budget_end'] = $input['budget_end'];
@@ -279,7 +306,7 @@ class BudgetController extends Common\CommonController
         });
 
         if($result){
-            return redirectPageMsg('1', "编辑成功，预算已被重置", route('budget.addBudgetSub')."?id=".$id);
+            return redirectPageMsg('1', "编辑成功，预算已被重置", route('budget.addBudgetSub')."?id=".$id, '添加预算项');
         }else{
             return redirectPageMsg('-1', "编辑失败", route('budget.editBudget')."?id=".$id);
         }
@@ -305,8 +332,10 @@ class BudgetController extends Common\CommonController
         $id = $input['id'];
 
         //获取预算信息
-        $budget = BudgetDb::where('budget_id', $id)
-            ->where('budget_sum', '0')
+        $budget = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->where('budget.budget_id', $id)
+            ->where('budget.budget_sum', '0')
+            ->select('budget.*', 'dep.dep_name')
             ->get()
             ->first();
         if(!$budget){
@@ -469,7 +498,7 @@ class BudgetController extends Common\CommonController
             ->toArray();
 
         //树形排列科目
-        $result = sortTreeBudget($subjects, 0, 0, session('userInfo.sysConfig.budget.subBudget'));
+        $result = sortTree($subjects, session('userInfo.sysConfig.budget.subBudget'));
         //倒叙科目汇总金额
         $result = array_reverse($result);
 
@@ -552,10 +581,12 @@ class BudgetController extends Common\CommonController
             return redirectPageMsg('-1', $validator->errors()->first(), route('budget.index'));
         }
         $id = $input['id'];
-
+        
         //获取预算信息
-        $budget = BudgetDb::where('budget_id', $id)
-            ->where('budget_sum', '0')
+        $budget = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->where('budget.budget_id', $id)
+            ->where('budget.budget_sum', '0')
+            ->select('budget.*', 'dep.dep_name')
             ->get()
             ->first();
         if(!$budget){
@@ -574,7 +605,7 @@ class BudgetController extends Common\CommonController
             echoAjaxJson(0, '非法请求');
         }
         $input = Input::all();
-        p($input);
+
         //过滤信息
         $rules = [
             'id' => 'required|between:32,32',

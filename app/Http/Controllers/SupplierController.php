@@ -48,7 +48,7 @@ class SupplierController extends Common\CommonController
         return view('supplier.addSupplier');
     }
 
-    //添加部门
+    //添加供应商
     public function createSupplier()
     {
         //验证表单
@@ -89,9 +89,9 @@ class SupplierController extends Common\CommonController
             return redirectPageMsg('-1', "添加失败", route('supplier.addSupplier'));
         }
     }
-    
-    //编辑部门视图
-    public function editSupplier ($id = '0')
+
+    //编辑供应商视图
+    public function editSupplier ()
     {
         //获取参数
         $input = Input::all();
@@ -109,7 +109,7 @@ class SupplierController extends Common\CommonController
         }
         $id = $input['id'];
 
-        //获取部门信息
+        //获取供应商信息
         $supplier = SupplierDb::where('supp_id', $id)
             ->get()
             ->first()

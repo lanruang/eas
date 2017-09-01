@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Models\User\UserModel AS UserDb;
 use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
 use App\Http\Models\Positions\PositionsModel AS PositionsDb;
+use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -117,5 +118,63 @@ class ComponentController extends CommonController
 
         //返回结果
         ajaxJsonRes($result);
+    }
+
+    //获取预算数据
+    public function ctGetBudget(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+
+        //获取岗位
+        $depData = DepartmentDb::select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid')
+            ->where('status', 1)
+            ->orderBy('sort', 'asc')
+            ->get()
+            ->toArray();
+        $arr = sortTree($depData, session('userInfo.dep_id'));
+        foreach($arr as $v){
+            $depIds[] = $v['id'];
+        }
+        $depIds[] = session('userInfo.dep_id');
+
+        //检索参数
+        $searchSql = array();
+        $searchSql[] = array('budget.budget_sum', 0);
+        $searchSql[] = array('budget.status', 1);
+
+        //分页
+        $skip = isset($input['start']) ? intval($input['start']) : 0;//从多少开始
+        $take = isset($input['length']) ? intval($input['length']) : 10;//数据长度
+        //获取记录总数
+        $total = BudgetDb::where($searchSql)->whereIn('budget.department', $depIds)->count();
+        //获取数据
+        $result = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->where($searchSql)
+            ->whereIn('budget.department', $depIds)
+            ->select('budget.budget_id AS id', 'budget.budget_num AS bd_num', 'budget.budget_name AS bd_name',
+                'budget.budget_start AS bd_start', 'budget.budget_end AS bd_end' , 'budget.status',
+                'dep.dep_name')
+            ->skip($skip)
+            ->take($take)
+            ->orderBy('budget.status', 'Desc')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 }

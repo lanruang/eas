@@ -28,6 +28,7 @@
 			<table id="budgetTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
+					<th class="center">预算部门</th>
 					<th class="center">预算编号</th>
 					<th class="center">预算名称</th>
 					<th class="center">起始期间</th>
@@ -209,6 +210,7 @@
 							}
 						},
 						"columns": [
+							{ "data": "dep_name"},
 							{ "data": "bd_num"},
 							{ "data": "bd_name"},
 							{ "data": "bd_start"},
@@ -219,7 +221,7 @@
 							{ "data": "null","class": "center"},
 						],
 						"columnDefs": [{
-							"targets": 5,
+							"targets": 6,
 							"render": function(data, type, row) {
 								html = '';
 								if(row.status == "102") {

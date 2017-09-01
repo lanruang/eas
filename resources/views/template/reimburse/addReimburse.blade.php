@@ -50,6 +50,7 @@
 					<tr class="new_reimburse_bg">
 						<th class="center col-xs-1">序号</th>
 						<th class="center">用途</th>
+						<th class="center">科目（用途）</th>
 						<th class="center col-xs-2">金额</th>
 						<th class="center col-xs-1">附件</th>
 						<th class="center col-xs-1">操作</th>
@@ -58,6 +59,7 @@
 						<tr>
 							<td class="center col-xs-1">{{ $k+1 }}</td>
 							<td>{{ $v['exp_remark'] }}</td>
+							<td>{{ $v['exp_debit'] }}</td>
 							<td class="align-right col-xs-2">{{ $v['exp_amount'] }}</td>
 							<td class="center col-xs-1">
 								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
@@ -78,6 +80,7 @@
 					@endforeach
 					<tr class="new_reimburse_bg">
 						<th class="center">合计</th>
+						<th></th>
 						<th></th>
 						<th class="align-right">0.00</th>
 						<th colspan="2">&nbsp;</th>
@@ -100,6 +103,22 @@
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="validation-form">
 									<div class="form-group">
+										<div class="form-group">
+											<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
+											<div class="col-sm-5">
+												<label class="control-label align-left" id="budget"></label>
+												<input type="hidden" id="budget_id" name="budget_id" value=""/>
+											</div>
+											<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
+											<div class="col-sm-5">
+												<label class="control-label align-left" id="text_debit"></label>
+												<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
+											</div>
+											<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+										</div>
 										<label class="col-sm-3 control-label no-padding-right"> 用途 </label>
 										<div class="col-sm-6">
 											<textarea class="input-xlarge" name="exp_remark" id="exp_remark" placeholder="用途"></textarea>
@@ -157,6 +176,55 @@
 		</div>
 	</div>
 
+	<div id="modal-subject" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="widget-box widget-color-blue2">
+				<div class="widget-header">
+					<h4 class="widget-title lighter smaller">选择科目</h4>
+					<span class="widget-toolbar">
+						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+					</span>
+				</div>
+
+				<div class="widget-body">
+					<div class="widget-main padding-8">
+						<ul id="subject_tree"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="modal-budget" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header no-padding">
+					<div class="table-header">
+						<button type="button" id="selectClose" class="close" data-dismiss="modal" aria-hidden="true">
+							<span class="white">&times;</span>
+						</button>
+						预算列表
+					</div>
+				</div>
+
+				<div class="modal-body">
+					<table id="budgetTable" style="width: 100%;" class="table table-striped table-bordered table-hover">
+						<thead>
+						<tr>
+							<th class="center">预算部门</th>
+							<th class="center">预算编号</th>
+							<th class="center">预算名称</th>
+							<th class="center">起始期间</th>
+							<th class="center">结束期间</th>
+							<th class="center">操作</th>
+						</tr>
+						</thead>
+					</table>
+				</div>
+
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -167,12 +235,27 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox-min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+		var budgetTable;
+		var budgetId;
+		var initTreeData;
+		var amount = 0;
+		var name;
 		$(function() {
+			$('button[href=#modal-subject]').click(function(){
+				if(!budgetId){
+					alertDialog('-1', '请先选择预算！')
+					return false;
+				}
+				name = this.id.substring(4, this.id.length);
+				subjectFun();
+			});
+
 			$('.date-picker').datepicker({
 				autoclose: true,
 				todayHighlight: true,
@@ -258,10 +341,14 @@
 				rules: {
 					exp_remark: {required: true, maxlength:150},
 					exp_amount: {required: true, number:true, min:0.01},
+					budget_id: {required: true},
+					sub_debit: {required: true},
 				},
 				messages: {
 					exp_remark: {required: "请填写用途.", maxlength: "字符数超出范围."},
 					exp_amount: {required: "请填写金额.", number:"请输入数字", min:"金额不能小于或者等于0"},
+					budget_id: {required: "请选择预算."},
+					sub_debit: {required: "请选择科目(用途)."},
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
@@ -272,9 +359,130 @@
 				},
 			});
 
-
+			budgetTable = $('#budgetTable')
+					.DataTable({
+						"lengthChange": false,
+						"ordering": false,
+						"searching": false,
+						"serverSide": true,
+						"ajax": {
+							"type": "post",
+							"async": false,
+							"dataType": "json",
+							"url": '{{route('component.ctGetBudget')}}',
+							"data": {"status":"1", "_token": '{{csrf_token()}}'},
+							"dataSrc": function ( res ) {
+								if(res.status == true){
+									return res.data;
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						},
+						"columns": [
+							{ "data": "dep_name"},
+							{ "data": "bd_num"},
+							{ "data": "bd_name"},
+							{ "data": "bd_start"},
+							{ "data": "bd_end"},
+							{ "data": "null", "class": "center"},
+						],
+						"columnDefs": [{
+							"targets": 5,
+							"render": function(data, type, row) {
+								var html = '<div class="action-buttons">' +
+										"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_num+"', '"+row.bd_name+"')\">" +
+										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
+										'</a></div>';
+								return html;
+							}
+						}]
+					});
 			getExpMainAmount();
 		});
+
+		//初始化下拉菜单
+		function subjectFun(){
+			var data = {"id": budgetId, "_token": '{{csrf_token()}}'};
+			var rel = ajaxPost(data, '{{ route('reimburse.getBudgetSub') }}');
+			if(rel.status == true){
+				initTreeData = rel.data;
+				subjectTree();
+			}else{
+				alertDialog(rel.status, rel.msg);
+			}
+		}
+		//科目选择
+		function subjectTree(){
+			$("#subject_tree").removeData("fu.tree");
+			$("#subject_tree").unbind('click.fu.tree');
+			treeData = initTreeDataFun();//
+			$('#subject_tree').ace_tree({
+				dataSource: treeData['dataSource'],
+				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+				'itemSelect' : true,
+				'folderSelect': false,
+				'multiSelect': false,
+				'open-icon' : 'ace-icon tree-minus',
+				'close-icon' : 'ace-icon tree-plus',
+				'folder-open-icon' : 'ace-icon tree-plus',
+				'folder-close-icon' : 'ace-icon tree-minus',
+				'selected-icon' : 'null',
+				'unselected-icon' : 'null',
+			}).on('selected.fu.tree', function(e, item) {
+				var html = item.target.sub_ip + '<br>' + item.target.oText;
+				if(name == 'debit' && item.target.status != '1'){
+					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+				}else{
+					if(name == 'debit'){
+						var data = {"sub_id":item.target.id, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
+						var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
+						if(rel.status == true){
+							if((rel.data - amount) < 0){
+								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
+							}else{
+								$('#text_'+name).html(html);
+								$('#sub_'+name).val(item.target.id);
+								$('#close_tree').click();
+							}
+						}else{
+							alertDialog('-1', '获取预算科目金额失败');
+						}
+					}else{
+						$('#text_'+name).html(html);
+						$('#sub_'+name).val(item.target.id);
+						$('#close_tree').click();
+					}
+				}
+			});
+		}
+		function initTreeDataFun(){
+			var dataSource = function(options, callback){
+				var $data = null
+				if(!("text" in options) && !("type" in options)){
+					$data = initTreeData;//the root tree
+					callback({ data: $data });
+					return;
+				}
+				else if("type" in options && options.type == "folder") {
+					if("additionalParameters" in options && "children" in options.additionalParameters)
+						$data = options.additionalParameters.children || {};
+					else $data = {}
+				}
+
+				if($data != null)//this setTimeout is only for mimicking some random delay
+					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}
+			return {'dataSource': dataSource}
+		}
+		//选择预算
+		function selectBudget(id, num, name){
+			var value = num + '<br>' + name;
+			budgetId = id;
+			$('#budget_id').val(id);
+			$('#budget').html(value);
+			$('#selectClose').click();
+		}
 
 		//返回
 		function goBack(){
@@ -298,6 +506,8 @@
 					'exp_remark': $('#exp_remark').val(),
 					'exp_amount': $('#exp_amount').val(),
 					'enclosure': $('#enclosure').val(),
+					'budget_id': $('#budget_id').val(),
+					'sub_debit': $('#sub_debit').val(),
 					"_token": '{{csrf_token()}}'
 				}
 				enclosure = $('#enclosure').val() ? 'fa-check green' : 'fa-close red';
@@ -309,6 +519,7 @@
 
 				var html = '<tr><td class="center col-xs-1">'+(expMainNum+1)+'</td>' +
 							'<td>'+data.exp_remark+'</td>' +
+							'<td>'+$('#text_debit').html()+'</td>' +
 							'<td class="align-right col-xs-2">'+data.exp_amount+'</td>' +
 							'<td class="center col-xs-1">' +
 							'<i class="ace-icon fa fa-check '+enclosure+' bigger-130"></i></td>' +
@@ -333,10 +544,10 @@
 			var trNum = $('#expMainTable').find('tr').length -1;
 			var amount = 0;
 			for(var i=1; i<trNum; i++){
-				amount += parseFloat($('#expMainTable')[0].rows[i].cells[2].innerText);
+				amount += parseFloat($('#expMainTable')[0].rows[i].cells[3].innerText);
 			}
 			amount = toDecimal(amount);
-			$('#expMainTable tr:last')[0].cells[2].innerText = amount;
+			$('#expMainTable tr:last')[0].cells[3].innerText = amount;
 			expMainNum = trNum-1;
 		}
 

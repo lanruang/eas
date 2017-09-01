@@ -11,6 +11,8 @@ use App\Http\Models\Expense\ExpEnclosureModel AS ExpEnclosureDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
 use App\Http\Models\User\UserModel AS UserDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
+use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSubjectDateDb;
 use Illuminate\Support\Facades\DB;
 use Validator;
 use Illuminate\Support\Facades\Input;
@@ -50,7 +52,7 @@ class ReimburseController extends Common\CommonController
             ->leftJoin('department AS dep', 'dep.dep_id','=','exp.expense_dep')
             ->leftJoin('users AS u', 'u.user_id','=','exp.expense_user')
             ->select('u.user_name AS user_name', 'dep.dep_name AS dep_name', 'exp.expense_num AS exp_num', 'exp.expense_id AS exp_id',
-                'exp.expense_title AS exp_title', 'exp.expense_date AS exp_date', 'exp.expense_status AS exp_status')
+                'exp.expense_title AS exp_title', 'exp.expense_date AS exp_date', 'exp.expense_status AS exp_status', 'exp.created_at AS add_time')
             ->where($searchSql)
             ->skip($skip)
             ->take($take)
@@ -120,12 +122,13 @@ class ReimburseController extends Common\CommonController
         //获取明细
         $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
             ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->leftjoin('subjects AS sub', 'expM.subject_id_debit', '=', 'sub.sub_id')
             ->where('expM.expense_id', $data['expense_id'])
-            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url',
+                'sub.sub_name AS exp_debit')
             ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
-
         return view('reimburse.addReimburse', $data);
     }
 
@@ -164,8 +167,10 @@ class ReimburseController extends Common\CommonController
         //获取明细
         $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
             ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->leftjoin('subjects AS sub', 'expM.subject_id_debit', '=', 'sub.sub_id')
             ->where('expM.expense_id', $data['expense_id'])
-            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url',
+                'sub.sub_name AS exp_debit')
             ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
@@ -223,6 +228,8 @@ class ReimburseController extends Common\CommonController
         $rules = [
             'exp_remark' => 'required|between:1,150',
             'exp_amount' => 'required|numeric|min:0.01',
+            'budget_id' => 'required|between:32,32',
+            'sub_debit' => 'required|between:32,32',
         ];
         $message = [
             'exp_remark.required' => '请填写用途',
@@ -230,6 +237,10 @@ class ReimburseController extends Common\CommonController
             'exp_amount.required' => '请填写金额',
             'exp_amount.numeric' => '请输入数字',
             'exp_amount.min' => '金额不能小于或者等于0',
+            'budget_id.required' => '请选择预算',
+            'budget_id.between' => '预算参数错误',
+            'sub_debit.required' => '请选择科目借',
+            'sub_debit.between' => '科目借参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
@@ -244,6 +255,24 @@ class ReimburseController extends Common\CommonController
             ->first();
         if(!$expense){
             echoAjaxJson('-1', '保存失败，单据信息获取失败，请刷新后重试！');
+        }
+
+        $date = date('Y-m-d', time());
+        //获取科目金额
+        $budgetAmount = BudgetSubjectDateDb::where('budget_id', $input['budget_id'])
+            ->where('subject_id', $input['sub_debit'])
+            ->where('budget_date', '<=', $date)
+            ->sum('budget_amount');
+        //获取除拒绝外的报销费用
+        $reimburse = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense AS exp', 'exp.expense_id', '=', 'expM.expense_id')
+            ->where('expM.budget_id', $input['budget_id'])
+            ->whereNotIn('exp.expense_status',['200','1003'])
+            ->sum('expM.exp_amount');
+
+        $result = $budgetAmount - $reimburse - $input['exp_amount'];
+        if($result < 0){
+            echoAjaxJson('-1', '预算科目金额不足，无法提交！');
         }
 
         //移动单据文件
@@ -264,6 +293,8 @@ class ReimburseController extends Common\CommonController
         //创建数据
         $data['exp_id'] = getId();
         $data['expense_id'] = $expense['expense_id'];
+        $data['budget_id'] = $input['budget_id'];
+        $data['subject_id_debit'] = $input['sub_debit'];
         $data['exp_remark'] = $input['exp_remark'];
         $data['exp_amount'] = $input['exp_amount'];
         $data['exp_user'] = session('userInfo.user_id');
@@ -292,7 +323,7 @@ class ReimburseController extends Common\CommonController
             }
 
             $rel['result'] = true;
-            $rel['expId'] = $data['exp_id'];;
+            $rel['expId'] = $data['exp_id'];
             $rel['url'] = $input['enclosure'] ? asset('enclosure/'.$dataEnclo['enclo_url']) : '';
             return $rel;
         });
@@ -568,6 +599,16 @@ class ReimburseController extends Common\CommonController
         if(!$reimburse) echoAjaxJson('-1', '参数错误，单据不存！');
         if(!$reimburse['reimburse'] != '202') echoAjaxJson('-1', '提交失败，单据状态错误！');
 
+        //查看明细参数是否完整
+        $isNull = ExpenseMainDb::where('expense_id', $id)
+            ->where(function ($query) {
+                $query->orWhere('budget_id', '')
+                    ->orWhere('subject_id_debit', '');
+            })
+            ->get()
+            ->first();
+        if($isNull) echoAjaxJson('-1', '单据明细“'. $isNull['exp_remark'] .'”中预算或者科目未选择，请编辑后再提交！');
+
         //获取预算审批流程
         $whereIn[] = 0;
         $whereIn[] = session('userInfo.dep_id');
@@ -769,5 +810,113 @@ class ReimburseController extends Common\CommonController
         $data['fUrl'] = $url;
         $data['url'] = $fileName;
         echoAjaxJson('1', '上传成功', $data);
+    }
+
+    //获取预算科目
+    public function getBudgetSub(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        $subjects = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use ($input) {
+            $join->on('bs.subject_id', '=', 'subjects.sub_id')
+                ->where('bs.budget_id', $input['id']);
+        })
+            ->where('subjects.status', 1)
+            ->select('subjects.sub_id AS id', 'subjects.sub_ip AS sub_ip', 'subjects.sub_pid AS pid', 'subjects.sub_id AS id',
+                'subjects.sub_name AS text', 'bs.status AS status')
+            ->orderBy('subjects.sub_ip', 'ASC')
+            ->get()
+            ->toArray();
+
+        //树形排列科目
+        $result = getTreeT($subjects, session('userInfo.sysConfig.reimburse.subReimburse'), 1);
+
+        //倒叙科目汇总金额
+        $result = array_reverse($result);
+
+        foreach ($result as $k => $v) {
+            $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
+            $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];
+            foreach ($result as $kk => $vv) {
+                if ($v['id'] == $vv['pid'] && $v['pid'] != 0) {
+                    $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $vv['budget_amount']);
+                    $result[$k]['parent'] = 1;
+                }
+            }
+        }
+        $result = array_reverse($result);
+
+
+        //创建结果数据
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
+    //核销预算金额
+    public function getCheckAmount(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+        $rules = [
+            'sub_id' => 'required|between:32,32',
+            'budget_id' => 'required|between:32,32',
+        ];
+        $message = [
+            'sub_id.required' => '参数不存在',
+            'sub_id.between' => '参数错误',
+            'budget_id.required' => '参数不存在',
+            'budget_id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $date = date('Y-m-d', time());
+
+        //获取科目金额
+        $budgetAmount = BudgetSubjectDateDb::where('budget_id', $input['budget_id'])
+            ->where('subject_id', $input['sub_id'])
+            ->where('budget_date', '<=', $date)
+            ->sum('budget_amount');
+        //获取除拒绝报销费用
+        $reimburse = ExpenseMainDb::from('expense_main AS expM')
+            ->leftjoin('expense AS exp', 'exp.expense_id', '=', 'expM.expense_id')
+            ->where('expM.budget_id', $input['budget_id'])
+            ->whereNotIn('exp.expense_status',['200','1003'])
+            ->sum('expM.exp_amount');
+        $result = $budgetAmount - $reimburse;
+        //创建结果数据
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 }

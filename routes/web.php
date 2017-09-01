@@ -204,14 +204,14 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('listReimburse', ['as' => 'reimburse.listReimburse', 'uses' => 'ReimburseController@listReimburse']);//查看单据
         Route::post('listAudit', ['as' => 'reimburse.listAudit', 'uses' => 'ReimburseController@listAudit']);//查看审核进度
         Route::post('confirmPay', ['as' => 'reimburse.confirmPay', 'uses' => 'ReimburseController@confirmPay']);//确认付款
+        Route::post('getBudgetSub', ['as' => 'reimburse.getBudgetSub', 'uses' => 'ReimburseController@getBudgetSub']);//获取预算科目
+        Route::post('getCheckAmount', ['as' => 'reimburse.getCheckAmount', 'uses' => 'ReimburseController@getCheckAmount']);//是否超出预算金额
     });
     //报销付款
     Route::group(['prefix' => 'reimbursePay'], function () {
         Route::get('index', ['as' => 'reimbursePay.index', 'uses' => 'ReimbursePayController@index']);//报销付款
         Route::post('getReimbursePay', ['as' => 'reimbursePay.getReimbursePay', 'uses' => 'ReimbursePayController@getReimbursePay']);//获取报销付款单据列表
         Route::get('listReimbursePay', ['as' => 'reimbursePay.listReimbursePay', 'uses' => 'ReimbursePayController@listReimbursePay']);//查看单据
-        Route::post('getBudgetSub', ['as' => 'reimbursePay.getBudgetSub', 'uses' => 'ReimbursePayController@getBudgetSub']);//获取预算科目
-        Route::post('getCheckAmount', ['as' => 'reimbursePay.getCheckAmount', 'uses' => 'ReimbursePayController@getCheckAmount']);//是否超出预算金额
         Route::post('updateExpense', ['as' => 'reimbursePay.updateExpense', 'uses' => 'ReimbursePayController@updateExpense']);//上传图片
         Route::post('payExpense', ['as' => 'reimbursePay.payExpense', 'uses' => 'ReimbursePayController@payExpense']);//上传图片
     });
@@ -223,5 +223,6 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('ctGetUser', ['as' => 'component.ctGetUser', 'uses' => 'Common\ComponentController@ctGetUser']);//用户数据
         Route::post('ctGetDep', ['as' => 'component.ctGetDep', 'uses' => 'Common\ComponentController@ctGetDep']);//部门数据
         Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//岗位数据
+        Route::post('ctGetBudget', ['as' => 'component.ctGetBudget', 'uses' => 'Common\ComponentController@ctGetBudget']);//预算数据
     });
 });

@@ -317,8 +317,10 @@ class AuditMyController extends Common\CommonController
     //预算信息
     private function getBudget($id)
     {
-        $result = BudgetDb::where('budget_id', $id)
-            ->where('budget_sum', '0')
+        $result = BudgetDb::leftjoin('department AS dep', 'dep.dep_id', '=', 'budget.department')
+            ->where('budget.budget_id', $id)
+            ->where('budget.budget_sum', '0')
+            ->select('budget.*', 'dep.dep_name')
             ->get()
             ->first();
         if(!$result){

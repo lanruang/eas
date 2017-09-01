@@ -33,6 +33,7 @@
 					<th class="center">报销日期</th>
 					<th class="center">报销单号</th>
 					<th class="center">单据副标题</th>
+					<th class="center">创建时间</th>
 					<th class="center">状态</th>
 					<th class="center">操作</th>
 				</tr>
@@ -171,13 +172,14 @@
 							{ "data": "exp_date", "class": "center"},
 							{ "data": "exp_num"},
 							{ "data": "exp_title"},
+							{ "data": "add_time", "class": "center"},
 							{ "data": "exp_status", "class": "center", render: function(data, type, row) {
 								return formatStatus(row.exp_status);
 							}},
 							{ "data": "null", "class": "center"},
 						],
 						"columnDefs": [{
-							"targets": 6,
+							"targets": 7,
 							"render": function(data, type, row) {
 								html = '';
 								if(row.exp_status == '202'){

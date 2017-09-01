@@ -75,26 +75,6 @@
     }
 
     /**
-     * 验证参数
-     *
-     * @param	str		$str
-     * @param   str     $param
-     * @param   str     $type
-     * @return	bool
-     *
-     */
-    function validateParam ($str = '', $param = '', $type = '')
-    {
-        switch ($param){
-            case "nullInt"://整数并且可以为空
-                $res = ctype_digit($str);
-            break;
-        }
-
-        return $res;
-    }
-
-    /**
      * 树形排序
      * @param	array		$array
      * @param	string		$pid
@@ -111,7 +91,6 @@
                 $arr = array_merge($arr, sortTree($array, $v['id'], $v['level']));
             }
         }
-
 
         return $arr;
     }
@@ -138,22 +117,25 @@
     }
 
     /**
-     * 转成树形结构(特殊)
+     * 转成树形结构(特殊-树形菜单使用)
      *
      * @param	array		$data
      * @param	string		$pid
+     * @param	string		$icon
+     * @param	string		$iconStr
      * @return	array
      */
-    function getTreeT($data, $pid = '0')
+    function getTreeT($data, $pid = '0', $icon = '0', $iconStr = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>')
     {
         $tree = array();
-        foreach($data as $k => $v)
-        {
-            if($v['pid'] == $pid)
-            {
+        foreach($data as $k => $v){
+            if($v['pid'] == $pid){
                 $v['oText'] = $v['text'];
+                if($icon != '0'){
+                    $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
+                }
                 $type = 'item';
-                $rel = getTreeT($data, $v['id']);
+                $rel = getTreeT($data, $v['id'], $icon);
                 if($rel){
                     $type = 'folder';
                     $v['additionalParameters']['children'] = $rel;
@@ -163,38 +145,6 @@
             }
         }
         return $tree;
-    }
-
-    /**
-     * 树形排序预算用
-     * @param	array		$array
-     * @param	string		$pid
-     * @return	array
-     */
-    function sortTreeBudget($array, $pid = '0', $level = 0, $budget = 0)
-    {
-        $arr = array();
-        if($budget != '0'){
-            foreach($array as $v){
-                if($v['pid']==$pid && $v['id'] == $budget){
-                    $v['level'] = $level;
-                    $arr[] = $v;
-                    $v['level'] = $level + 1;
-                    $arr = array_merge($arr,sortTreeBudget($array,$v['id'], $v['level']));
-                }
-            }
-        }else{
-            foreach($array as $v){
-                if($v['pid']==$pid){
-                    $v['level'] = $level;
-                    $arr[] = $v;
-                    $v['level'] = $level + 1;
-                    $arr = array_merge($arr,sortTreeBudget($array,$v['id'], $v['level']));
-                }
-            }
-        }
-
-        return $arr;
     }
 
     /**
@@ -271,7 +221,7 @@
     }
 
     /**
-     * 随机数
+     * 获取随机ID
      *
      * @return	string
      */
@@ -279,6 +229,7 @@
         $id = strtoupper(md5(uniqid(mt_rand(), true)));
         return $id;
     }
+
     /**
      * 邮件发送
      *

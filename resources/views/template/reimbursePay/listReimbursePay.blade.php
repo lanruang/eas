@@ -49,7 +49,7 @@
 					<th rowspan="2" class="center align-middle">预算</th>
 				</tr>
 				<tr class="new_reimburse_bg">
-					<th class="center">借（报销用途）</th>
+					<th class="center">借（用途）</th>
 					<th class="center">贷（付款方式）</th>
 				</tr>
 				@foreach ($expMain as $k => $v)
@@ -113,28 +113,17 @@
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
-										<div class="col-sm-5">
-											<label class="control-label align-left" id="budget"></label>
-											<input type="hidden" id="budget_id" name="budget_id" value=""/>
-										</div>
-										<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right"> 科目-借（报销用途） </label>
-										<div class="col-sm-5">
-											<label class="control-label align-left" id="text_debit"></label>
-											<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
-										</div>
-										<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
-									</div>
-									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 科目-贷（付款方式）  </label>
-										<div class="col-sm-5">
-											<label class="control-label align-left" id="text_credit"></label>
-											<input type="hidden" id="sub_credit" name="sub_credit" value=""/>
+										<div class="col-sm-3">
+											<label>
+												<select class="form-control" id="sub_credit" name="sub_credit">
+													<option value="">请选择</option>
+													@foreach ($subject as $v)
+														<option value="{{ $v['id'] }}">{{ $v['text'] }}</option>
+													@endforeach
+												</select>
+											</label>
 										</div>
-										<button type="button" href="#modal-subject" data-toggle="modal" id="btn_credit" class="btn btn-white btn-sm btn-primary">选择</button>
 									</div>
 									<input type="hidden" id="exp_id" name="exp_id" value=""/>
 									<input type="hidden" id="expense" name="expense" value="{{ $expense_id }}">
@@ -192,55 +181,6 @@
 		</div>
 	</div>
 
-	<div id="modal-subject" class="modal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="widget-box widget-color-blue2">
-				<div class="widget-header">
-					<h4 class="widget-title lighter smaller">选择科目</h4>
-					<span class="widget-toolbar">
-						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
-					</span>
-				</div>
-
-				<div class="widget-body">
-					<div class="widget-main padding-8">
-						<ul id="subject_tree"></ul>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div id="modal-budget" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header no-padding">
-					<div class="table-header">
-						<button type="button" id="selectClose" class="close" data-dismiss="modal" aria-hidden="true">
-							<span class="white">&times;</span>
-						</button>
-						预算列表
-					</div>
-				</div>
-
-				<div class="modal-body">
-					<table id="budgetTable" style="width: 100%;" class="table table-striped table-bordered table-hover">
-						<thead>
-						<tr>
-							<th class="center">预算编号</th>
-							<th class="center">预算名称</th>
-							<th class="center">起始期间</th>
-							<th class="center">结束期间</th>
-							<th class="center">状态</th>
-							<th class="center">操作</th>
-						</tr>
-						</thead>
-					</table>
-				</div>
-
-			</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -257,20 +197,8 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var name;
-		var budgetTable;
-		var budgetId;
 		var initTreeData;
-		var amount = 0;
 		$(function() {
-			$('button[href=#modal-subject]').click(function(){
-				if(!budgetId){
-					alertDialog('-1', '请先选择预算！')
-					return false;
-				}
-				name = this.id.substring(4, this.id.length);
-				subjectFun();
-			});
 			//图片展示
 			var colorbox_params = {
 				reposition:true,
@@ -300,61 +228,15 @@
 			html += '<tr><td colspan="3" class="col-xs-4">申请人：{{ $user_name }}</td> </tr>'
 			$('#listAudit').html(html);
 
-			budgetTable = $('#budgetTable')
-					.DataTable({
-						"lengthChange": false,
-						"ordering": false,
-						"searching": false,
-						"serverSide": true,
-						"ajax": {
-							"type": "post",
-							"async": false,
-							"dataType": "json",
-							"url": '{{route('budget.getBudget')}}',
-							"data": {"status":"1", "_token": '{{csrf_token()}}'},
-							"dataSrc": function ( res ) {
-								if(res.status == true){
-									return res.data;
-								}else{
-									alertDialog(res.status, res.msg);
-								}
-							}
-						},
-						"columns": [
-							{ "data": "bd_num"},
-							{ "data": "bd_name"},
-							{ "data": "bd_start"},
-							{ "data": "bd_end"},
-							{ "data": "status","class": "center", render: function(data, type, row) {
-								return formatStatus(row.status);
-							}},
-							{ "data": "null", "class": "center"},
-						],
-						"columnDefs": [{
-							"targets": 5,
-							"render": function(data, type, row) {
-								var html = '<div class="action-buttons">' +
-										"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_num+"', '"+row.bd_name+"')\">" +
-										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
-										'</a></div>';
-								return html;
-							}
-						}]
-					});
-
 			$('#validation-form').validate({
 				errorElement: 'div',
 				errorClass: 'help-block',
 				focusInvalid: false,
 				ignore: "",
 				rules: {
-					budget_id: {required: true},
-					sub_debit: {required: true},
 					sub_credit: {required: true},
 				},
 				messages: {
-					budget_id: {required: "请选择预算."},
-					sub_debit: {required: "请选择科目-借."},
 					sub_credit: {required: "请选择科目-贷."}
 				},
 				highlight: function (e) {
@@ -367,81 +249,6 @@
 			});
 			getExpMainAmount();
 		});
-
-		//初始化下拉菜单
-		function subjectFun(){
-			var data = {"id": budgetId, "type": name, "_token": '{{csrf_token()}}'};
-			var rel = ajaxPost(data, '{{ route('reimbursePay.getBudgetSub') }}');
-			if(rel.status == true){
-				initTreeData = rel.data;
-				subjectTree();
-			}else{
-				alertDialog(rel.status, rel.msg);
-			}
-		}
-		//科目选择
-		function subjectTree(){
-			$("#subject_tree").removeData("fu.tree");
-			$("#subject_tree").unbind('click.fu.tree');
-			treeData = initTreeDataFun();//
-			$('#subject_tree').ace_tree({
-				dataSource: treeData['dataSource'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': false,
-				'multiSelect': false,
-				'open-icon' : 'ace-icon tree-minus',
-				'close-icon' : 'ace-icon tree-plus',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				var html = item.target.sub_ip + '<br>' + item.target.oText;
-				if(name == 'debit' && item.target.status != '1'){
-					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');
-				}else{
-					if(name == 'debit'){
-						var data = {"sub_id":item.target.id, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
-						var rel = ajaxPost(data, '{{ route('reimbursePay.getCheckAmount') }}');
-						if(rel.status == true){
-							if((rel.data - amount) < 0){
-								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
-							}else{
-								$('#text_'+name).html(html);
-								$('#sub_'+name).val(item.target.id);
-								$('#close_tree').click();
-							}
-						}else{
-							alertDialog('-1', '获取预算科目金额失败');
-						}
-					}else{
-						$('#text_'+name).html(html);
-						$('#sub_'+name).val(item.target.id);
-						$('#close_tree').click();
-					}
-				}
-			});
-		}
-		function initTreeDataFun(){
-			var dataSource = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = initTreeData;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource': dataSource}
-		}
 
 		//明细金额汇总
 		function getExpMainAmount(){
@@ -480,28 +287,9 @@
 			$('#reimburseForm').addClass('hide');
 		}
 
-		//选择预算
-		function selectBudget(id, num, name){
-			var value = num + '<br>' + name;
-			budgetId = id;
-			$('#budget_id').val(id);
-			$('#budget').html(value);
-			$('#selectClose').click();
-		}
-
 		//验证表单
 		function postForm(){
 			if($('#validation-form').valid()){
-				var budget_period = $('#budget_period').val();
-				if(budget_period == 'day') {
-					var date = $('#budget_date').val();
-					date = date.split(' 一 ');
-					var getDateDiff = getDateToDiff(date[0], date[1], 'day');
-					if (getDateDiff > 30) {
-						alertDialog('-1', '预算期间类型为天数时，预算期间不能大于31天。');
-						return;
-					}
-				}
 				$('#validation-form').submit();
 			};
 		}
