@@ -103,22 +103,22 @@
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="validation-form">
 									<div class="form-group">
-										<div class="form-group">
-											<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
-											<div class="col-sm-5">
-												<label class="control-label align-left" id="budget"></label>
-												<input type="hidden" id="budget_id" name="budget_id" value=""/>
-											</div>
-											<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+										<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
+										<div class="col-sm-5">
+											<label class="control-label align-left" id="budget"></label>
+											<input type="hidden" id="budget_id" name="budget_id" value=""/>
 										</div>
-										<div class="form-group">
-											<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
-											<div class="col-sm-5">
-												<label class="control-label align-left" id="text_debit"></label>
-												<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
-											</div>
-											<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+										<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
+										<div class="col-sm-5">
+											<label class="control-label align-left" id="text_debit"></label>
+											<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
 										</div>
+										<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+									</div>
+									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 用途 </label>
 										<div class="col-sm-6">
 											<textarea class="input-xlarge" name="exp_remark" id="exp_remark" placeholder="用途"></textarea>

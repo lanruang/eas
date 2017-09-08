@@ -9,7 +9,7 @@
 {{--页面内容--}}
 @section('content')
 	<div class="row">
-		<div class="col-xs-12 col-sm-10">
+		<div class="col-xs-12">
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addReimburse();">我要报销</button>

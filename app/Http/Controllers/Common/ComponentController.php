@@ -9,6 +9,8 @@ use App\Http\Models\User\UserModel AS UserDb;
 use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
 use App\Http\Models\Positions\PositionsModel AS PositionsDb;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
+use App\Http\Models\Customer\CustomerModel AS CustomerDb;
+use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -176,5 +178,64 @@ class ComponentController extends CommonController
 
         //返回结果
         ajaxJsonRes($data);
+    }
+
+    //获取客户数据
+    public function ctGetCustomer(Request $request){
+        //验证传输方式
+
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取记录总数
+        $total = CustomerDb::count();
+        //获取数据
+        $result = CustomerDb::select('cust_id AS id', 'cust_num AS parties_num', 'cust_name AS parties_name')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
+    //获取供应商数据
+    public function ctGetSupplier(Request $request){
+        //验证传输方式
+
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取记录总数
+        $total = SupplierDb::count();
+        //获取数据
+        $result = SupplierDb::select('supp_id AS id', 'supp_num AS parties_num', 'supp_name AS parties_name')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
+
+    public function ctGetGetId()
+    {
+        //p(getId());
+        p(session('userInfo'));
     }
 }

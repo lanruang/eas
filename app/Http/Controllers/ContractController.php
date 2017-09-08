@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Models\Supplier\ContractModel AS ContractDb;
+use App\Http\Models\System\SysAssemblyModel AS SysAssDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -45,14 +46,22 @@ class ContractController extends Common\CommonController
     //添加合同视图
     public function addContract()
     {
-        return view('contract.addContract');
+        //获取合同下拉菜单信息
+        $data['select'] = SysAssDb::whereIn('ass_type', array('contract_class', 'contract_type'))
+            ->select('ass_type', 'ass_text', 'ass_value')
+            ->orderBy('ass_sort')
+            ->get()
+            ->toArray();
+
+        return view('contract.addContract', $data);
     }
 
-    //添加部门
-    public function createSupplier()
+    //添加合同
+    public function createContract()
     {
         //验证表单
         $input = Input::all();
+        /*
         $rules = [
             'supp_num' => 'required|between:1,200',
             'supp_name' => 'required|between:1,200',
@@ -67,26 +76,10 @@ class ContractController extends Common\CommonController
         if($validator->fails()){
             return redirectPageMsg('-1', $validator->errors()->first(), route('supplier.addSupplier'));
         }
+*/
+    p($input);
 
-        //供应商是否存在
-        $result = SupplierDb::where('supp_num', $input['supp_num'])
-            ->orWhere('supp_name', $input['supp_name'])
-            ->first();
-        if($result){
-            return redirectPageMsg('-1', "添加失败，供应商编号或供应商名称重复", route('supplier.addSupplier'));
-        }
 
-        //创建供应商
-        $supplierDb = new SupplierDb();
-        $supplierDb->supp_num = $input['supp_num'];
-        $supplierDb->supp_name = $input['supp_name'];
-        $result = $supplierDb->save();
-
-        if($result){
-            return redirectPageMsg('1', "添加成功", route('supplier.addSupplier'));
-        }else{
-            return redirectPageMsg('-1', "添加失败", route('supplier.addSupplier'));
-        }
     }
     
     //编辑供应商视图

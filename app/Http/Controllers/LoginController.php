@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Models\User\UserModel AS loginDb;
 use App\Http\Models\Node\NodeModel AS nodeDb;
-use App\Http\Models\SysConfig\SysConfigModel AS sysConfigDb;
+use App\Http\Models\System\SysConfigModel AS sysConfigDb;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Validator;

@@ -187,6 +187,7 @@ Route::group(['middleware' => ['permission']], function () {
     Route::group(['prefix' => 'contract'], function () {
         Route::get('index', ['as' => 'contract.index', 'uses' => 'ContractController@index']);//合同列表
         Route::get('addContract', ['as' => 'contract.addContract', 'uses' => 'ContractController@addContract']);//添加合同视图
+        Route::post('createContract', ['as' => 'contract.createContract', 'uses' => 'ContractController@createContract']);//创建合同
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销
@@ -224,5 +225,8 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('ctGetDep', ['as' => 'component.ctGetDep', 'uses' => 'Common\ComponentController@ctGetDep']);//部门数据
         Route::post('ctGetPos', ['as' => 'component.ctGetPos', 'uses' => 'Common\ComponentController@ctGetPos']);//岗位数据
         Route::post('ctGetBudget', ['as' => 'component.ctGetBudget', 'uses' => 'Common\ComponentController@ctGetBudget']);//预算数据
+        Route::get('ctGetGetId', ['as' => 'component.ctGetGetId', 'uses' => 'Common\ComponentController@ctGetGetId']);//预算数据
+        Route::post('ctGetCustomer', ['as' => 'component.ctGetCustomer', 'uses' => 'Common\ComponentController@ctGetCustomer']);//客户数据
+        Route::post('ctGetSupplier', ['as' => 'component.ctGetSupplier', 'uses' => 'Common\ComponentController@ctGetSupplier']);//供应商数据
     });
 });

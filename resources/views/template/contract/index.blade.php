@@ -18,7 +18,7 @@
 		<div class="col-xs-12 col-sm-10">
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
-					<button class="btn btn-white btn-sm btn-round" onclick="addContract();">添加</button>
+					<button class="btn btn-white btn-sm btn-round" onclick="addContract();">创建合同</button>
 				</div>
 			</div>
 			<p></p>
