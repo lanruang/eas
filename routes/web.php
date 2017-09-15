@@ -188,6 +188,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('index', ['as' => 'contract.index', 'uses' => 'ContractController@index']);//合同列表
         Route::get('addContract', ['as' => 'contract.addContract', 'uses' => 'ContractController@addContract']);//添加合同视图
         Route::post('createContract', ['as' => 'contract.createContract', 'uses' => 'ContractController@createContract']);//创建合同
+        Route::post('uploadEnclo', ['as' => 'contract.uploadEnclo', 'uses' => 'ContractController@uploadEnclo']);//上传附件
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销

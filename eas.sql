@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2017-09-08 17:22:17
+Date: 2017-09-15 17:45:39
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -225,13 +225,15 @@ CREATE TABLE `contract` (
   `cont_id` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_type` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_class` varchar(8) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `cont_budget` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `cont_budget_sub` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_num` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_parties` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_start` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_end` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `cont_status` int(4) NOT NULL,
-  `cont_amount` decimal(10,0) NOT NULL,
+  `cont_sum_amount` decimal(10,0) NOT NULL,
   `cont_remark` text CHARACTER SET utf8 COLLATE utf8_bin,
   `cont_auto` tinyint(1) NOT NULL,
   `created_user` char(32) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
@@ -251,11 +253,8 @@ DROP TABLE IF EXISTS `contract_details`;
 CREATE TABLE `contract_details` (
   `details_id` char(32) NOT NULL,
   `cont_id` char(32) NOT NULL,
-  `cont_num` varchar(255) DEFAULT NULL,
-  `cont_name` varchar(255) DEFAULT NULL,
-  `cont_charge_type` varchar(255) DEFAULT NULL,
-  `cont_start` varchar(255) DEFAULT NULL,
-  `cont_end` varchar(255) DEFAULT NULL,
+  `cont_details_date` varchar(10) DEFAULT NULL,
+  `cont_amount` decimal(10,0) NOT NULL,
   `cont_status` int(4) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -273,7 +272,6 @@ DROP TABLE IF EXISTS `contract_enclosure`;
 CREATE TABLE `contract_enclosure` (
   `enclo_id` char(32) NOT NULL,
   `cont_id` char(32) NOT NULL,
-  `enclo_user` char(32) NOT NULL,
   `enclo_url` text,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -353,7 +351,7 @@ CREATE TABLE `expense` (
 -- Records of expense
 -- ----------------------------
 INSERT INTO `expense` VALUES ('01312513D5C357069D88F1510F911FB4', 'reimburse', 'FD138675B855A703350A5E344DDB04CD', '8454859EDC79BCD6B5250DF817FF10EA', 'R2017081815312243053', '', '2017-08-18', '0', '0.00', '201', '8454859EDC79BCD6B5250DF817FF10EA', '2017-08-18 15:31:22', '2017-08-30 16:18:20');
-INSERT INTO `expense` VALUES ('2DF01C997A84DF74F25CCE3FCAEBC345', 'reimburse', 'FD138675B855A703350A5E344DDB04CD', '8454859EDC79BCD6B5250DF817FF10EA', 'R2017090415392315101', '', '2017-09-04', '0', '0.00', '202', null, '2017-09-04 15:39:23', '2017-09-04 16:05:23');
+INSERT INTO `expense` VALUES ('2DF01C997A84DF74F25CCE3FCAEBC345', 'reimburse', 'FD138675B855A703350A5E344DDB04CD', '8454859EDC79BCD6B5250DF817FF10EA', 'R2017090415392315101', '', '2017-09-04', '0', '0.00', '202', null, '2017-09-04 15:39:23', '2017-09-12 10:56:46');
 INSERT INTO `expense` VALUES ('BD0A210FF949503A53F42B2FAB53E2DF', 'reimburse', 'FD138675B855A703350A5E344DDB04CD', '8454859EDC79BCD6B5250DF817FF10EA', 'R2017082816560661026', '', '2017-08-28', '0', '0.00', '203', '8454859EDC79BCD6B5250DF817FF10EA', '2017-08-28 16:56:07', '2017-08-30 15:10:23');
 
 -- ----------------------------
@@ -738,7 +736,7 @@ INSERT INTO `sys_config` VALUES ('73CF2DE47AC9BABD04C643179DC436A7', 'reimburse'
 INSERT INTO `sys_config` VALUES ('7A788EC8B4F5A3E9182CFA9A38EBC7A1', 'contract', 'uploadSize', '3', '上传文件大小MB计算');
 INSERT INTO `sys_config` VALUES ('A343A7B3C37E3A94FD326330DC3649CE', 'reimburse', 'uploadSize', '1', '上传文件大小MB计算');
 INSERT INTO `sys_config` VALUES ('BFE650AC88031C06334BA7EE4636DB0A', 'reimbursePay', 'subPay', '069198AAA6240ED6006BA1A5BB9AA04E,DCE2994F049D91688F30CD1808FBE9F4', '费用报销出纳付款方式科目ID');
-INSERT INTO `sys_config` VALUES ('C175246CAD2A902293FE430348E935F1', 'budget', 'subBudget', '3F661AB1498766BE94EFE5E8C693C575', '预算科目ID');
+INSERT INTO `sys_config` VALUES ('C175246CAD2A902293FE430348E935F1', 'budget', 'subBudget', '12C4D398BCBFE03095C7C85FE22EA3DD', '预算科目ID');
 INSERT INTO `sys_config` VALUES ('F9886ACE0B05333039CCE31D63B0C52C', 'reimburse', 'userCashier', '8454859EDC79BCD6B5250DF817FF10EA', '费用报销核销出纳ID');
 
 -- ----------------------------
@@ -757,6 +755,7 @@ CREATE TABLE `sys_status` (
 -- ----------------------------
 -- Records of sys_status
 -- ----------------------------
+INSERT INTO `sys_status` VALUES ('', '301', '合同', '', '');
 INSERT INTO `sys_status` VALUES ('1', '-1', '常规', '已删除', '<span style=\"color:red;\">已删除</span>');
 INSERT INTO `sys_status` VALUES ('10', '1009', '审批流程', '审批中', '<span style=\"color:orange;\">审批中</span>');
 INSERT INTO `sys_status` VALUES ('11', '202', '费用报销', '编辑单据', '<span style=\"color:green;\">编辑中</span>');
@@ -796,7 +795,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '0', '2017-08-17 10:20:52', '1', '0', '2017-08-17 10:19:20', '2017-08-17 10:20:52');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2017-09-08 15:03:17', '1', '0', '2016-05-25 05:56:33', '2017-09-08 15:03:17');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2017-09-15 16:15:27', '1', '0', '2016-05-25 05:56:33', '2017-09-15 16:15:27');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '0', '2017-08-17 10:20:57', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------

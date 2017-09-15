@@ -322,6 +322,15 @@
                         },700)
                     }
                 },
+				removedfile: function(file){
+					var ref;
+					if (file.previewElement) {
+						if ((ref = file.previewElement) != null) {
+							ref.parentNode.removeChild(file.previewElement);
+							$('#enclosure').val('');
+						}
+					}
+				}
 			});
 
 			//图片展示

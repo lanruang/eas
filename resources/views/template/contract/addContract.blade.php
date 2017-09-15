@@ -97,6 +97,24 @@
 					</div>
 				</div>
 
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
+					<div class="col-sm-3">
+						<label class="control-label align-left" id="budget"></label>
+						<input type="hidden" id="budget_id" name="budget_id" value=""/>
+					</div>
+					<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
+					<div class="col-sm-3">
+						<label class="control-label align-left" id="text_debit"></label>
+						<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
+					</div>
+					<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+				</div>
+
 				<div class="form-group" id="budgetDateFarm">
 					<label class="col-sm-3 control-label no-padding-right"> 合同备注 </label>
 					<div class="col-sm-3">
@@ -118,47 +136,34 @@
 						</button>
 					</div>
 				</div>
-				<img class="cboxElement hide"/>
-				<input type="hidden" id="enclosure" name="enclosure" readonly>
+				<input type="hidden" id="enclosure" name="enclosure">
 				<input type="file" multiple="multiple" class="hide">
 
-				<div class="form-group" id="budgetDateFarm">
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right">  </label>
-					<div class="col-sm-5">
-						<table style="word-break: break-all; width: 100%;">
-							<tr>
-								<td class="col-xs-9 align-middle">12312312312312321312312</td>
-								<td class="col-xs-3 align-right">
-									<button type="button" class="btn btn-danger btn-xs">
-										<i data-dz-remove  class="ace-icon glyphicon glyphicon-minus bigger-110 icon-only"></i>
-									</button>
-								</td>
-							</tr>
-						</table>
+					<div class="col-sm-8" id="uploadFrame">
+						<div class="clearfix hide" id="uploadFrameLi">
+							<div class="grid2" style="word-wrap:break-word;" data-dz-name>
+							</div>
+							<button data-dz-remove class="btn btn-white btn-xs btn-round">
+								<i class="ace-icon fa fa-times red"></i>
+							</button>
+						</div>
 					</div>
 				</div>
-				<div class="col-xs-12">
-					<ul id="uploadFrame" class="ace-thumbnails clearfix">
-						<li id="uploadFrameLi" class="cboxElement dz-preview btn_cp">
-							<img data-dz-thumbnail/>
-							<div class="tools tools-top">
-								<a><i data-dz-remove class="ace-icon fa fa-times red"></i></a>
-							</div>
-						</li>
-					</ul>
-				</div>
+
 
 				<h3 class="header smaller lighter clearfix">
-					权限分配
+					合同期间配置
 				</h3>
-				<div class="form-group" id="budgetDateFarm">
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right">  </label>
 					<div class="col-sm-2">
 						<input type="hidden" name="contract_dates" id="contract_dates" value=""/>
 					</div>
 				</div>
 
-				<div class="form-group" id="budgetDateFarm">
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 日期 </label>
 					<div class="col-sm-2">
 						<div class="input-group">
@@ -173,10 +178,10 @@
 					</button>
 				</div>
 
-				<div class="form-group" id="budgetDateFarm">
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 金额 </label>
 					<div class="col-sm-2">
-						<input class="form-control text-right" type="text" name="amount" placeholder="0.00" id="amount" onblur="formatAmount('amount')"/>
+						<input class="form-control text-right" type="text" placeholder="0.00" id="amount" onblur="formatAmount('amount')"/>
 					</div>
 				</div>
 
@@ -222,7 +227,6 @@
 		</div>
 	</div>
 
-
 	<div id="modal-parties" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -250,6 +254,55 @@
 		</div><!-- /.modal-dialog -->
 	</div>
 
+	<div id="modal-budget" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header no-padding">
+					<div class="table-header">
+						<button type="button" id="selectClose" class="close" data-dismiss="modal" aria-hidden="true">
+							<span class="white">&times;</span>
+						</button>
+						预算列表
+					</div>
+				</div>
+
+				<div class="modal-body">
+					<table id="budgetTable" style="width: 100%;" class="table table-striped table-bordered table-hover">
+						<thead>
+						<tr>
+							<th class="center">预算部门</th>
+							<th class="center">预算编号</th>
+							<th class="center">预算名称</th>
+							<th class="center">起始期间</th>
+							<th class="center">结束期间</th>
+							<th class="center">操作</th>
+						</tr>
+						</thead>
+					</table>
+				</div>
+
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div>
+
+	<div id="modal-subject" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="widget-box widget-color-blue2">
+				<div class="widget-header">
+					<h4 class="widget-title lighter smaller">选择科目</h4>
+					<span class="widget-toolbar">
+						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+					</span>
+				</div>
+
+				<div class="widget-body">
+					<div class="widget-main padding-8">
+						<ul id="subject_tree"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -277,6 +330,8 @@
 		var partiesType;
 		var partiesTable;
 		var sumAmount = 0;
+		var budgetTable;
+		var budgetId;
 		$(function($) {
 			$('#contract_class').change(function(){
 				partiesType = $('#contract_class').val();
@@ -353,14 +408,14 @@
 					$(e).remove();
 				},
 			});
-
+			$('#uploadFrameLi').removeClass('hide');
 			//上传文件
 			var previewNode = document.querySelector("#uploadFrameLi");
 			previewNode.id = "";
 			var previewTemplate = previewNode.parentNode.innerHTML;
 			previewNode.parentNode.removeChild(previewNode);
 			uploadFrame = new Dropzone(document.body,{
-				url: '{{ route('reimburse.uploadImg') }}', //url
+				url: '{{ route('contract.uploadEnclo') }}', //url
 				params: {"_token": '{{csrf_token()}}'},
 				thumbnailWidth: 80,
 				thumbnailHeight: 80,
@@ -375,8 +430,17 @@
 				dictMaxFilesExceeded: "上传失败,已到最大上传数量,对多上传1个附件.",
 				success: function(file, data) {
 					var data = JSON.parse(data);
-					$(file.previewElement).attr('href',data.data.fUrl);
-					$('#enclosure').val(data.data.url);
+					var url = data.data.url;
+					var urls = $('#enclosure').val();
+					file.upload.url = url;
+					if(urls == '' || !dates){
+						urls = url;
+					}else{
+						urls = urls.split("|");
+						urls.push(url);
+						urls = urls.join("|");
+					}
+					$('#enclosure').val(urls);
 				},
 				error: function (file, msg) {
 					alertDialog('-1', msg);
@@ -386,7 +450,7 @@
 					$('.btn-purple').addClass('hide');
 					$('#progressbar').removeClass('hide');
 				},
-				uploadprogress: function(a, b, c) {
+				uploadprogress: function(a, b) {
 					setTimeout(function(){
 						$('#progressbarWidth').css('width', b+'%');
 					},1)
@@ -398,7 +462,65 @@
 						},700)
 					}
 				},
+				removedfile: function(file){
+					var ref;
+					if (file.previewElement) {
+						if ((ref = file.previewElement) != null) {
+							ref.parentNode.removeChild(file.previewElement);
+						}
+					}
+					var urls = $('#enclosure').val();
+					urls = urls.split("|");
+					for(i in urls){
+						if(urls[i] == file.upload.url){
+							urls.splice(i,1)
+						}
+					}
+					urls = urls.join("|");
+					$('#enclosure').val(urls);
+				}
 			});
+
+			budgetTable = $('#budgetTable')
+					.DataTable({
+						"lengthChange": false,
+						"ordering": false,
+						"searching": false,
+						"serverSide": true,
+						"ajax": {
+							"type": "post",
+							"async": false,
+							"dataType": "json",
+							"url": '{{route('component.ctGetBudget')}}',
+							"data": {"status":"1", "_token": '{{csrf_token()}}'},
+							"dataSrc": function ( res ) {
+								if(res.status == true){
+									return res.data;
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						},
+						"columns": [
+							{ "data": "dep_name"},
+							{ "data": "bd_num"},
+							{ "data": "bd_name"},
+							{ "data": "bd_start"},
+							{ "data": "bd_end"},
+							{ "data": "null", "class": "center"},
+						],
+						"columnDefs": [{
+							"targets": 5,
+							"render": function(data, type, row) {
+								var html = '<div class="action-buttons">' +
+										"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_num+"', '"+row.bd_name+"')\">" +
+										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
+										'</a></div>';
+								return html;
+							}
+						}]
+					});
+
 		});
 
 		//合同方
@@ -536,5 +658,87 @@
 			$('#contractPeriod tr[date='+date+']').remove();
 		}
 
+		//初始化下拉菜单
+		function subjectFun(){
+			var data = {"id": budgetId, "_token": '{{csrf_token()}}'};
+			var rel = ajaxPost(data, '{{ route('reimburse.getBudgetSub') }}');
+			if(rel.status == true){
+				initTreeData = rel.data;
+				subjectTree();
+			}else{
+				alertDialog(rel.status, rel.msg);
+			}
+		}
+		//科目选择
+		function subjectTree(){
+			$("#subject_tree").removeData("fu.tree");
+			$("#subject_tree").unbind('click.fu.tree');
+			treeData = initTreeDataFun();//
+			$('#subject_tree').ace_tree({
+				dataSource: treeData['dataSource'],
+				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+				'itemSelect' : true,
+				'folderSelect': false,
+				'multiSelect': false,
+				'open-icon' : 'ace-icon tree-minus',
+				'close-icon' : 'ace-icon tree-plus',
+				'folder-open-icon' : 'ace-icon tree-plus',
+				'folder-close-icon' : 'ace-icon tree-minus',
+				'selected-icon' : 'null',
+				'unselected-icon' : 'null',
+			}).on('selected.fu.tree', function(e, item) {
+				var html = item.target.sub_ip + '<br>' + item.target.oText;
+				if(name == 'debit' && item.target.status != '1'){
+					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+				}else{
+					if(name == 'debit'){
+						var data = {"sub_id":item.target.id, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
+						var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
+						if(rel.status == true){
+							if((rel.data - amount) < 0){
+								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
+							}else{
+								$('#text_'+name).html(html);
+								$('#sub_'+name).val(item.target.id);
+								$('#close_tree').click();
+							}
+						}else{
+							alertDialog('-1', '获取预算科目金额失败');
+						}
+					}else{
+						$('#text_'+name).html(html);
+						$('#sub_'+name).val(item.target.id);
+						$('#close_tree').click();
+					}
+				}
+			});
+		}
+		function initTreeDataFun(){
+			var dataSource = function(options, callback){
+				var $data = null
+				if(!("text" in options) && !("type" in options)){
+					$data = initTreeData;//the root tree
+					callback({ data: $data });
+					return;
+				}
+				else if("type" in options && options.type == "folder") {
+					if("additionalParameters" in options && "children" in options.additionalParameters)
+						$data = options.additionalParameters.children || {};
+					else $data = {}
+				}
+
+				if($data != null)//this setTimeout is only for mimicking some random delay
+					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}
+			return {'dataSource': dataSource}
+		}
+		//选择预算
+		function selectBudget(id, num, name){
+			var value = num + '<br>' + name;
+			budgetId = id;
+			$('#budget_id').val(id);
+			$('#budget').html(value);
+			$('#selectClose').click();
+		}
 	</script>
 @endsection()
