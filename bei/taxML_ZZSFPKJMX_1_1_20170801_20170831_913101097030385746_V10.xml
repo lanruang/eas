@@ -1,0 +1,1681 @@
+<?xml version="1.0" encoding="GBK"?>
+<taxML cnName="增值税发票开具明细" xmlns="http://www.chinatax.gov.cn/dataspec/" name="slSbbtjZzsfpkjmxRequest" version="SW5001-2006" xsi:type="slSbbtjZzsfpkjmxRequest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sbbZzsfpkjmx>
+    <head>
+      <publicHead>
+        <nsrsbh>913101097030385746</nsrsbh>
+        <nsrmc>上海友基商务资讯有限公司</nsrmc>
+        <tbrq>20170731</tbrq>
+        <sssq>
+          <rqQ>20170801</rqQ>
+          <rqZ>20170831</rqZ>
+        </sssq>
+      </publicHead>
+    </head>
+    <body>
+      <zyfpkjmx />
+      <zyfpkjhjxx>
+        <zyfpkjhjs>0</zyfpkjhjs>
+        <zzszyfphjJe>0</zzszyfphjJe>
+        <zzszyfphjSe>0</zzszyfphjSe>
+      </zyfpkjhjxx>
+      <ptfpkjmx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209901</fphm>
+          <kprq>20170703 15:39:00</kprq>
+          <gmfnsrsbh>310109000630265</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>1</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209902</fphm>
+          <kprq>20170703 15:39:51</kprq>
+          <gmfnsrsbh>913101090512747659</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>2</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209903</fphm>
+          <kprq>20170703 15:40:41</kprq>
+          <gmfnsrsbh>913101090711859466</gmfnsrsbh>
+          <je>388.35</je>
+          <se>11.65</se>
+          <zfbz>N</zfbz>
+          <xh>3</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209904</fphm>
+          <kprq>20170703 15:41:27</kprq>
+          <gmfnsrsbh>913101160729846861</gmfnsrsbh>
+          <je>1262.14</je>
+          <se>37.86</se>
+          <zfbz>N</zfbz>
+          <xh>4</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209905</fphm>
+          <kprq>20170703 15:44:26</kprq>
+          <gmfnsrsbh>91310109082017278M</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>5</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209906</fphm>
+          <kprq>20170703 15:45:12</kprq>
+          <gmfnsrsbh>91310109554314124F</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>6</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209907</fphm>
+          <kprq>20170703 15:46:05</kprq>
+          <gmfnsrsbh>91310109093577211D</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>7</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209908</fphm>
+          <kprq>20170703 15:47:20</kprq>
+          <gmfnsrsbh>91310109301520536R</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>8</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209909</fphm>
+          <kprq>20170703 15:48:05</kprq>
+          <gmfnsrsbh>913101150879472045</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>9</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209910</fphm>
+          <kprq>20170703 15:49:02</kprq>
+          <gmfnsrsbh>913101093122285654</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>10</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209911</fphm>
+          <kprq>20170703 15:50:00</kprq>
+          <gmfnsrsbh>91310118312550626Y</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>11</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209912</fphm>
+          <kprq>20170703 15:51:07</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>12</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209913</fphm>
+          <kprq>20170703 15:53:30</kprq>
+          <gmfnsrsbh>9131010530142849XY</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>13</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209914</fphm>
+          <kprq>20170703 15:54:17</kprq>
+          <gmfnsrsbh>91310000684026083M</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>14</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209915</fphm>
+          <kprq>20170703 15:54:47</kprq>
+          <gmfnsrsbh>913101096840936819</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>15</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209916</fphm>
+          <kprq>20170703 15:55:47</kprq>
+          <gmfnsrsbh>91310109398661537K</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>16</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209917</fphm>
+          <kprq>20170703 15:57:53</kprq>
+          <gmfnsrsbh>913101207895336000</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>17</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209918</fphm>
+          <kprq>20170703 15:59:28</kprq>
+          <gmfnsrsbh>310000400623059</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>18</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209919</fphm>
+          <kprq>20170703 16:00:14</kprq>
+          <gmfnsrsbh>91310107MA1G06L97L</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>19</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209920</fphm>
+          <kprq>20170703 16:01:05</kprq>
+          <gmfnsrsbh>91310109332542981G</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>20</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209921</fphm>
+          <kprq>20170703 16:02:29</kprq>
+          <gmfnsrsbh>91310109332632063C</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>21</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209922</fphm>
+          <kprq>20170703 16:03:21</kprq>
+          <gmfnsrsbh>91310109692933134F</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>22</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209923</fphm>
+          <kprq>20170703 16:04:07</kprq>
+          <gmfnsrsbh>913101135806025844</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>23</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209924</fphm>
+          <kprq>20170703 16:04:58</kprq>
+          <gmfnsrsbh>91310109332619168L</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>24</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209925</fphm>
+          <kprq>20170703 16:05:50</kprq>
+          <gmfnsrsbh>91310109133105957U</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>25</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209926</fphm>
+          <kprq>20170703 16:07:47</kprq>
+          <gmfnsrsbh>310108000599022</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>26</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209927</fphm>
+          <kprq>20170703 16:08:37</kprq>
+          <gmfnsrsbh>91310116342140898Y</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>27</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209928</fphm>
+          <kprq>20170703 16:09:25</kprq>
+          <gmfnsrsbh>91310109341985127A</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>28</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209929</fphm>
+          <kprq>20170703 16:10:21</kprq>
+          <gmfnsrsbh>91310109350703128P</gmfnsrsbh>
+          <je>2718.45</je>
+          <se>81.55</se>
+          <zfbz>N</zfbz>
+          <xh>29</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209930</fphm>
+          <kprq>20170703 16:11:04</kprq>
+          <gmfnsrsbh>91310109MA1G50B94G</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>30</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209931</fphm>
+          <kprq>20170703 16:12:00</kprq>
+          <gmfnsrsbh>91310116350982024M</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>31</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209932</fphm>
+          <kprq>20170703 16:12:29</kprq>
+          <gmfnsrsbh>913101163508813465</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>32</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209933</fphm>
+          <kprq>20170703 16:13:57</kprq>
+          <gmfnsrsbh>91310115312278837L</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>33</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209934</fphm>
+          <kprq>20170703 16:14:46</kprq>
+          <gmfnsrsbh>91310110MA1G82YT67</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>34</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209935</fphm>
+          <kprq>20170703 16:15:37</kprq>
+          <gmfnsrsbh>91310116MA1J87GK4A</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>35</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209936</fphm>
+          <kprq>20170703 16:16:21</kprq>
+          <gmfnsrsbh>91310109773720878J</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>36</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209937</fphm>
+          <kprq>20170703 16:17:16</kprq>
+          <gmfnsrsbh>91310107MA1G03C59K</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>37</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209938</fphm>
+          <kprq>20170703 16:18:01</kprq>
+          <gmfnsrsbh>91310109MA1G510H2B</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>38</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209939</fphm>
+          <kprq>20170703 16:18:48</kprq>
+          <gmfnsrsbh>91310101MA2FP1G620</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>39</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209940</fphm>
+          <kprq>20170703 16:19:31</kprq>
+          <gmfnsrsbh>91310000322284785M</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>40</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209941</fphm>
+          <kprq>20170703 16:20:26</kprq>
+          <gmfnsrsbh>91310109MA1G55BL66</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>41</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209942</fphm>
+          <kprq>20170703 16:21:15</kprq>
+          <gmfnsrsbh>91310109087952716N</gmfnsrsbh>
+          <je>873.79</je>
+          <se>26.21</se>
+          <zfbz>N</zfbz>
+          <xh>42</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209943</fphm>
+          <kprq>20170703 16:22:20</kprq>
+          <gmfnsrsbh>91310109MA1G549W09</gmfnsrsbh>
+          <je>873.79</je>
+          <se>26.21</se>
+          <zfbz>N</zfbz>
+          <xh>43</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209944</fphm>
+          <kprq>20170703 16:24:46</kprq>
+          <gmfnsrsbh>913101057927814000</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>44</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209945</fphm>
+          <kprq>20170703 16:26:52</kprq>
+          <gmfnsrsbh>310000400683230</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>45</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209946</fphm>
+          <kprq>20170703 16:28:03</kprq>
+          <gmfnsrsbh>91310110MA1G8AU56A</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>46</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209947</fphm>
+          <kprq>20170703 16:28:53</kprq>
+          <gmfnsrsbh>91310115MA1K3LTF8N</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>47</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209948</fphm>
+          <kprq>20170703 16:29:43</kprq>
+          <gmfnsrsbh>91310109MA1G58UP80</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>48</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209949</fphm>
+          <kprq>20170703 16:30:35</kprq>
+          <gmfnsrsbh>91310116MA1J8H2W00</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>49</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209950</fphm>
+          <kprq>20170703 16:31:19</kprq>
+          <gmfnsrsbh>913101061322685352</gmfnsrsbh>
+          <je>2912.62</je>
+          <se>87.38</se>
+          <zfbz>N</zfbz>
+          <xh>50</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209951</fphm>
+          <kprq>20170703 16:32:11</kprq>
+          <gmfnsrsbh>913101077878545006</gmfnsrsbh>
+          <je>4854.37</je>
+          <se>145.63</se>
+          <zfbz>N</zfbz>
+          <xh>51</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209952</fphm>
+          <kprq>20170703 16:33:05</kprq>
+          <gmfnsrsbh>913100006693747333</gmfnsrsbh>
+          <je>9708.74</je>
+          <se>291.26</se>
+          <zfbz>Y</zfbz>
+          <xh>52</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209953</fphm>
+          <kprq>20170703 16:35:17</kprq>
+          <gmfnsrsbh>91310109324358404D</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>53</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209954</fphm>
+          <kprq>20170704 16:07:43</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>Y</zfbz>
+          <xh>54</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209955</fphm>
+          <kprq>20170704 16:20:43</kprq>
+          <gmfnsrsbh>9131010966434149X4</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>55</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209956</fphm>
+          <kprq>20170719 10:36:56</kprq>
+          <gmfnsrsbh>91310109794549889C</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>56</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209957</fphm>
+          <kprq>20170719 10:38:06</kprq>
+          <gmfnsrsbh>913101097989425813</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>57</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209958</fphm>
+          <kprq>20170719 10:39:07</kprq>
+          <gmfnsrsbh>91310117764257383B</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>58</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209959</fphm>
+          <kprq>20170719 10:40:20</kprq>
+          <gmfnsrsbh>913101097683984667</gmfnsrsbh>
+          <je>2427.18</je>
+          <se>72.82</se>
+          <zfbz>N</zfbz>
+          <xh>59</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209960</fphm>
+          <kprq>20170719 10:41:10</kprq>
+          <gmfnsrsbh>91310000797013836R</gmfnsrsbh>
+          <je>9708.74</je>
+          <se>291.26</se>
+          <zfbz>N</zfbz>
+          <xh>60</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209961</fphm>
+          <kprq>20170719 10:42:21</kprq>
+          <gmfnsrsbh>91310109789550279W</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>61</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209962</fphm>
+          <kprq>20170719 10:43:22</kprq>
+          <gmfnsrsbh>91310000671130092X</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>62</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209963</fphm>
+          <kprq>20170719 10:44:21</kprq>
+          <gmfnsrsbh>91310109679371819W</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>63</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209964</fphm>
+          <kprq>20170719 10:46:56</kprq>
+          <gmfnsrsbh>91310000768764649Q</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>64</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209965</fphm>
+          <kprq>20170719 10:48:25</kprq>
+          <gmfnsrsbh>913101156072595530</gmfnsrsbh>
+          <je>4077.67</je>
+          <se>122.33</se>
+          <zfbz>N</zfbz>
+          <xh>65</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209966</fphm>
+          <kprq>20170719 10:49:22</kprq>
+          <gmfnsrsbh>91310118748767455U</gmfnsrsbh>
+          <je>4854.37</je>
+          <se>145.63</se>
+          <zfbz>N</zfbz>
+          <xh>66</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209967</fphm>
+          <kprq>20170719 10:50:23</kprq>
+          <gmfnsrsbh>913101157333607590</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>67</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209968</fphm>
+          <kprq>20170719 10:51:29</kprq>
+          <gmfnsrsbh>91310104557491900K</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>68</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209969</fphm>
+          <kprq>20170719 10:52:23</kprq>
+          <gmfnsrsbh>91310109554345270C</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>69</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209970</fphm>
+          <kprq>20170719 10:53:35</kprq>
+          <gmfnsrsbh>913101097293948092</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>70</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209971</fphm>
+          <kprq>20170719 10:54:29</kprq>
+          <gmfnsrsbh>91310109772896337W</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>71</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209972</fphm>
+          <kprq>20170719 10:55:33</kprq>
+          <gmfnsrsbh>91310109763978103P</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>72</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209973</fphm>
+          <kprq>20170719 10:56:40</kprq>
+          <gmfnsrsbh>913102305834939776</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>73</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209974</fphm>
+          <kprq>20170719 10:57:25</kprq>
+          <gmfnsrsbh>9131010977807940XA</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>74</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209975</fphm>
+          <kprq>20170719 10:59:00</kprq>
+          <gmfnsrsbh>913101095665584178</gmfnsrsbh>
+          <je>2330.10</je>
+          <se>69.90</se>
+          <zfbz>N</zfbz>
+          <xh>75</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209976</fphm>
+          <kprq>20170719 11:00:02</kprq>
+          <gmfnsrsbh>91310109052962375M</gmfnsrsbh>
+          <je>2330.10</je>
+          <se>69.90</se>
+          <zfbz>N</zfbz>
+          <xh>76</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209977</fphm>
+          <kprq>20170719 11:09:25</kprq>
+          <gmfnsrsbh>91310109586792366H</gmfnsrsbh>
+          <je>2669.90</je>
+          <se>80.10</se>
+          <zfbz>N</zfbz>
+          <xh>77</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209978</fphm>
+          <kprq>20170719 11:10:28</kprq>
+          <gmfnsrsbh>913100000729643272</gmfnsrsbh>
+          <je>2669.90</je>
+          <se>80.10</se>
+          <zfbz>N</zfbz>
+          <xh>78</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209979</fphm>
+          <kprq>20170719 11:11:32</kprq>
+          <gmfnsrsbh>310109000630265</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>79</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209980</fphm>
+          <kprq>20170719 11:12:39</kprq>
+          <gmfnsrsbh>913101090512747659</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>80</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209981</fphm>
+          <kprq>20170719 11:13:34</kprq>
+          <gmfnsrsbh>913101090711859466</gmfnsrsbh>
+          <je>388.35</je>
+          <se>11.65</se>
+          <zfbz>N</zfbz>
+          <xh>81</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209982</fphm>
+          <kprq>20170719 11:14:21</kprq>
+          <gmfnsrsbh>913101160729846861</gmfnsrsbh>
+          <je>1262.14</je>
+          <se>37.86</se>
+          <zfbz>N</zfbz>
+          <xh>82</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209983</fphm>
+          <kprq>20170719 11:15:15</kprq>
+          <gmfnsrsbh>91310109082017278M</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>83</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209984</fphm>
+          <kprq>20170719 11:16:04</kprq>
+          <gmfnsrsbh>91310109554314124F</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>84</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209985</fphm>
+          <kprq>20170719 11:17:00</kprq>
+          <gmfnsrsbh>91310109093577211D</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>85</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209986</fphm>
+          <kprq>20170719 11:17:51</kprq>
+          <gmfnsrsbh>91310109301520536R</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>86</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209987</fphm>
+          <kprq>20170719 11:18:54</kprq>
+          <gmfnsrsbh>913101150879472045</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>87</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209988</fphm>
+          <kprq>20170719 11:19:45</kprq>
+          <gmfnsrsbh>913101093122285654</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>88</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209989</fphm>
+          <kprq>20170719 11:20:41</kprq>
+          <gmfnsrsbh>91310118312550626Y</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>89</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209990</fphm>
+          <kprq>20170719 11:21:30</kprq>
+          <gmfnsrsbh>310110000548228</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>90</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209991</fphm>
+          <kprq>20170719 11:22:38</kprq>
+          <gmfnsrsbh>9131010530142849XY</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>91</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209992</fphm>
+          <kprq>20170719 11:24:30</kprq>
+          <gmfnsrsbh>91310000684026083M</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>92</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209993</fphm>
+          <kprq>20170719 11:25:25</kprq>
+          <gmfnsrsbh>913101096840936819</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>93</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209994</fphm>
+          <kprq>20170719 11:26:24</kprq>
+          <gmfnsrsbh>91310109398661537K</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>94</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209995</fphm>
+          <kprq>20170719 11:27:19</kprq>
+          <gmfnsrsbh>913101207895336000</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>95</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209996</fphm>
+          <kprq>20170719 11:28:16</kprq>
+          <gmfnsrsbh>310000400623059</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>96</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209997</fphm>
+          <kprq>20170719 11:29:11</kprq>
+          <gmfnsrsbh>91310107MA1G06L97L</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>97</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209998</fphm>
+          <kprq>20170719 11:30:28</kprq>
+          <gmfnsrsbh>91310109332542981G</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>98</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78209999</fphm>
+          <kprq>20170719 11:31:30</kprq>
+          <gmfnsrsbh>91310109332632063C</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>99</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78210000</fphm>
+          <kprq>20170719 11:33:07</kprq>
+          <gmfnsrsbh>91310109692933134F</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>100</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214081</fphm>
+          <kprq>20170703 15:12:49</kprq>
+          <gmfnsrsbh>91310000579115578M</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>101</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214082</fphm>
+          <kprq>20170703 15:16:03</kprq>
+          <gmfnsrsbh>913100006643411000</gmfnsrsbh>
+          <je>2912.62</je>
+          <se>87.38</se>
+          <zfbz>Y</zfbz>
+          <xh>102</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214083</fphm>
+          <kprq>20170703 15:17:12</kprq>
+          <gmfnsrsbh>91310109794549889C</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>103</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214084</fphm>
+          <kprq>20170703 15:19:10</kprq>
+          <gmfnsrsbh>913101097989425813</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>104</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214085</fphm>
+          <kprq>20170703 15:20:02</kprq>
+          <gmfnsrsbh>91310117764257383B</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>105</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214086</fphm>
+          <kprq>20170703 15:20:58</kprq>
+          <gmfnsrsbh>913101097683984667</gmfnsrsbh>
+          <je>2427.18</je>
+          <se>72.82</se>
+          <zfbz>N</zfbz>
+          <xh>106</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214087</fphm>
+          <kprq>20170703 15:21:56</kprq>
+          <gmfnsrsbh>91310109789550279W</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>107</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214088</fphm>
+          <kprq>20170703 15:22:41</kprq>
+          <gmfnsrsbh>91310000671130092X</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>108</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214089</fphm>
+          <kprq>20170703 15:23:26</kprq>
+          <gmfnsrsbh>91310109679371819W</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>109</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214090</fphm>
+          <kprq>20170703 15:24:16</kprq>
+          <gmfnsrsbh>91310118748767455U</gmfnsrsbh>
+          <je>4854.37</je>
+          <se>145.63</se>
+          <zfbz>N</zfbz>
+          <xh>110</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214091</fphm>
+          <kprq>20170703 15:25:08</kprq>
+          <gmfnsrsbh>91310118748767455U</gmfnsrsbh>
+          <je>10582.52</je>
+          <se>317.48</se>
+          <zfbz>Y</zfbz>
+          <xh>111</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214092</fphm>
+          <kprq>20170703 15:25:40</kprq>
+          <gmfnsrsbh>913101157333607590</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>112</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214093</fphm>
+          <kprq>20170703 15:26:30</kprq>
+          <gmfnsrsbh>91310104557491900K</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>113</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214094</fphm>
+          <kprq>20170703 15:27:05</kprq>
+          <gmfnsrsbh>91310109554345270C</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>114</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214095</fphm>
+          <kprq>20170703 15:27:57</kprq>
+          <gmfnsrsbh>913101097293948092</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>115</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214096</fphm>
+          <kprq>20170703 15:29:04</kprq>
+          <gmfnsrsbh>91310109772896337W</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>116</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214097</fphm>
+          <kprq>20170703 15:32:31</kprq>
+          <gmfnsrsbh>913100006643411159</gmfnsrsbh>
+          <je>2912.62</je>
+          <se>87.38</se>
+          <zfbz>N</zfbz>
+          <xh>117</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214098</fphm>
+          <kprq>20170703 15:35:06</kprq>
+          <gmfnsrsbh>91310109763978103P</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>118</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214099</fphm>
+          <kprq>20170703 15:35:59</kprq>
+          <gmfnsrsbh>913102305834939776</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>119</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100171320</fpdm>
+          <fphm>78214100</fphm>
+          <kprq>20170703 15:36:44</kprq>
+          <gmfnsrsbh>9131010977807940XA</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>120</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952001</fphm>
+          <kprq>20170720 13:28:45</kprq>
+          <gmfnsrsbh>913101135806025844</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>121</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952002</fphm>
+          <kprq>20170720 13:30:02</kprq>
+          <gmfnsrsbh>91310109332619168L</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>122</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952003</fphm>
+          <kprq>20170720 13:31:12</kprq>
+          <gmfnsrsbh>91310109133105957U</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>123</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952004</fphm>
+          <kprq>20170720 13:32:02</kprq>
+          <gmfnsrsbh>310108000599022</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>124</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952005</fphm>
+          <kprq>20170720 13:32:56</kprq>
+          <gmfnsrsbh>91310116342140898Y</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>125</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952006</fphm>
+          <kprq>20170720 13:33:46</kprq>
+          <gmfnsrsbh>91310109341985127A</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>126</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952007</fphm>
+          <kprq>20170720 13:35:10</kprq>
+          <gmfnsrsbh>91310109350703128P</gmfnsrsbh>
+          <je>2718.45</je>
+          <se>81.55</se>
+          <zfbz>N</zfbz>
+          <xh>127</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952008</fphm>
+          <kprq>20170720 13:37:56</kprq>
+          <gmfnsrsbh>91310109MA1G50B94G</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>128</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952009</fphm>
+          <kprq>20170720 13:40:00</kprq>
+          <gmfnsrsbh>91310116350982024M</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>129</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952010</fphm>
+          <kprq>20170720 13:41:02</kprq>
+          <gmfnsrsbh>913101163508813465</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>130</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952011</fphm>
+          <kprq>20170720 13:41:49</kprq>
+          <gmfnsrsbh>91310115312278837L</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>131</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952012</fphm>
+          <kprq>20170720 13:42:45</kprq>
+          <gmfnsrsbh>91310110MA1G82YT67</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>132</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952013</fphm>
+          <kprq>20170720 13:45:17</kprq>
+          <gmfnsrsbh>91310116MA1J87GK4A</gmfnsrsbh>
+          <je>582.52</je>
+          <se>17.48</se>
+          <zfbz>N</zfbz>
+          <xh>133</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952014</fphm>
+          <kprq>20170720 13:46:47</kprq>
+          <gmfnsrsbh>91310109773720878J</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>134</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952015</fphm>
+          <kprq>20170720 13:48:23</kprq>
+          <gmfnsrsbh>91310107MA1G03C59K</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>135</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952016</fphm>
+          <kprq>20170720 13:49:43</kprq>
+          <gmfnsrsbh>91310109MA1G510H2B</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>136</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952017</fphm>
+          <kprq>20170720 13:50:40</kprq>
+          <gmfnsrsbh>91310101MA2FP1G620</gmfnsrsbh>
+          <je>776.70</je>
+          <se>23.30</se>
+          <zfbz>N</zfbz>
+          <xh>137</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952018</fphm>
+          <kprq>20170720 13:51:32</kprq>
+          <gmfnsrsbh>91310000322284785M</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>138</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952019</fphm>
+          <kprq>20170720 13:52:25</kprq>
+          <gmfnsrsbh>91310109MA1G55BL66</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>139</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952020</fphm>
+          <kprq>20170720 13:53:48</kprq>
+          <gmfnsrsbh>91310109087952716N</gmfnsrsbh>
+          <je>873.79</je>
+          <se>26.21</se>
+          <zfbz>N</zfbz>
+          <xh>140</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952021</fphm>
+          <kprq>20170720 13:54:57</kprq>
+          <gmfnsrsbh>91310109MA1G549W09</gmfnsrsbh>
+          <je>873.79</je>
+          <se>26.21</se>
+          <zfbz>N</zfbz>
+          <xh>141</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952022</fphm>
+          <kprq>20170720 13:55:42</kprq>
+          <gmfnsrsbh>913101057927814000</gmfnsrsbh>
+          <je>485.44</je>
+          <se>14.56</se>
+          <zfbz>N</zfbz>
+          <xh>142</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952023</fphm>
+          <kprq>20170720 13:56:45</kprq>
+          <gmfnsrsbh>310000400683230</gmfnsrsbh>
+          <je>1941.75</je>
+          <se>58.25</se>
+          <zfbz>N</zfbz>
+          <xh>143</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952024</fphm>
+          <kprq>20170720 13:58:10</kprq>
+          <gmfnsrsbh>91310110MA1G8AU56A</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>144</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952025</fphm>
+          <kprq>20170720 13:59:48</kprq>
+          <gmfnsrsbh>91310115MA1K3LTF8N</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>145</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952026</fphm>
+          <kprq>20170720 14:01:48</kprq>
+          <gmfnsrsbh>91310109324358404D</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>146</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952027</fphm>
+          <kprq>20170720 14:02:36</kprq>
+          <gmfnsrsbh>91310109MA1G58UP80</gmfnsrsbh>
+          <je>679.61</je>
+          <se>20.39</se>
+          <zfbz>N</zfbz>
+          <xh>147</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952028</fphm>
+          <kprq>20170720 14:03:57</kprq>
+          <gmfnsrsbh>91310116MA1J8H2W00</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>148</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952029</fphm>
+          <kprq>20170720 14:04:46</kprq>
+          <gmfnsrsbh>9131010966434149X4</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>149</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952030</fphm>
+          <kprq>20170720 14:05:47</kprq>
+          <gmfnsrsbh>913101061322685352</gmfnsrsbh>
+          <je>2912.62</je>
+          <se>87.38</se>
+          <zfbz>N</zfbz>
+          <xh>150</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952031</fphm>
+          <kprq>20170720 14:06:30</kprq>
+          <gmfnsrsbh>913101077878545006</gmfnsrsbh>
+          <je>4854.37</je>
+          <se>145.63</se>
+          <zfbz>N</zfbz>
+          <xh>151</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952032</fphm>
+          <kprq>20170720 14:07:41</kprq>
+          <gmfnsrsbh>913100006693747333</gmfnsrsbh>
+          <je>9708.74</je>
+          <se>291.26</se>
+          <zfbz>N</zfbz>
+          <xh>152</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952033</fphm>
+          <kprq>20170720 14:10:47</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>-1650.48</je>
+          <se>-49.52</se>
+          <zfbz>N</zfbz>
+          <xh>153</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952034</fphm>
+          <kprq>20170720 14:12:30</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>1456.31</je>
+          <se>43.69</se>
+          <zfbz>N</zfbz>
+          <xh>154</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952035</fphm>
+          <kprq>20170724 15:10:56</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>-194.17</je>
+          <se>-5.83</se>
+          <zfbz>N</zfbz>
+          <xh>155</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952036</fphm>
+          <kprq>20170724 15:12:27</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>-3883.50</je>
+          <se>-116.50</se>
+          <zfbz>N</zfbz>
+          <xh>156</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952037</fphm>
+          <kprq>20170724 15:14:07</kprq>
+          <gmfnsrsbh>000000000000000</gmfnsrsbh>
+          <je>-970.87</je>
+          <se>-29.13</se>
+          <zfbz>N</zfbz>
+          <xh>157</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952038</fphm>
+          <kprq>20170724 15:15:48</kprq>
+          <gmfnsrsbh>91310000768764649Q</gmfnsrsbh>
+          <je>970.87</je>
+          <se>29.13</se>
+          <zfbz>N</zfbz>
+          <xh>158</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952039</fphm>
+          <kprq>20170724 15:17:31</kprq>
+          <gmfnsrsbh>913101156072595530</gmfnsrsbh>
+          <je>4077.67</je>
+          <se>122.33</se>
+          <zfbz>N</zfbz>
+          <xh>159</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952040</fphm>
+          <kprq>20170726 11:22:32</kprq>
+          <gmfnsrsbh>310104797045272</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>160</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952041</fphm>
+          <kprq>20170726 11:23:38</kprq>
+          <gmfnsrsbh>91310114593144041X</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>161</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952042</fphm>
+          <kprq>20170726 11:24:38</kprq>
+          <gmfnsrsbh>91310101739770003E</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>162</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952043</fphm>
+          <kprq>20170726 11:25:23</kprq>
+          <gmfnsrsbh>913101135707962745</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>163</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952044</fphm>
+          <kprq>20170726 11:26:03</kprq>
+          <gmfnsrsbh>913101140748367164</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>164</xh>
+        </mxxx>
+        <mxxx>
+          <fpdm>3100172320</fpdm>
+          <fphm>26952045</fphm>
+          <kprq>20170726 11:26:51</kprq>
+          <gmfnsrsbh>91310116MA1J8K8X51</gmfnsrsbh>
+          <je>1747.57</je>
+          <se>52.43</se>
+          <zfbz>N</zfbz>
+          <xh>165</xh>
+        </mxxx>
+      </ptfpkjmx>
+      <ptfpkjhjxx>
+        <ptfpkjhjs>165</ptfpkjhjs>
+        <ptfpkjhjJe>225630.89</ptfpkjhjJe>
+        <ptfpkjhjSe>6769.11</ptfpkjhjSe>
+      </ptfpkjhjxx>
+    </body>
+  </sbbZzsfpkjmx>
+</taxML>
