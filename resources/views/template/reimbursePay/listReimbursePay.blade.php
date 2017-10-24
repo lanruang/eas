@@ -71,10 +71,10 @@
 							<button type="button" class="btn btn-success btn-minier" onclick="addReimburseInfo('{{ $v['exp_id'] }}', this);">补充信息</button>
 						</td>
 						<td class="center align-middle">
-							{{ mapKey(session('userInfo.subject'), $v['debit_pid']) }}{{ $v['subject_debit'] }}
+							{{ mapKey(session('userInfo.subject'), $v['debit_pid'], 1) }}{{ $v['subject_debit'] }}
 						</td>
 						<td class="center align-middle">
-							{{ mapKey(session('userInfo.subject'), $v['credit_pid']) }}{{ $v['subject_credit'] }}
+							{{ mapKey(session('userInfo.subject'), $v['credit_pid'], 1) }}{{ $v['subject_credit'] }}
 						</td>
 						<td class="center align-middle">
 							{{ $v['budget_name'] }}

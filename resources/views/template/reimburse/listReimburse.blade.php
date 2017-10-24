@@ -35,6 +35,7 @@
 				<tr class="new_reimburse_bg">
 					<th class="center col-xs-1">序号</th>
 					<th class="center">用途</th>
+					<th class="center">科目（用途）</th>
 					<th class="center col-xs-2">金额</th>
 					<th class="center col-xs-1">附件</th>
 					<th class="center col-xs-1">操作</th>
@@ -43,6 +44,7 @@
 					<tr>
 						<td class="center col-xs-1 align-middle">{{ $k+1 }}</td>
 						<td class="align-middle">{{ $v['exp_remark'] }}</td>
+						<td>{{ mapKey(session('userInfo.subject'), $v['exp_debit_pid'], 1) }}{{ $v['exp_debit'] }}</td>
 						<td class="align-right col-xs-2 align-middle">{{ $v['exp_amount'] }}</td>
 						<td class="center col-xs-1 align-middle">
 							<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
@@ -58,6 +60,7 @@
 				@endforeach
 				<tr class="new_reimburse_bg">
 					<th class="center">合计</th>
+					<th></th>
 					<th></th>
 					<th class="align-right">0.00</th>
 					<th colspan="2">&nbsp;</th>
@@ -119,10 +122,10 @@
 			var trNum = $('#expMainTable').find('tr').length -1;
 			var amount = 0;
 			for(var i=1; i<trNum; i++){
-				amount += parseFloat($('#expMainTable')[0].rows[i].cells[2].innerText);
+				amount += parseFloat($('#expMainTable')[0].rows[i].cells[3].innerText);
 			}
 			amount = toDecimal(amount);
-			$('#expMainTable tr:last')[0].cells[2].innerText = amount;
+			$('#expMainTable tr:last')[0].cells[3].innerText = amount;
 			expMainNum = trNum-1;
 		}
 	</script>

@@ -402,11 +402,14 @@ class AuditMyController extends Common\CommonController
         //获取明细
         $result['expMain'] = ExpenseMainDb::from('expense_main AS expM')
             ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
+            ->leftjoin('subjects AS sub', 'expM.subject_id_debit', '=', 'sub.sub_id')
             ->where('expM.expense_id', $id)
-            ->select('expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url')
+            ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url',
+                'sub.sub_name AS exp_debit', 'sub.sub_pid AS exp_debit_pid')
             ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
+
         return $result;
     }
     //更新报销单信息

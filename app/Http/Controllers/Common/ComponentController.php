@@ -255,7 +255,7 @@ class ComponentController extends CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $rel = mapKey(session('userInfo.subject'), $input['sub_pid']);
+        $rel = mapKey(session('userInfo.subject'), $input['sub_pid'], 1);
 
         return ajaxJsonRes($rel);
     }

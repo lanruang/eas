@@ -59,7 +59,7 @@
 						<tr>
 							<td class="center col-xs-1">{{ $k+1 }}</td>
 							<td>{{ $v['exp_remark'] }}</td>
-							<td>{{ $v['exp_debit'] }}</td>
+							<td>{{ mapKey(session('userInfo.subject'), $v['exp_debit_pid'], 1) }}{{ $v['exp_debit'] }}</td>
 							<td class="align-right col-xs-2">{{ $v['exp_amount'] }}</td>
 							<td class="center col-xs-1">
 								<i class="ace-icon fa fa-check {{ $v['enclosure'] ? 'fa-check green' : 'fa-close red' }} bigger-130"></i>
@@ -102,15 +102,16 @@
 						<div class="row">
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="validation-form">
-
+									@if (session('userInfo.sysConfig.reimburse.budgetOnOff') == 1)
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
 										<div class="col-sm-5">
 											<label class="control-label align-left" id="budget"></label>
-											<input type="hidden" id="budget_id" name="budget_id" value=""/>
 										</div>
 										<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
 									</div>
+									@endif
+									<input type="hidden" id="budget_id" name="budget_id" value=""/>
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
 										<div class="col-sm-5">
@@ -243,13 +244,14 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var budgetTable;
-		var budgetId;
+		var budgetId = '';
+		var budgetOnOff = '{{ session('userInfo.sysConfig.reimburse.budgetOnOff') }}';
 		var initTreeData;
 		var amount = 0;
 		var name;
 		$(function() {
 			$('button[href=#modal-subject]').click(function(){
-				if(!budgetId){
+				if(!budgetId && budgetOnOff == '1'){
 					alertDialog('-1', '请先选择预算！')
 					return false;
 				}
@@ -351,13 +353,11 @@
 				rules: {
 					exp_remark: {required: true, maxlength:150},
 					exp_amount: {required: true, number:true, min:0.01},
-					budget_id: {required: true},
 					sub_debit: {required: true},
 				},
 				messages: {
 					exp_remark: {required: "请填写用途.", maxlength: "字符数超出范围."},
 					exp_amount: {required: "请填写金额.", number:"请输入数字", min:"金额不能小于或者等于0"},
-					budget_id: {required: "请选择预算."},
 					sub_debit: {required: "请选择科目(用途)."},
 				},
 				highlight: function (e) {
@@ -440,17 +440,17 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-				var html = item.target.sub_ip + '<br>' + item.target.oText;
 				if(name == 'debit' && item.target.status != '1'){
 					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
 				}else{
 					if(name == 'debit'){
-						var data = {"sub_id":item.target.id, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
+						var data = {"sub_id":item.target.id, "sub_pid": item.target.pid, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
 						var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
 						if(rel.status == true){
-							if((rel.data - amount) < 0){
+							if((rel.data - amount) < 0 && budgetOnOff == '1'){
 								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
 							}else{
+								var html = item.target.sub_ip + '<br>' + rel.parSub + item.target.oText;
 								$('#text_'+name).html(html);
 								$('#sub_'+name).val(item.target.id);
 								$('#close_tree').click();

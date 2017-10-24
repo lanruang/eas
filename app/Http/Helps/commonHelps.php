@@ -255,15 +255,22 @@
      *
      * @param    array		arr
      * @param    string		key
+     * @param    string     isSub
      * @return    string
      *
      */
-    function mapKey($arr = array(), $key = '')
+    function mapKey($arr = array(), $key = '', $isSub = '0')
 	{
+        $str = '';
         if(!array_key_exists($key, $arr)){
             return '';
         }
-        $str = $arr[$key]['sub_name'].' - ';
+        if($isSub){
+            $str = $arr[$key]['sub_name'].' - ';
+        }else{
+            $str = $arr[$key];
+        }
+
         return $str;
     }
 

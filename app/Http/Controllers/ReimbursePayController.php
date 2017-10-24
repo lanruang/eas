@@ -233,8 +233,7 @@ class ReimbursePayController extends Common\CommonController
         //单据明细数据完整性
         $isNull = ExpenseMainDb::where('expense_id', $input['id'])
             ->where(function ($query) {
-                $query->orWhere('budget_id', '')
-                    ->orWhere('subject_id_credit', '');
+                $query->orWhere('subject_id_credit', '');
             })
             ->get()
             ->first();
