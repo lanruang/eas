@@ -71,10 +71,10 @@
 							<button type="button" class="btn btn-success btn-minier" onclick="addReimburseInfo('{{ $v['exp_id'] }}', this);">补充信息</button>
 						</td>
 						<td class="center align-middle">
-							{{ $v['subject_debit'] }}
+							{{ mapKey(session('userInfo.subject'), $v['debit_pid']) }}{{ $v['subject_debit'] }}
 						</td>
 						<td class="center align-middle">
-							{{ $v['subject_credit'] }}
+							{{ mapKey(session('userInfo.subject'), $v['credit_pid']) }}{{ $v['subject_credit'] }}
 						</td>
 						<td class="center align-middle">
 							{{ $v['budget_name'] }}
@@ -114,16 +114,11 @@
 									</div>
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 科目-贷（付款方式）  </label>
-										<div class="col-sm-3">
-											<label>
-												<select class="form-control" id="sub_credit" name="sub_credit">
-													<option value="">请选择</option>
-													@foreach ($subject as $v)
-														<option value="{{ $v['id'] }}">{{ $v['text'] }}</option>
-													@endforeach
-												</select>
-											</label>
+										<div class="col-sm-5">
+											<label class="control-label align-left" id="sub_text"></label>
+											<input type="hidden" id="sub_credit" name="sub_credit" value=""/>
 										</div>
+										<button type="button" href="#modal-subject" data-toggle="modal" id="btn_sub" class="btn btn-white btn-sm btn-primary">选择</button>
 									</div>
 									<input type="hidden" id="exp_id" name="exp_id" value=""/>
 									<input type="hidden" id="expense" name="expense" value="{{ $expense_id }}">
@@ -144,6 +139,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div id="payFarm" class="hide col-sm-offset-2 col-sm-8">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -181,6 +177,24 @@
 		</div>
 	</div>
 
+	<div id="modal-subject" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="widget-box widget-color-blue2">
+				<div class="widget-header">
+					<h4 class="widget-title lighter smaller">选择科目</h4>
+					<span class="widget-toolbar">
+						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+					</span>
+				</div>
+
+				<div class="widget-body">
+					<div class="widget-main padding-8">
+						<ul id="subject_tree"></ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection()
 
 {{--页面加载js--}}
@@ -197,7 +211,6 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var initTreeData;
 		$(function() {
 			//图片展示
 			var colorbox_params = {
@@ -248,7 +261,56 @@
 				},
 			});
 			getExpMainAmount();
+			subjectTree();
 		});
+		//科目选择
+		function subjectTree(){
+			treeData = initTreeData();//
+			$('#subject_tree').ace_tree({
+				dataSource: treeData['dataSource'],
+				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
+				'itemSelect' : true,
+				'folderSelect': false,
+				'multiSelect': false,
+				'open-icon' : 'ace-icon tree-minus',
+				'close-icon' : 'ace-icon tree-plus',
+				'folder-open-icon' : 'ace-icon tree-plus',
+				'folder-close-icon' : 'ace-icon tree-minus',
+				'selected-icon' : 'null',
+				'unselected-icon' : 'null',
+			}).on('selected.fu.tree', function(e, item) {
+				if(item.target.status != '1'){
+					alertDialog('-1', '请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+				}else{
+					var parData = {"sub_pid": item.target.pid, "_token": '{{csrf_token()}}'};
+					var rel = ajaxPost(parData, '{{ route('component.ajaxGetParentSub') }}');
+					var html = item.target.sub_ip + '<br>' + rel + item.target.oText;
+					$('#sub_text').html(html);
+					$('#sub_credit').val(item.target.id);
+					$('#close_tree').click();
+				}
+			});
+		}
+		function initTreeData(){
+			var paySub = {"_token": '{{csrf_token()}}'};
+			var tree_data = ajaxPost(paySub, '{{ route('component.ajaxGetPaySub') }}');
+			var dataSource = function(options, callback){
+				var $data = null;
+				if(!("text" in options) && !("type" in options)){
+					$data = tree_data;//the root tree
+					callback({ data: $data });
+					return;
+				}
+				else if("type" in options && options.type == "folder") {
+					if("additionalParameters" in options && "children" in options.additionalParameters)
+						$data = options.additionalParameters.children || {};
+					else $data = {}
+				}
+				if($data != null)//this setTimeout is only for mimicking some random delay
+					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}
+			return {'dataSource': dataSource}
+		}
 
 		//明细金额汇总
 		function getExpMainAmount(){
@@ -261,7 +323,6 @@
 			$('#expMainTable tr:last')[0].cells[2].innerText = amount;
 			expMainNum = trNum-1;
 		}
-
 		//添加预算信息
 		function addReimburseInfo(id, e){
 			amount = $(e).parent().parent()[0].cells[2].innerText;
@@ -305,6 +366,7 @@
 					alertDialog('-1', res.msg)
 				}
 			}else{
+				$('#reimburseForm').addClass('hide');
 				$('#expMainTable').addClass('hide');
 				$('#listAudit').addClass('hide');
 				$('#payFarm').removeClass('hide');

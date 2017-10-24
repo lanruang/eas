@@ -87,12 +87,14 @@ class ReimbursePayController extends Common\CommonController
             return redirectPageMsg('-1', $validator->errors()->first(), route('reimbursePay.index'));
         }
         $id = $input['id'];
+
         //获取单据
         $data = ExpenseDb::from('expense AS exp')
             ->leftJoin('department AS dep', 'dep.dep_id','=','exp.expense_dep')
             ->leftJoin('users AS u', 'u.user_id','=','exp.expense_user')
             ->select('u.user_name AS user_name', 'dep.dep_name AS dep_name', 'exp.expense_num', 'exp.expense_id',
                 'exp.expense_title', 'exp.expense_date', 'exp.expense_status')
+            ->where('exp.expense_id', $id)
             ->where('exp.expense_type', 'reimburse')
             ->where('exp.expense_cashier', session('userInfo.user_id'))
             ->get()
@@ -100,6 +102,7 @@ class ReimbursePayController extends Common\CommonController
         if(!$data){
             return redirectPageMsg('-1', '单据信息获取失败，请刷新后重试', route('reimburse.index'));
         }
+
         //获取明细
         $data['expMain'] = ExpenseMainDb::from('expense_main AS expM')
             ->leftjoin('expense_enclosure AS expE', 'expM.exp_id', '=', 'expE.exp_id')
@@ -108,12 +111,13 @@ class ReimbursePayController extends Common\CommonController
             ->leftjoin('budget AS budget', 'expM.budget_id', '=', 'budget.budget_id')
             ->where('expM.expense_id', $id)
             ->select('expM.exp_id', 'expM.exp_remark', 'expM.exp_amount', 'expM.enclosure', 'expE.enclo_url AS url'
-                , 'debit.sub_name AS subject_debit', 'credit.sub_name AS subject_credit'
+                , 'debit.sub_name AS subject_debit', 'debit.sub_pid AS debit_pid'
+                , 'credit.sub_name AS subject_credit', 'credit.sub_pid AS credit_pid'
                 , 'budget.budget_name AS budget_name')
             ->orderBy('expM.created_at', 'asc')
             ->get()
             ->toArray();
-        
+
         //获取审批进度
         $audit = AuditInfoDb::from('audit_info AS ai')
             ->leftjoin('audit_info_text AS ait', 'ai.process_id', '=', 'ait.process_id')
@@ -127,16 +131,7 @@ class ReimbursePayController extends Common\CommonController
             ->get()
             ->toArray();
         $data['audit'] = json_encode($audit);
-
-        //获取科目列表
-        $sub_ids = explode(',', session('userInfo.sysConfig.reimbursePay.subPay'));
-        $subject = SubjectsDb::select('sub_id AS id', 'sub_name AS text')
-            ->whereIn('sub_id', $sub_ids)
-            ->orderBy('sub_ip', 'asc')
-            ->get()
-            ->toArray();
-        $data['subject'] = $subject;
-
+        
         return view('reimbursePay.listReimbursePay', $data);
     }
 
@@ -230,6 +225,7 @@ class ReimbursePayController extends Common\CommonController
             ->select('expense_id', 'expense_user', 'expense_num')
             ->get()
             ->first();
+    
         if(!$exp){
             echoAjaxJson('-1', '单据获取失败，请重试');
         }

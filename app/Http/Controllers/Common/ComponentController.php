@@ -11,6 +11,7 @@ use App\Http\Models\Positions\PositionsModel AS PositionsDb;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -232,10 +233,53 @@ class ComponentController extends CommonController
         ajaxJsonRes($data);
     }
 
-
-    public function ctGetGetId()
+    //获取科目父级名称
+    public function ajaxGetParentSub(Request $request)
     {
-        //p(getId());
-        p(session('userInfo'));
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'sub_pid' => 'required|between:32,32',
+        ];
+        $message = [
+            'sub_pid.required' => '参数不存在',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        $rel = mapKey(session('userInfo.subject'), $input['sub_pid']);
+
+        return ajaxJsonRes($rel);
+    }
+
+    //获取付款金额
+    public function ajaxGetPaySub(Request $request)
+    {
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取付款方式科目
+        $subject = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'status', 'sub_pid AS pid', 'sub_ip')
+            ->where('status', '1')
+            ->orderBy('sub_ip', 'asc')
+            ->get()
+            ->toArray();
+        $subPay = explode(',', session('userInfo.sysConfig.reimbursePay.subPay'));
+        $subPaySub = array();
+        foreach($subPay as $k => $v){
+            $subPaySub = array_merge($subPaySub, getTreeT($subject, $v, 1, '' ,1));
+        }
+
+        return ajaxJsonRes($subPaySub);
     }
 }

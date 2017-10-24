@@ -229,5 +229,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('ctGetGetId', ['as' => 'component.ctGetGetId', 'uses' => 'Common\ComponentController@ctGetGetId']);//预算数据
         Route::post('ctGetCustomer', ['as' => 'component.ctGetCustomer', 'uses' => 'Common\ComponentController@ctGetCustomer']);//客户数据
         Route::post('ctGetSupplier', ['as' => 'component.ctGetSupplier', 'uses' => 'Common\ComponentController@ctGetSupplier']);//供应商数据
+        Route::post('ajaxGetParentSub', ['as' => 'component.ajaxGetParentSub', 'uses' => 'Common\ComponentController@ajaxGetParentSub']);//获取科目父级名称
+        Route::post('ajaxGetPaySub', ['as' => 'component.ajaxGetPaySub', 'uses' => 'Common\ComponentController@ajaxGetPaySub']);//获取支付方式科目
     });
 });

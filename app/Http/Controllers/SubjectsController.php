@@ -118,7 +118,7 @@ class SubjectsController extends Common\CommonController
         $input['subject_budget'] = array_key_exists('subject_budget', $input) ? 1 : 0;
 
         //添加数据
-        $subjectDb = new subjectDb;
+        $subjectDb = new SubjectsDb;
         $subjectDb->sub_id = getId();
         $subjectDb->sub_type = $input['subject_type'];
         $subjectDb->sub_ip = $input['subject_ip'];

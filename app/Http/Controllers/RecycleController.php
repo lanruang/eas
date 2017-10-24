@@ -11,7 +11,7 @@ class RecycleController extends Common\CommonController
 {
     public function index()
     {
-        p(session('userInfo.recycle'));
+        p(getId());
         return view('recycle.index');
     }
 

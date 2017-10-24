@@ -848,7 +848,7 @@ class ReimburseController extends Common\CommonController
 
         //树形排列科目
         $result = getTreeT($subjects, session('userInfo.sysConfig.reimburse.subReimburse'), 1);
-
+    
         //倒叙科目汇总金额
         $result = array_reverse($result);
 

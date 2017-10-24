@@ -123,25 +123,45 @@
      * @param	string		$pid
      * @param	string		$icon
      * @param	string		$iconStr
+     * @param	string		$pidId
      * @return	array
      */
-    function getTreeT($data, $pid = '0', $icon = '0', $iconStr = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>')
+    function getTreeT($data, $pid = '0', $icon = '0', $iconStr = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>', $pidId = '0')
     {
         $tree = array();
-        foreach($data as $k => $v){
-            if($v['pid'] == $pid){
-                $v['oText'] = $v['text'];
-                if($icon != '0'){
-                    $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
+        if($pidId == '1'){
+            foreach($data as $k => $v){
+                if ($v['id'] == $pid) {
+                    $v['oText'] = $v['text'];
+                    if ($icon != '0') {
+                        $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
+                    }
+                    $type = 'item';
+                    $rel = getTreeT($data, $v['id'], $icon);
+                    if ($rel) {
+                        $type = 'folder';
+                        $v['additionalParameters']['children'] = $rel;
+                    }
+                    $v['type'] = $type;
+                    $tree[] = $v;
                 }
-                $type = 'item';
-                $rel = getTreeT($data, $v['id'], $icon);
-                if($rel){
-                    $type = 'folder';
-                    $v['additionalParameters']['children'] = $rel;
+            }
+        }else{
+            foreach($data as $k => $v){
+                if ($v['pid'] == $pid) {
+                    $v['oText'] = $v['text'];
+                    if ($icon != '0') {
+                        $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
+                    }
+                    $type = 'item';
+                    $rel = getTreeT($data, $v['id'], $icon);
+                    if ($rel) {
+                        $type = 'folder';
+                        $v['additionalParameters']['children'] = $rel;
+                    }
+                    $v['type'] = $type;
+                    $tree[] = $v;
                 }
-                $v['type'] = $type;
-                $tree[] = $v;
             }
         }
         return $tree;
@@ -229,6 +249,24 @@
         $id = strtoupper(md5(uniqid(mt_rand(), true)));
         return $id;
     }
+
+    /**
+     * map查找
+     *
+     * @param    array		arr
+     * @param    string		key
+     * @return    string
+     *
+     */
+    function mapKey($arr = array(), $key = '')
+	{
+        if(!array_key_exists($key, $arr)){
+            return '';
+        }
+        $str = $arr[$key]['sub_name'].' - ';
+        return $str;
+    }
+
 
     /**
      * 邮件发送

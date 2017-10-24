@@ -234,8 +234,8 @@
 	/**
 	 * 信息转换
 	 *
-	 * @param    string      key
-	 * @param    string      type
+	 * @param    string		key
+	 * @param    array		array
 	 * @return    string
 	 *
 	 */

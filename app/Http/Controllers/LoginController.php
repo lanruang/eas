@@ -7,6 +7,7 @@ use App\Http\Requests;
 use App\Http\Models\User\UserModel AS loginDb;
 use App\Http\Models\Node\NodeModel AS nodeDb;
 use App\Http\Models\System\SysConfigModel AS sysConfigDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Validator;
@@ -80,6 +81,15 @@ class LoginController extends Common\CommonController
                 ->withErrors(array('0'=>'没有登录权限，请联系管理员。'));
         }
 
+        //获取科目
+        $subRel = SubjectsDb::select('sub_id AS id', 'sub_name', 'sub_pid AS pid', 'sub_ip')
+            ->orderBy('sub_ip', 'asc')
+            ->get()
+            ->toArray();
+        foreach($subRel as $v){
+            $subject[$v['id']] = $v;
+        }
+
         //更新登录时间
         loginDb::where('user_id', $userInfo->user_id)
                 ->update(['last_login' => date('Y-m-d H:i:s', time())]);
@@ -93,7 +103,10 @@ class LoginController extends Common\CommonController
         session(['userInfo.permission' => $menu['permission']]);
         session(['userInfo.not_permission' => $menu['not_permission']]);
         //session(['userInfo.recycle' => $menu['recycle']]);
+        //存储系统配置
         session(['userInfo.sysConfig' => $sysConfig]);
+        //存储科目数据
+        session(['userInfo.subject' => $subject]);
 
         return redirect(route('main.index'));
     }

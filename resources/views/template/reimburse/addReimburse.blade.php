@@ -102,6 +102,7 @@
 						<div class="row">
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="validation-form">
+
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
 										<div class="col-sm-5">
@@ -467,7 +468,7 @@
 		}
 		function initTreeDataFun(){
 			var dataSource = function(options, callback){
-				var $data = null
+				var $data = null;
 				if(!("text" in options) && !("type" in options)){
 					$data = initTreeData;//the root tree
 					callback({ data: $data });
@@ -502,7 +503,7 @@
 		function updateExpense(date){
 			var date = date == null ? $('#expense_date').val() : date;
 			var expense_title = $('#expense_title').val();
-			var data = {"exp_id": '{{ $expense_id }}', "exp_date": date, "exp_title": expense_title, "_token": '{{csrf_token()}}'}
+			var data = {"exp_id": '{{ $expense_id }}', "exp_date": date, "exp_title": expense_title, "_token": '{{csrf_token()}}'};
 			var res = ajaxPost(data, '{{ route('reimburse.updateExpense') }}')
 			alertDialog(res.status, res.msg);
 		}

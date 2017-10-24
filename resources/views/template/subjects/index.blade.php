@@ -135,30 +135,28 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			})
-
-			function initiateDemoData(){
-				var tree_data = JSON.parse('{!!$select!!}');
-				var dataSource1 = function(options, callback){
-					var $data = null
-					if(!("text" in options) && !("type" in options)){
-						$data = tree_data;//the root tree
-						callback({ data: $data });
-						return;
-					}
-					else if("type" in options && options.type == "folder") {
-						if("additionalParameters" in options && "children" in options.additionalParameters)
-							$data = options.additionalParameters.children || {};
-						else $data = {}
-					}
-
-					if($data != null)//this setTimeout is only for mimicking some random delay
-						setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-				}
-				return {'dataSource1': dataSource1}
-			}
-
-
 		})
+
+		function initiateDemoData(){
+			var tree_data = JSON.parse('{!!$select!!}');
+			var dataSource1 = function(options, callback){
+				var $data = null
+				if(!("text" in options) && !("type" in options)){
+					$data = tree_data;//the root tree
+					callback({ data: $data });
+					return;
+				}
+				else if("type" in options && options.type == "folder") {
+					if("additionalParameters" in options && "children" in options.additionalParameters)
+						$data = options.additionalParameters.children || {};
+					else $data = {}
+				}
+
+				if($data != null)//this setTimeout is only for mimicking some random delay
+					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}
+			return {'dataSource1': dataSource1}
+		}
 
 		function getParameter(i) {
 			subTable.settings()[0].ajax.async = false;

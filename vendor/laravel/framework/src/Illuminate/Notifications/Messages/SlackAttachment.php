@@ -2,10 +2,12 @@
 
 namespace Illuminate\Notifications\Messages;
 
-use Carbon\Carbon;
+use Illuminate\Support\InteractsWithTime;
 
 class SlackAttachment
 {
+    use InteractsWithTime;
+
     /**
      * The attachment's title.
      *
@@ -28,6 +30,13 @@ class SlackAttachment
     public $content;
 
     /**
+     * A plain-text summary of the attachment.
+     *
+     * @var string
+     */
+    public $fallback;
+
+    /**
      * The attachment's color.
      *
      * @var string
@@ -47,6 +56,20 @@ class SlackAttachment
      * @var array
      */
     public $markdown;
+
+    /**
+     * The attachment's image url.
+     *
+     * @var string
+     */
+    public $imageUrl;
+
+    /**
+     * The attachment's thumb url.
+     *
+     * @var string
+     */
+    public $thumbUrl;
 
     /**
      * The attachment's footer.
@@ -98,6 +121,19 @@ class SlackAttachment
     }
 
     /**
+     * A plain-text summary of the attachment.
+     *
+     * @param  string  $fallback
+     * @return $this
+     */
+    public function fallback($fallback)
+    {
+        $this->fallback = $fallback;
+
+        return $this;
+    }
+
+    /**
      * Set the color of the attachment.
      *
      * @param  string  $color
@@ -106,6 +142,30 @@ class SlackAttachment
     public function color($color)
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    /**
+     * Add a field to the attachment.
+     *
+     * @param  \Closure|string $title
+     * @param  string $content
+     * @return $this
+     */
+    public function field($title, $content = '')
+    {
+        if (is_callable($title)) {
+            $callback = $title;
+
+            $callback($attachmentField = new SlackAttachmentField);
+
+            $this->fields[] = $attachmentField;
+
+            return $this;
+        }
+
+        $this->fields[$title] = $content;
 
         return $this;
     }
@@ -132,6 +192,32 @@ class SlackAttachment
     public function markdown(array $fields)
     {
         $this->markdown = $fields;
+
+        return $this;
+    }
+
+    /**
+     * Set the image URL.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function image($url)
+    {
+        $this->imageUrl = $url;
+
+        return $this;
+    }
+
+    /**
+     * Set the URL to the attachment thumbnail.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function thumb($url)
+    {
+        $this->thumbUrl = $url;
 
         return $this;
     }
@@ -165,12 +251,12 @@ class SlackAttachment
     /**
      * Set the timestamp.
      *
-     * @param  Carbon  $timestamp
+     * @param  \DateTimeInterface|\DateInterval|int  $timestamp
      * @return $this
      */
-    public function timestamp(Carbon $timestamp)
+    public function timestamp($timestamp)
     {
-        $this->timestamp = $timestamp->getTimestamp();
+        $this->timestamp = $this->availableAt($timestamp);
 
         return $this;
     }
