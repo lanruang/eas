@@ -3,11 +3,8 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/jquery-ui.custom.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/jquery.gritter.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/select2.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-datepicker3.min.css" />
-	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-editable.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -79,12 +76,7 @@
 												<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delDep();">清除</button>
 											</div>
 										</div>
-										<div class="profile-info-row">
-											<div class="profile-info-name"> 部门负责人</div>
-											<div class="profile-info-value form-group">
-												<label class="col-xs-3 output" id="dep_leader_list"></label>
-											</div>
-										</div>
+
 										<div class="profile-info-row">
 											<div class="profile-info-name"> 岗位</div>
 											<div class="profile-info-value form-group">
@@ -200,7 +192,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="tree1"></ul>
+						<div id="treeDep" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -220,7 +212,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="posTree"></ul>
+						<div id="treePos" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -233,12 +225,51 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.validate.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.bootstrap-duallistbox.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+		var subTreeSetDep = {
+			data: {
+				key: {
+					name: "text",
+				}
+			},
+			view: {
+				showLine:false,
+				showIcon: false,
+			},
+			callback: {
+				onClick: treeClickDep
+			},
+			async: {
+				enable: true,
+				url: '{{route('component.ctGetDep')}}',
+				otherParam: {"_token": '{{csrf_token()}}'}
+			}
+		};
+		var subTreeSetPos = {
+			data: {
+				key: {
+					name: "text",
+				}
+			},
+			view: {
+				showLine:false,
+				showIcon: false,
+			},
+			callback: {
+				onClick: treeClickPos
+			},
+			async: {
+				enable: true,
+				url: '{{route('component.ctGetPos')}}',
+				otherParam: {"_token": '{{csrf_token()}}'}
+			}
+		};
+		var IDMark_A = "_a";
 		$(function(){
 			$('#validation-form').validate({
 				errorElement: 'div',
@@ -267,45 +298,9 @@
 			});
 
 			//选择部门
-			var sampleData = initiateDemoData();//see below
-			$('#tree1').ace_tree({
-				dataSource: sampleData['dataSource'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': true,
-				'multiSelect': false,
-				'open-icon' : 'tree_null_icon_open',
-				'close-icon' : 'tree_null_icon_close',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				$('#department').val(item.target.id);
-				$('#dep_list').html(item.target.text);
-				$('#dep_leader_list').html(item.target.dep_leader);
-				$('#close_tree').click();
-			})
-
+			$.fn.zTree.init($("#treeDep"), subTreeSetDep);
 			//选择岗位
-			var posData = initiatePosData();//see below
-			$('#posTree').ace_tree({
-				dataSource: posData['dataSource'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': true,
-				'multiSelect': false,
-				'open-icon' : 'tree_null_icon_open',
-				'close-icon' : 'tree_null_icon_close',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				$('#positions').val(item.target.id);
-				$('#pos_list').html(item.target.text);
-				$('#close_pos').click();
-			})
+			$.fn.zTree.init($("#treePos"), subTreeSetPos);
 		});
 
 		//返回
@@ -325,26 +320,11 @@
 		}
 
 		//选择部门
-		function initiateDemoData(){
-			var tree_data = JSON.parse('{!!$dep!!}');
-			var dataSource = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = tree_data;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource': dataSource}
-		}
+		function treeClickDep(event, treeId, treeNode) {
+			$('#department').val(treeNode.id);
+			$('#dep_list').html(treeNode.text);
+			$('#close_tree').click();
+		};
 		//清除选项
 		function delDep(){
 			$('#department').val('');
@@ -353,26 +333,11 @@
 		}
 
 		//选择岗位
-		function initiatePosData(){
-			var tree_data = JSON.parse('{!!$pos!!}');
-			var dataSource = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = tree_data;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource': dataSource}
-		}
+		function treeClickPos(event, treeId, treeNode) {
+			$('#positions').val(treeNode.id);
+			$('#pos_list').html(treeNode.text);
+			$('#close_pos').click();
+		};
 		//清除选项
 		function delPos(){
 			$('#positions').val('');

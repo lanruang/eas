@@ -4,6 +4,7 @@
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -82,7 +83,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="tree1"></ul>
+						<div id="treePos" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -96,15 +97,34 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.validate.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.bootstrap-duallistbox.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-
+		var subTreeSet = {
+			data: {
+				key: {
+					name: "text",
+				}
+			},
+			view: {
+				showLine:false,
+				showIcon: false,
+			},
+			callback: {
+				onClick: treeOnClick
+			},
+			async: {
+				enable: true,
+				url: '{{route('component.ctGetPos')}}',
+				otherParam: {"_token": '{{csrf_token()}}'}
+			}
+		};
+		var IDMark_A = "_a";
 		$(function($) {
 
 			$('#validation-form').validate({
@@ -132,46 +152,14 @@
 			});
 
 			//选择上级岗位
-			var sampleData = initiateDemoData();//see below
-			$('#tree1').ace_tree({
-				dataSource: sampleData['dataSource1'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': true,
-				'multiSelect': false,
-				'open-icon' : 'tree_null_icon_open',
-				'close-icon' : 'tree_null_icon_close',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				$('#pos_pid_list').html(item.target.text);
-				$('#pos_pid').val(item.target.id);
-				$('#close_tree').click();
-			})
+			$.fn.zTree.init($("#treePos"), subTreeSet);
 		});
 
-		function initiateDemoData(){
-			var tree_data = ajaxPost({"_token": '{{csrf_token()}}'}, '{{route('component.ctGetPos')}}');
-			var dataSource1 = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = tree_data;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource1': dataSource1}
-		}
+		function treeOnClick(event, treeId, treeNode) {
+			$('#pos_pid_list').html(treeNode.text);
+			$('#pos_pid').val(treeNode.id);
+			$('#close_tree').click();
+		};
 		//清除选项
 		function delTree(){
 			$('#pos_pid_list').html('');

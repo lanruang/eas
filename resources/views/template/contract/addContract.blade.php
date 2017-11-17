@@ -59,7 +59,7 @@
 					<div class="col-sm-5">
 						<label class="control-label align-left" id="text_parties"></label>
 						<input type="hidden" id="contract_parties" name="contract_parties" value=""/>
-						<button type="button" href="#modal-parties" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+						<button type="button" href="#modal-parties" data-toggle="modal" class="btn btn-white btn-sm btn-primary">选择</button>
 					</div>
 
 				</div>
@@ -103,16 +103,16 @@
 						<label class="control-label align-left" id="budget"></label>
 						<input type="hidden" id="budget_id" name="budget_id" value=""/>
 					</div>
-					<button type="button" href="#modal-budget" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+					<button type="button" href="#modal-budget" data-toggle="modal" class="btn btn-white btn-sm btn-primary">选择</button>
 				</div>
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 科目(用途) </label>
+					<label class="col-sm-3 control-label no-padding-right"> 科目(收付款项) </label>
 					<div class="col-sm-3">
-						<label class="control-label align-left" id="text_debit"></label>
-						<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
+						<label class="control-label align-left" id="subject_text"></label>
+						<input type="hidden" id="contract_subject" name="contract_subject" value=""/>
 					</div>
-					<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+					<button type="button" href="#modal-subject" data-toggle="modal" class="btn btn-white btn-sm btn-primary">选择</button>
 				</div>
 
 				<div class="form-group" id="budgetDateFarm">
@@ -259,7 +259,7 @@
 			<div class="modal-content">
 				<div class="modal-header no-padding">
 					<div class="table-header">
-						<button type="button" id="selectClose" class="close" data-dismiss="modal" aria-hidden="true">
+						<button type="button" id="selectBudgetClose" class="close" data-dismiss="modal" aria-hidden="true">
 							<span class="white">&times;</span>
 						</button>
 						预算列表
@@ -331,10 +331,21 @@
 		var partiesTable;
 		var sumAmount = 0;
 		var budgetTable;
-		var budgetId;
+		var budgetId = '';
+		var budgetOnOff =  '{{ session('userInfo.sysConfig.subContract.budgetOnOff') }}';
 		$(function($) {
+			$('button[href=#modal-subject]').click(function(){
+				if(!budgetId && budgetOnOff == '1'){
+					alertDialog('-1', '请先选择预算！')
+					return false;
+				}
+				subjectFun();
+			});
+
 			$('#contract_class').change(function(){
 				partiesType = $('#contract_class').val();
+				$('#contract_parties').val('');
+				$('#text_parties').html('');
 				if(partiesType == 'income'){
 					partiesUrl = '{{route('component.ctGetCustomer')}}';
 				}else{
@@ -384,6 +395,7 @@
 					contract_class: {required: true, maxlength:8},
 					contract_type: {required: true, maxlength:32},
 					contract_parties: {required: true, maxlength:32},
+					contract_subject: {required: true, maxlength:32},
 					contract_num: {required: true, maxlength:150},
 					contract_name: {required: true, maxlength:150},
 					contract_date: {required: true},
@@ -399,6 +411,7 @@
 					contract_date: {required: "请选择合同期间."},
 					contract_amount: {required: "请填写合同总金额.", number:"合同总金额请输入数字", min:"合同总金额不能小于或者等于0"},
 					contract_dates: {required: "请填写收付款期间."},
+					contract_subject: {required: "请选择科目.", maxlength:"科目数据错误"},
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
@@ -520,7 +533,6 @@
 							}
 						}]
 					});
-
 		});
 
 		//合同方
@@ -568,7 +580,7 @@
 			partiesTable.settings()[0].ajax.url =  partiesUrl;
 			partiesTable.ajax.reload();
 		}
-		//选择预算
+		//选择合同方
 		function selectParties(id, name){
 			$('#contract_parties').val(id);
 			$('#text_parties').html(name);
@@ -585,7 +597,7 @@
 			if($('#validation-form').valid()) {
 				var amount = $('#contract_amount').val();
 				if(amount != sumAmount){
-					alertDialog('-1', '收付款期间金额总和不等于合同总金额。');
+					alertDialog('-1', '收付款期间金额合计不等于合同总金额。');
 					return;
 				}
 				$('#validation-form').submit();
@@ -661,7 +673,7 @@
 		//初始化下拉菜单
 		function subjectFun(){
 			var data = {"id": budgetId, "_token": '{{csrf_token()}}'};
-			var rel = ajaxPost(data, '{{ route('reimburse.getBudgetSub') }}');
+			var rel = ajaxPost(data, '{{ route('contract.getBudgetSub') }}');
 			if(rel.status == true){
 				initTreeData = rel.data;
 				subjectTree();
@@ -687,29 +699,15 @@
 				'selected-icon' : 'null',
 				'unselected-icon' : 'null',
 			}).on('selected.fu.tree', function(e, item) {
-				var html = item.target.sub_ip + '<br>' + item.target.oText;
-				if(name == 'debit' && item.target.status != '1'){
+				if(item.target.status != '1'){
 					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
-				}else{
-					if(name == 'debit'){
-						var data = {"sub_id":item.target.id, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
-						var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
-						if(rel.status == true){
-							if((rel.data - amount) < 0){
-								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
-							}else{
-								$('#text_'+name).html(html);
-								$('#sub_'+name).val(item.target.id);
-								$('#close_tree').click();
-							}
-						}else{
-							alertDialog('-1', '获取预算科目金额失败');
-						}
-					}else{
-						$('#text_'+name).html(html);
-						$('#sub_'+name).val(item.target.id);
-						$('#close_tree').click();
-					}
+				} else {
+					var parData = {"sub_pid": item.target.pid, "_token": '{{csrf_token()}}'};
+					var rel = ajaxPost(parData, '{{ route('component.ajaxGetParentSub') }}');
+					var html = item.target.sub_ip + '<br>' + rel + item.target.oText;
+					$('#contract_subject').html(html);
+					$('#subject_text').val(item.target.id);
+					$('#close_tree').click();
 				}
 			});
 		}
@@ -738,7 +736,8 @@
 			budgetId = id;
 			$('#budget_id').val(id);
 			$('#budget').html(value);
-			$('#selectClose').click();
+			$('#selectBudgetClose').click();
 		}
+
 	</script>
 @endsection()

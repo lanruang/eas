@@ -6,7 +6,9 @@
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-datepicker3.min.css" />
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/dropzone.min.css" />
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/colorbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
+
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
@@ -118,7 +120,7 @@
 											<label class="control-label align-left" id="text_debit"></label>
 											<input type="hidden" id="sub_debit" name="sub_debit" value=""/>
 										</div>
-										<button type="button" href="#modal-subject" data-toggle="modal" id="btn_debit" class="btn btn-white btn-sm btn-primary">选择</button>
+										<button type="button" href="#modal-subject" data-toggle="modal" id="selectSubBtn" class="btn btn-white btn-sm btn-primary">选择</button>
 									</div>
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 用途 </label>
@@ -190,7 +192,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="subject_tree"></ul>
+						<div id="treeSub" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -238,6 +240,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox-min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -248,14 +251,39 @@
 		var budgetOnOff = '{{ session('userInfo.sysConfig.reimburse.budgetOnOff') }}';
 		var initTreeData;
 		var amount = 0;
-		var name;
+		var subTreeSet = {
+			data: {
+				key: {
+					name: "sub_ip",
+					fontCss: getFont,
+					nameIsHTML: true
+				}
+			},
+			view: {
+				showLine:false,
+				//showIcon: false,
+				addDiyDom: listSubName,
+			},
+			callback: {
+				onClick: treeOnClick,
+				dataFilter: dataFilter
+			},
+			async: {
+				enable: true,
+				url: '{{route('reimburse.getBudgetSub')}}',
+				dataFilter: dataFilter
+			}
+		};
+		var IDMark_A = "_a";
+		function getFont(treeId, node) {
+			return node.font ? node.font : {};
+		}
 		$(function() {
 			$('button[href=#modal-subject]').click(function(){
 				if(!budgetId && budgetOnOff == '1'){
 					alertDialog('-1', '请先选择预算！')
 					return false;
 				}
-				name = this.id.substring(4, this.id.length);
 				subjectFun();
 			});
 
@@ -368,8 +396,8 @@
 					$(e).remove();
 				},
 			});
-
-			budgetTable = $('#budgetTable')
+			if(budgetOnOff){
+				budgetTable = $('#budgetTable')
 					.DataTable({
 						"lengthChange": false,
 						"ordering": false,
@@ -408,83 +436,54 @@
 							}
 						}]
 					});
+			}
 			getExpMainAmount();
 		});
 
-		//初始化下拉菜单
+		//初始化科目菜单
 		function subjectFun(){
-			var data = {"id": budgetId, "_token": '{{csrf_token()}}'};
-			var rel = ajaxPost(data, '{{ route('reimburse.getBudgetSub') }}');
-			if(rel.status == true){
-				initTreeData = rel.data;
-				subjectTree();
-			}else{
-				alertDialog(rel.status, rel.msg);
+			subTreeSet.async.otherParam = {"id": budgetId, "_token": '{{csrf_token()}}'};
+			$.fn.zTree.init($("#treeSub"), subTreeSet);
+		}
+		function dataFilter(treeId, parentNode, data) {
+			if (data.status == true) {
+				return data.data;
+			} else {
+				alertDialog(data.status, data.msg);
 			}
+		}
+		function listSubName(treeId, treeNode) {
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var str = "<a><span>"+ treeNode.text +"</span></a>";
+			aObj.after(str);
 		}
 		//科目选择
-		function subjectTree(){
-			$("#subject_tree").removeData("fu.tree");
-			$("#subject_tree").unbind('click.fu.tree');
-			treeData = initTreeDataFun();//
-			$('#subject_tree').ace_tree({
-				dataSource: treeData['dataSource'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': false,
-				'multiSelect': false,
-				'open-icon' : 'ace-icon tree-minus',
-				'close-icon' : 'ace-icon tree-plus',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				if(name == 'debit' && item.target.status != '1'){
-					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
-				}else{
-					if(name == 'debit'){
-						var data = {"sub_id":item.target.id, "sub_pid": item.target.pid, "budget_id": budgetId, "_token": '{{csrf_token()}}'};
-						var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
-						if(rel.status == true){
-							if((rel.data - amount) < 0 && budgetOnOff == '1'){
-								alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
-							}else{
-								var html = item.target.sub_ip + '<br>' + rel.parSub + item.target.oText;
-								$('#text_'+name).html(html);
-								$('#sub_'+name).val(item.target.id);
-								$('#close_tree').click();
-							}
-						}else{
-							alertDialog('-1', '获取预算科目金额失败');
-						}
-					}else{
-						$('#text_'+name).html(html);
-						$('#sub_'+name).val(item.target.id);
+		function treeOnClick(event, treeId, treeNode) {
+			if(treeNode.status != '1'){
+				alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+			}else{
+				var data = {
+					"sub_id": treeNode.id,
+					"sub_pid": treeNode.pid,
+					"budget_id": budgetId,
+					"_token": '{{csrf_token()}}'
+				};
+				var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
+				if (rel.status == true) {
+					if ((rel.data - amount) < 0 && budgetOnOff == '1') {
+						alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
+					} else {
+						var html = treeNode.sub_ip + '<br>' + rel.parSub + treeNode.text;
+						$('#text_debit').html(html);
+						$('#sub_debit').val(treeNode.id);
 						$('#close_tree').click();
 					}
+				} else {
+					alertDialog('-1', '获取预算科目金额失败');
 				}
-			});
-		}
-		function initTreeDataFun(){
-			var dataSource = function(options, callback){
-				var $data = null;
-				if(!("text" in options) && !("type" in options)){
-					$data = initTreeData;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
 			}
-			return {'dataSource': dataSource}
-		}
+		};
+
 		//选择预算
 		function selectBudget(id, num, name){
 			var value = num + '<br>' + name;

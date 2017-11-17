@@ -3,7 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -49,7 +49,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="tree1"></ul>
+						<div id="subTreeFarm" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -63,7 +63,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.dataTables.bootstrap.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
@@ -73,8 +73,22 @@
 		var per_pid = 0;
 		var per_id = 0;
 		var per_name = '';
+		var subTreeSet = {
+			data: {
+				key: {
+					name: "sub_ip",
+				}
+			},
+			view: {
+				showLine:false,
+				showIcon: false,
+				addDiyDom: listSubName,
+			},
+		};
+		var IDMark_A = "_a";
+		var html;
 		$(function($) {
-			var html;
+			$.fn.zTree.init($("#subTreeFarm"), subTreeSet, JSON.parse('{!!$select!!}'));
 			subTable = $('#subTable')
 					.DataTable({
 						"lengthChange": false,
@@ -120,42 +134,12 @@
 							}
 						}],
 					});
-
-			var sampleData = initiateDemoData();//see below
-			$('#tree1').ace_tree({
-				dataSource: sampleData['dataSource1'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': false,
-				'multiSelect': false,
-				'open-icon' : 'ace-icon tree-minus',
-				'close-icon' : 'ace-icon tree-plus',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			})
 		})
 
-		function initiateDemoData(){
-			var tree_data = JSON.parse('{!!$select!!}');
-			var dataSource1 = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = tree_data;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-			}
-			return {'dataSource1': dataSource1}
+		function listSubName(treeId, treeNode) {
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var str = "<a><span>"+ treeNode.text +"</span></a>";
+			aObj.after(str);
 		}
 
 		function getParameter(i) {

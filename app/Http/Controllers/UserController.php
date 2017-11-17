@@ -167,34 +167,6 @@ class UserController extends Common\CommonController
             ->get();
         $data['role'] = $result;
 
-        //获取部门下拉菜单
-        $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
-            ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
-            ->where('department.recycle', 0)
-            ->where('department.status', 1)
-            ->orderBy('sort', 'ASC')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = DepartmentDb::where('status', 1)
-            ->min('dep_pid');
-        $dep = !getTreeT($dep, $selectPid) ? $dep = array() : getTreeT($dep, $selectPid);
-
-        //获取岗位菜单
-        $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('recycle', 0)
-            ->where('status', 1)
-            ->orderBy('sort', 'ASC')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = PositionsDb::where('status', 1)
-            ->min('pos_pid');
-        $pos = !getTreeT($pos, $selectPid) ? $pos = array() : getTreeT($pos, $selectPid);
-
-        $data['dep'] = json_encode($dep);
-        $data['pos'] = json_encode($pos);
-
         return view('user.addUser', $data);
     }
 
@@ -295,47 +267,9 @@ class UserController extends Common\CommonController
             ->where('users.user_id', $id)
             ->first();
 
-        //获取部门负责人
-        $dep_leader = DepartmentDb::leftjoin('users AS u', 'u.user_id', '=', 'department.dep_leader')
-            ->select('u.user_name AS dep_leader')
-            ->where('department.dep_id', $user->department)
-            ->get()
-            ->first();
-        if($dep_leader){
-            $user->dep_leader = $dep_leader->dep_leader;
-        }
-
         if(!$user){
             return redirectPageMsg('-1', "参数错误", route('user.index'));
         }
-
-        //获取部门下拉菜单
-        $dep = DepartmentDb::leftjoin('users', 'users.user_id', '=', 'dep_leader')
-            ->select('dep_id AS id', 'dep_name AS text', 'dep_pid AS pid',  'user_name AS dep_leader')
-            ->where('department.recycle', 0)
-            ->where('department.status', 1)
-            ->orderBy('sort', 'ASC')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = DepartmentDb::where('status', 1)
-            ->min('dep_pid');
-        $dep = !getTreeT($dep, $selectPid) ? $dep = array() : getTreeT($dep, $selectPid);
-
-        //获取岗位菜单
-        $pos = PositionsDb::select('pos_id AS id', 'pos_name AS text', 'pos_pid AS pid')
-            ->where('recycle', 0)
-            ->where('status', 1)
-            ->orderBy('sort', 'ASC')
-            ->get()
-            ->toArray();
-        //获取下拉菜单最小pid
-        $selectPid = PositionsDb::where('status', 1)
-            ->min('pos_pid');
-        $pos = !getTreeT($pos, $selectPid) ? $pos = array() : getTreeT($pos, $selectPid);
-
-        $data['dep'] = json_encode($dep);
-        $data['pos'] = json_encode($pos);
 
         //获取角色
         $role = roleDb::select('id', 'name')

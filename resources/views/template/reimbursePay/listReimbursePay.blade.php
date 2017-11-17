@@ -10,7 +10,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('reimburse.index')}}">费用报销</a></li>
+	<li><a href="{{route('reimbursePay.index')}}">费用报销</a></li>
 	<li>查看单据</li>
 @endsection()
 

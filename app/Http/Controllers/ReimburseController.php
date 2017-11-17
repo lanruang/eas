@@ -862,23 +862,12 @@ class ReimburseController extends Common\CommonController
                 ->toArray();
         }
 
-        //树形排列科目
-        $result = getTreeT($subjects, session('userInfo.sysConfig.reimburse.subReimburse'), 1);
-
-        //倒叙科目汇总金额
-        $result = array_reverse($result);
-
-        foreach ($result as $k => $v) {
-            $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
-            $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];
-            foreach ($result as $kk => $vv) {
-                if ($v['id'] == $vv['pid'] && $v['pid'] != 0) {
-                    $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $vv['budget_amount']);
-                    $result[$k]['parent'] = 1;
-                }
-            }
+        foreach($subjects as $k => $v){
+            $subjects[$k]['sub_ip'] = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>'.$v['sub_ip'];
         }
-        $result = array_reverse($result);
+
+        //树形排列科目
+        $result = getTree($subjects, session('userInfo.sysConfig.reimburse.subReimburse'), 1);
 
         //创建结果数据
         $data['data'] = $result;

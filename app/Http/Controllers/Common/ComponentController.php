@@ -95,7 +95,7 @@ class ComponentController extends CommonController
         //获取下拉菜单最小pid
         $selectPid = DepartmentDb::where('status', 1)
             ->min('dep_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
 
         //返回结果
         ajaxJsonRes($result);
@@ -117,7 +117,7 @@ class ComponentController extends CommonController
         //获取下拉菜单最小pid
         $selectPid = PositionsDb::where('status', 1)
             ->min('pos_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
 
         //返回结果
         ajaxJsonRes($result);
@@ -245,7 +245,7 @@ class ComponentController extends CommonController
         $input = Input::all();
         //过滤信息
         $rules = [
-            'sub_pid' => 'required|between:32,32',
+            'sub_pid' => 'required|between:0,32',
         ];
         $message = [
             'sub_pid.required' => '参数不存在',
@@ -254,9 +254,9 @@ class ComponentController extends CommonController
         if ($validator->fails()) {
             echoAjaxJson('-1', $validator->errors()->first());
         }
-
+        
         $rel = mapKey(session('userInfo.subject'), $input['sub_pid'], 1);
-
+        
         return ajaxJsonRes($rel);
     }
 

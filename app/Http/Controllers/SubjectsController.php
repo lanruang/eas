@@ -21,7 +21,7 @@ class SubjectsController extends Common\CommonController
         //获取最小pid
         $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
 
         $subject['select'] = json_encode($result);
         return view('subjects.index', $subject);
@@ -71,15 +71,15 @@ class SubjectsController extends Common\CommonController
     //添加权限视图
     public function addSubjects(){
         //下拉菜单信息
-        $result = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'sub_pid AS pid', 'sub_ip')
+        $result = SubjectsDb::select('sub_id AS id', 'sub_name AS text', 'sub_ip', 'sub_pid AS pid', 'sub_ip')
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
         //获取下拉菜单最小pid
         $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
-
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
+    
         $subject['select'] = json_encode($result);
         return view('subjects.addSubjects', $subject);
     }
@@ -173,7 +173,7 @@ class SubjectsController extends Common\CommonController
         //获取下拉菜单最小pid
         $selectPid = SubjectsDb::where('status', 1)
             ->min('sub_pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
 
         $subject['select'] = json_encode($result);
 

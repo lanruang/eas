@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Models\Supplier\ContractModel AS ContractDb;
 use App\Http\Models\System\SysAssemblyModel AS SysAssDb;
+use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -70,6 +71,7 @@ class ContractController extends Common\CommonController
             'contract_date' => 'required',
             'contract_amount' => 'required|numeric|min:0.01',
             'contract_dates' => 'required',
+            'contract_parties' => 'required|between:32,32',
         ];
         $message = [
             'contract_class.required' => '请选择合同分组',
@@ -117,6 +119,60 @@ class ContractController extends Common\CommonController
 
     }
 
+
+    //获取预算科目
+    public function getBudgetSub(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //开启报销预算
+        if(session('userInfo.sysConfig.contract.budgetOnOff') == 1){
+            //获取参数
+            $input = Input::all();
+            $rules = [
+                'id' => 'required|between:32,32',
+            ];
+            $message = [
+                'id.required' => '参数不存在',
+                'id.between' => '参数错误'
+            ];
+            $validator = Validator::make($input, $rules, $message);
+            if($validator->fails()){
+                echoAjaxJson('-1', $validator->errors()->first());
+            }
+
+            $subjects = SubjectsDb::leftjoin('budget_subject AS bs', function ($join) use ($input) {
+                $join->on('bs.subject_id', '=', 'subjects.sub_id')
+                    ->where('bs.budget_id', $input['id']);
+            })
+                ->where('subjects.status', 1)
+                ->select('subjects.sub_id AS id', 'subjects.sub_ip AS sub_ip', 'subjects.sub_pid AS pid',
+                    'subjects.sub_name AS text', 'bs.status AS status')
+                ->orderBy('subjects.sub_ip', 'ASC')
+                ->get()
+                ->toArray();
+        }else{
+            $subjects = SubjectsDb::where('status', 1)
+                ->select('sub_id AS id', 'sub_ip', 'sub_pid AS pid', 'sub_name AS text', 'status')
+                ->orderBy('sub_ip', 'ASC')
+                ->get()
+                ->toArray();
+        }
+
+        //树形排列科目
+        $result = getTreeT($subjects, session('userInfo.sysConfig.contract.subContract'), 1);
+
+        //创建结果数据
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
 
     //上传附件
     public function uploadEnclo(Request $request){
