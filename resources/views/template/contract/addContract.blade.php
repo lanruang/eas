@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/daterangepicker.min.css" />
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-duallistbox.min.css"/>
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-datepicker3.min.css" />
-
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -61,7 +61,6 @@
 						<input type="hidden" id="contract_parties" name="contract_parties" value=""/>
 						<button type="button" href="#modal-parties" data-toggle="modal" class="btn btn-white btn-sm btn-primary">选择</button>
 					</div>
-
 				</div>
 
 				<div class="form-group">
@@ -97,6 +96,7 @@
 					</div>
 				</div>
 
+				@if (session('userInfo.sysConfig.contract.budgetOnOff') == 1)
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 预算 </label>
 					<div class="col-sm-3">
@@ -105,7 +105,7 @@
 					</div>
 					<button type="button" href="#modal-budget" data-toggle="modal" class="btn btn-white btn-sm btn-primary">选择</button>
 				</div>
-
+				@endif
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 科目(收付款项) </label>
 					<div class="col-sm-3">
@@ -151,7 +151,6 @@
 						</div>
 					</div>
 				</div>
-
 
 				<h3 class="header smaller lighter clearfix">
 					合同期间配置
@@ -297,7 +296,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="subject_tree"></ul>
+						<div id="treeSub" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -316,7 +315,7 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/chosen.jquery.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/moment.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.daterangepicker.min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 
 	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
@@ -332,7 +331,34 @@
 		var sumAmount = 0;
 		var budgetTable;
 		var budgetId = '';
-		var budgetOnOff =  '{{ session('userInfo.sysConfig.subContract.budgetOnOff') }}';
+		var budgetOnOff =  '{{ session('userInfo.sysConfig.contract.budgetOnOff') }}';
+		var subTreeSet = {
+			data: {
+				key: {
+					name: "sub_ip",
+					fontCss: getFont,
+					nameIsHTML: true
+				}
+			},
+			view: {
+				showLine: false,
+				showIcon: false,
+				dblClickExpand: false,
+				addDiyDom: listSubName,
+			},
+			callback: {
+				onClick: treeOnClick,
+			},
+			async: {
+				enable: true,
+				url: '{{route('contract.getBudgetSub')}}',
+				dataFilter: dataFilter
+			}
+		};
+		var IDMark_A = "_a";
+		function getFont(treeId, node) {
+			return node.font ? node.font : {};
+		}
 		$(function($) {
 			$('button[href=#modal-subject]').click(function(){
 				if(!budgetId && budgetOnOff == '1'){
@@ -494,45 +520,48 @@
 				}
 			});
 
-			budgetTable = $('#budgetTable')
-					.DataTable({
-						"lengthChange": false,
-						"ordering": false,
-						"searching": false,
-						"serverSide": true,
-						"ajax": {
-							"type": "post",
-							"async": false,
-							"dataType": "json",
-							"url": '{{route('component.ctGetBudget')}}',
-							"data": {"status":"1", "_token": '{{csrf_token()}}'},
-							"dataSrc": function ( res ) {
-								if(res.status == true){
-									return res.data;
-								}else{
-									alertDialog(res.status, res.msg);
+			if(budgetOnOff) {
+				budgetTable = $('#budgetTable')
+						.DataTable({
+							"lengthChange": false,
+							"ordering": false,
+							"searching": false,
+							"serverSide": true,
+							"ajax": {
+								"type": "post",
+								"async": false,
+								"dataType": "json",
+								"url": '{{route('component.ctGetBudget')}}',
+								"data": {"status": "1", "_token": '{{csrf_token()}}'},
+								"dataSrc": function (res) {
+									if (res.status == true) {
+										return res.data;
+									} else {
+										alertDialog(res.status, res.msg);
+									}
 								}
-							}
-						},
-						"columns": [
-							{ "data": "dep_name"},
-							{ "data": "bd_num"},
-							{ "data": "bd_name"},
-							{ "data": "bd_start"},
-							{ "data": "bd_end"},
-							{ "data": "null", "class": "center"},
-						],
-						"columnDefs": [{
-							"targets": 5,
-							"render": function(data, type, row) {
-								var html = '<div class="action-buttons">' +
-										"<a class=\"green\" href=\"#\" onclick=\"selectBudget('"+row.id+"', '"+row.bd_num+"', '"+row.bd_name+"')\">" +
-										'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
-										'</a></div>';
-								return html;
-							}
-						}]
-					});
+							},
+							"columns": [
+								{"data": "dep_name"},
+								{"data": "bd_num"},
+								{"data": "bd_name"},
+								{"data": "bd_start"},
+								{"data": "bd_end"},
+								{"data": "null", "class": "center"},
+							],
+							"columnDefs": [{
+								"targets": 5,
+								"render": function (data, type, row) {
+									var html = '<div class="action-buttons">' +
+											"<a class=\"green\" href=\"#\" onclick=\"selectBudget('" + row.id + "', '" + row.bd_num + "', '" + row.bd_name + "')\">" +
+											'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
+											'</a></div>';
+									return html;
+								}
+							}]
+						});
+			}
+
 		});
 
 		//合同方
@@ -672,64 +701,43 @@
 
 		//初始化下拉菜单
 		function subjectFun(){
-			var data = {"id": budgetId, "_token": '{{csrf_token()}}'};
-			var rel = ajaxPost(data, '{{ route('contract.getBudgetSub') }}');
-			if(rel.status == true){
-				initTreeData = rel.data;
-				subjectTree();
-			}else{
-				alertDialog(rel.status, rel.msg);
+			subTreeSet.async.otherParam = {"id": budgetId, "_token": '{{csrf_token()}}'};
+			$.fn.zTree.init($("#treeSub"), subTreeSet);
+		}
+		function dataFilter(treeId, parentNode, data) {
+			if (data.status == true) {
+				return data.data;
+			} else {
+				alertDialog(data.status, data.msg);
 			}
 		}
+		function listSubName(treeId, treeNode) {
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var str = '<span>'+ treeNode.text +'</span>';
+			if(treeNode.status == 1 && !treeNode.children){
+				var str = str + '<i class="ace-icon fa fa-check fa-check green"></i>';
+			}
+			aObj.append(str);
+		}
+
 		//科目选择
-		function subjectTree(){
-			$("#subject_tree").removeData("fu.tree");
-			$("#subject_tree").unbind('click.fu.tree');
-			treeData = initTreeDataFun();//
-			$('#subject_tree').ace_tree({
-				dataSource: treeData['dataSource'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': false,
-				'multiSelect': false,
-				'open-icon' : 'ace-icon tree-minus',
-				'close-icon' : 'ace-icon tree-plus',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				if(item.target.status != '1'){
+		function treeOnClick(event, treeId, treeNode) {
+			if(!treeNode.children){
+				if(treeNode.status != '1'){
 					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
-				} else {
-					var parData = {"sub_pid": item.target.pid, "_token": '{{csrf_token()}}'};
+				}else{
+					var parData = {"sub_pid": treeNode.pid, "_token": '{{csrf_token()}}'};
 					var rel = ajaxPost(parData, '{{ route('component.ajaxGetParentSub') }}');
-					var html = item.target.sub_ip + '<br>' + rel + item.target.oText;
-					$('#contract_subject').html(html);
-					$('#subject_text').val(item.target.id);
+					var html = treeNode.sub_ip + '<br>' + rel + treeNode.text;
+					$('#subject_text').html(html);
+					$('#contract_subject').val(treeNode.id);
 					$('#close_tree').click();
 				}
-			});
-		}
-		function initTreeDataFun(){
-			var dataSource = function(options, callback){
-				var $data = null
-				if(!("text" in options) && !("type" in options)){
-					$data = initTreeData;//the root tree
-					callback({ data: $data });
-					return;
-				}
-				else if("type" in options && options.type == "folder") {
-					if("additionalParameters" in options && "children" in options.additionalParameters)
-						$data = options.additionalParameters.children || {};
-					else $data = {}
-				}
-
-				if($data != null)//this setTimeout is only for mimicking some random delay
-					setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
+			}else{
+				var zTree = $.fn.zTree.getZTreeObj("treeSub");
+				zTree.expandNode(treeNode);
 			}
-			return {'dataSource': dataSource}
-		}
+		};
 		//选择预算
 		function selectBudget(id, num, name){
 			var value = num + '<br>' + name;

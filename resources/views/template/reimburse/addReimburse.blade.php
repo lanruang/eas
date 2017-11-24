@@ -260,13 +260,13 @@
 				}
 			},
 			view: {
-				showLine:false,
-				//showIcon: false,
+				showLine: false,
+				showIcon: false,
+				dblClickExpand: false,
 				addDiyDom: listSubName,
 			},
 			callback: {
 				onClick: treeOnClick,
-				dataFilter: dataFilter
 			},
 			async: {
 				enable: true,
@@ -454,33 +454,42 @@
 		}
 		function listSubName(treeId, treeNode) {
 			var aObj = $("#" + treeNode.tId + IDMark_A);
-			var str = "<a><span>"+ treeNode.text +"</span></a>";
-			aObj.after(str);
+			var str = '<span>'+ treeNode.text +'</span>';
+			if(treeNode.status == 1 && !treeNode.children){
+				var str = str + '<i class="ace-icon fa fa-check fa-check green"></i>';
+			}
+			aObj.append(str);
 		}
+
 		//科目选择
 		function treeOnClick(event, treeId, treeNode) {
-			if(treeNode.status != '1'){
-				alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
-			}else{
-				var data = {
-					"sub_id": treeNode.id,
-					"sub_pid": treeNode.pid,
-					"budget_id": budgetId,
-					"_token": '{{csrf_token()}}'
-				};
-				var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
-				if (rel.status == true) {
-					if ((rel.data - amount) < 0 && budgetOnOff == '1') {
-						alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
+			if(!treeNode.children){
+				if(treeNode.status != '1'){
+					alertDialog('-1', '所选预算不包含此科目，无法选择。“科目-借”请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+				}else{
+					var data = {
+						"sub_id": treeNode.id,
+						"sub_pid": treeNode.pid,
+						"budget_id": budgetId,
+						"_token": '{{csrf_token()}}'
+					};
+					var rel = ajaxPost(data, '{{ route('reimburse.getCheckAmount') }}');
+					if (rel.status == true) {
+						if ((rel.data - amount) < 0 && budgetOnOff == '1') {
+							alertDialog('-1', '选择失败，预算科目金额不足，请及时调整预算');
+						} else {
+							var html = treeNode.sub_ip + '<br>' + rel.parSub + treeNode.text;
+							$('#text_debit').html(html);
+							$('#sub_debit').val(treeNode.id);
+							$('#close_tree').click();
+						}
 					} else {
-						var html = treeNode.sub_ip + '<br>' + rel.parSub + treeNode.text;
-						$('#text_debit').html(html);
-						$('#sub_debit').val(treeNode.id);
-						$('#close_tree').click();
+						alertDialog('-1', '获取预算科目金额失败');
 					}
-				} else {
-					alertDialog('-1', '获取预算科目金额失败');
 				}
+			}else{
+				var zTree = $.fn.zTree.getZTreeObj("treeSub");
+				zTree.expandNode(treeNode);
 			}
 		};
 

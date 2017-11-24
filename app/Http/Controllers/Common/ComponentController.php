@@ -274,12 +274,17 @@ class ComponentController extends CommonController
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
+        if(!$subject){
+            echoAjaxJson('-1', '付款方式科目不存在。');
+        }
         $subPay = explode(',', session('userInfo.sysConfig.reimbursePay.subPay'));
         $subPaySub = array();
         foreach($subPay as $k => $v){
-            $subPaySub = array_merge($subPaySub, getTreeT($subject, $v, 1, '' ,1));
+            $subPaySub = array_merge($subPaySub, getTree($subject, $v, '1'));
         }
 
-        return ajaxJsonRes($subPaySub);
+        $data['status'] = 1;
+        $data['data'] = $subPaySub;
+        return ajaxJsonRes($data);
     }
 }

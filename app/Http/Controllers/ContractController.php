@@ -164,7 +164,7 @@ class ContractController extends Common\CommonController
         }
 
         //树形排列科目
-        $result = getTreeT($subjects, session('userInfo.sysConfig.contract.subContract'), 1);
+        $result = getTree($subjects, session('userInfo.sysConfig.contract.subContract'));
 
         //创建结果数据
         $data['data'] = $result;

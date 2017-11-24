@@ -862,10 +862,6 @@ class ReimburseController extends Common\CommonController
                 ->toArray();
         }
 
-        foreach($subjects as $k => $v){
-            $subjects[$k]['sub_ip'] = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>'.$v['sub_ip'];
-        }
-
         //树形排列科目
         $result = getTree($subjects, session('userInfo.sysConfig.reimburse.subReimburse'), 1);
 

@@ -100,14 +100,16 @@
      *
      * @param	array		$data
      * @param	string		$pid
+     * @param	bool		$listPid
      * @return	array
      */
-    function getTree($data, $pid = '0')
+    function getTree($data, $pid = '0', $listPid = '0')
     {
+        $typeId = $listPid == '1' ? 'id' : 'pid';
         $tree = '';
         foreach($data as $k => $v)
         {
-            if($v['pid'] == $pid)
+            if($v[$typeId] == $pid)
             {
                 $v['children'] = getTree($data, $v['id']);
                 $tree[] = $v;

@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/bootstrap-datepicker3.min.css" />
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/dropzone.min.css" />
 	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/colorbox.min.css" />
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -189,7 +190,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="subject_tree"></ul>
+						<div id="treeSub" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -205,12 +206,39 @@
 	<script src="{{asset('resources/views/template')}}/assets/js/bootstrap-datepicker.min.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/dropzone.js"></script>
 	<script src="{{asset('resources/views/template')}}/assets/js/jquery.colorbox-min.js"></script>
-	<script src="{{asset('resources/views/template')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+		var subTreeSet = {
+			data: {
+				key: {
+					name: "sub_ip",
+					fontCss: getFont,
+					nameIsHTML: true
+				}
+			},
+			view: {
+				showLine: false,
+				showIcon: false,
+				dblClickExpand: false,
+				addDiyDom: listSubName,
+			},
+			callback: {
+				onClick: treeOnClick,
+			},
+			async: {
+				enable: true,
+				url: '{{route('component.ajaxGetPaySub')}}',
+				dataFilter: dataFilter
+			}
+		};
+		var IDMark_A = "_a";
+		function getFont(treeId, node) {
+			return node.font ? node.font : {};
+		}
 		$(function() {
 			//图片展示
 			var colorbox_params = {
@@ -261,8 +289,48 @@
 				},
 			});
 			getExpMainAmount();
-			subjectTree();
+
+			subTreeSet.async.otherParam = {"_token": '{{csrf_token()}}'};
+			$.fn.zTree.init($("#treeSub"), subTreeSet);
 		});
+
+		function dataFilter(treeId, parentNode, data) {
+			if (data.status == true) {
+				return data.data;
+			} else {
+				alertDialog(data.status, data.msg);
+			}
+		}
+		function listSubName(treeId, treeNode) {
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var str = '<span>'+ treeNode.text +'</span>';
+			if(treeNode.status == 1 && !treeNode.children){
+				var str = str + '<i class="ace-icon fa fa-check fa-check green"></i>';
+			}
+			aObj.append(str);
+		}
+
+		//科目选择
+		function treeOnClick(event, treeId, treeNode) {
+			if(!treeNode.children){
+				if(treeNode.status != '1'){
+					alertDialog('-1', '请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
+				} else {
+					var parData = {"sub_pid": treeNode.pid, "_token": '{{csrf_token()}}'};
+					var rel = ajaxPost(parData, '{{ route('component.ajaxGetParentSub') }}');
+					var html = treeNode.sub_ip + '<br>' + rel + treeNode.text;
+					$('#sub_text').html(html);
+					$('#sub_credit').val(treeNode.id);
+					$('#close_tree').click();
+				}
+			}else{
+				var zTree = $.fn.zTree.getZTreeObj("treeSub");
+				zTree.expandNode(treeNode);
+			}
+		};
+
+
+
 		//科目选择
 		function subjectTree(){
 			treeData = initTreeData();//
