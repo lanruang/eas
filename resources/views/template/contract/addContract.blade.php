@@ -372,7 +372,7 @@
 				partiesType = $('#contract_class').val();
 				$('#contract_parties').val('');
 				$('#text_parties').html('');
-				if(partiesType == 'income'){
+				if(partiesType == '{{session('userInfo.sysConfig.contract.income')}}'){
 					partiesUrl = '{{route('component.ctGetCustomer')}}';
 				}else{
 					partiesUrl = '{{route('component.ctGetSupplier')}}';
@@ -467,16 +467,30 @@
 				dictFileTooBig: "上传失败,文件不能大于5MB",
 				dictInvalidFileType: "上传失败,文件格式错误。支持格式jpg、jpeg、png.",
 				dictMaxFilesExceeded: "上传失败,已到最大上传数量,对多上传1个附件.",
+				accept: function(file, done) {
+					if(file.upload.filename.indexOf(",") > 0 )
+					{
+						alertDialog('-1', '文件名称中不能包含“,”符号');
+						var ref;
+						if (file.previewElement) {
+							if ((ref = file.previewElement) != null) {
+								ref.parentNode.removeChild(file.previewElement);
+							}
+						}
+					}else{
+						done();
+					}
+				},
 				success: function(file, data) {
 					var data = JSON.parse(data);
 					var url = data.data.url;
 					var urls = $('#enclosure').val();
 					file.upload.url = url;
 					if(urls == '' || !dates){
-						urls = url;
+						urls = file.upload.filename+','+url;
 					}else{
 						urls = urls.split("|");
-						urls.push(url);
+						urls.push(file.upload.filename+','+url);
 						urls = urls.join("|");
 					}
 					$('#enclosure').val(urls);
@@ -511,7 +525,7 @@
 					var urls = $('#enclosure').val();
 					urls = urls.split("|");
 					for(i in urls){
-						if(urls[i] == file.upload.url){
+						if(urls[i] == file.upload.filename+','+file.upload.url){
 							urls.splice(i,1)
 						}
 					}

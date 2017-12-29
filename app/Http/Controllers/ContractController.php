@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Models\Supplier\ContractModel AS ContractDb;
+use App\Http\Models\Contract\ContractModel AS ContractDb;
+use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
+use App\Http\Models\Contract\ContEnclosureModel AS ContEncloDb;
 use App\Http\Models\System\SysAssemblyModel AS SysAssDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
+use App\Http\Models\Customer\CustomerModel AS CustomerDb;
+use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 use Validator;
+use Storage;
 
 class ContractController extends Common\CommonController
 {
@@ -19,7 +25,7 @@ class ContractController extends Common\CommonController
     }
 
     //合同列表
-    public function getCont(Request $request){
+    public function getContract(Request $request){
         //验证传输方式
 
         if(!$request->ajax())
@@ -28,9 +34,15 @@ class ContractController extends Common\CommonController
         }
 
         //获取记录总数
-        $total = SupplierDb::count();
+        $total = ContractDb::count();
         //获取数据
-        $result = SupplierDb::select('supp_id AS id', 'supp_num', 'supp_name')
+        $result = ContractDb::from('contract AS cont')
+            ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+            ->select('cont.cont_id AS id', 'cont.cont_type AS contract_type', 'cont.cont_num AS contract_num',
+                'cont.cont_name AS contract_name', 'cont.cont_start AS date_start', 'cont.cont_end AS date_end',
+                'cont.cont_sum_amount AS contract_amount', 'cont.cont_status AS status', 'sysAssType.ass_text AS contract_type',
+                'sysAssClass.ass_text AS contract_class')
             ->get()
             ->toArray();
 
@@ -63,15 +75,15 @@ class ContractController extends Common\CommonController
         //验证表单
         $input = Input::all();
         $rules = [
-            'contract_class' => 'required|between:1,8',
+            'contract_class' => 'required|between:32,32',
             'contract_type' => 'required|between:32,32',
             'contract_parties' => 'required|between:32,32',
             'contract_num' => 'required|between:0,150',
             'contract_name' => 'required|between:0,150',
             'contract_date' => 'required',
             'contract_amount' => 'required|numeric|min:0.01',
+            'contract_subject' => 'required|between:32,32',
             'contract_dates' => 'required',
-            'contract_parties' => 'required|between:32,32',
         ];
         $message = [
             'contract_class.required' => '请选择合同分组',
@@ -92,33 +104,316 @@ class ContractController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('contract.createContract'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contract.addContract'));
         }
         //格式化合同期间
         $contract_date = $input['contract_date'];
         $contract_date = explode(' 一 ', $contract_date);
         if(count($contract_date) != 2){
-            echoAjaxJson('-1', '合同期间错误！');
+            return redirectPageMsg('-1', '合同期间错误！', route('contract.addContract'));
         }
         //合同信息
-        $contData['cont_id'] = getId();
+        $cont_id = getId();
+        $contData['cont_id'] = $cont_id;
         $contData['cont_type'] = $input['contract_type'];
         $contData['cont_class'] = $input['contract_class'];
+        $contData['cont_budget'] = '';//$input['budget_id'];
+        $contData['cont_subject'] = $input['contract_subject'];
         $contData['cont_num'] = $input['contract_num'];
-        $contData['cont_name'] = $input['contract_parties'];
+        $contData['cont_name'] = $input['contract_name'];
+        $contData['cont_parties'] = $input['contract_parties'];
         $contData['cont_start'] = $contract_date[0];
         $contData['cont_end'] = $contract_date[1];
         $contData['cont_status'] = '302';
         $contData['cont_sum_amount'] = $input['contract_amount'];
         $contData['cont_remark'] = $input['contract_remark'];
+        $contData['created_user'] = session('userInfo.user_id');
+        $contData['created_at'] = date('Y-m-d H:i:s', time());
+        $contData['updated_at'] = date('Y-m-d H:i:s', time());
         //合同明细
-
+        $detailsData = explode('|', $input['contract_dates']);//分割日期
+        foreach($detailsData as $k => $v){
+            $a = explode(',', $v);  //分割数据
+            if(count($a) != 2){
+                return redirectPageMsg('-1', '合同明细期间参数错误！', route('contract.addContract'));
+            }
+            $contDetails[$k]['details_id'] = getId();
+            $contDetails[$k]['cont_id'] = $cont_id;
+            $contDetails[$k]['cont_details_date'] = $a[0];
+            $contDetails[$k]['cont_amount'] = $a[1];
+            $contDetails[$k]['cont_status'] = '302';
+            $contDetails[$k]['created_at'] = date('Y-m-d H:i:s', time());
+            $contDetails[$k]['updated_at'] = date('Y-m-d H:i:s', time());
+        }
         //合同附件
-    p($input);
+        $contEnclo = '';
+        //移动单据文件
+        if($input['enclosure']){
+            $enclosures = explode('|', $input['enclosure']);
+            foreach($enclosures as $k => $v){
+                $fileName = explode(',', $v);
+                if(count($fileName) != 2){
+                    return redirectPageMsg('-1', '保存失败，附件名称格式化错误！', route('contract.addContract'));
+                }
+                $directory = 'contract/'.session('userInfo.user_id').'/'.$fileName[1];
+                $exists = Storage::disk('storageTemp')->exists($directory);
+                if(!$exists){
+                    return redirectPageMsg('-1', '保存失败，附件获取失败，请刷新后重试！', route('contract.addContract'));
+                }
+                $oldFile = 'uploads/contract/'.session('userInfo.user_id').'/'.$fileName[1];
+                $newFile = 'enclosure/contract/'.$cont_id.'/'.$fileName[1];
+                $result = Storage::move($oldFile, $newFile);
+                if(!$result){
+                    return redirectPageMsg('-1', '保存失败，附件保存失败，请刷新后重试！', route('contract.addContract'));
+                }
+                $contEnclo[$k]['enclo_id'] = getId();
+                $contEnclo[$k]['cont_id'] = $cont_id;
+                $contEnclo[$k]['enclo_name'] = $fileName[0];
+                $contEnclo[$k]['enclo_url'] = $newFile;
+                $contEnclo[$k]['created_at'] = date('Y-m-d H:i:s', time());
+                $contEnclo[$k]['updated_at'] = date('Y-m-d H:i:s', time());
+            }
+        }
 
+        //事物创建数据
+        $result = DB::transaction(function () use($contData, $contDetails, $contEnclo) {
+            ContractDb::insert($contData);
+            ContDetailsDb::insert($contDetails);
+            if($contEnclo){
+                ContEncloDb::insert($contEnclo);
+            }
+            return true;
+        });
 
+        if($result){
+            return redirectPageMsg('1', "提交成功", route('contract.index'));
+        }else{
+            return redirectPageMsg('-1', "提交失败", route('contract.addContract'));
+        }
     }
 
+    //编辑合同视图
+    public function editContract()
+    {
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contract.index'));
+        }
+        $id = $input['id'];
+
+        //查询合同是否存在
+        $data['contract'] = ContractDb::from('contract AS cont')
+            ->leftJoin('subjects AS sub', 'cont.cont_subject','=','sub.sub_id')
+            ->where('cont.cont_id', $id)
+            ->select('cont.*', 'sub.sub_ip', 'sub.sub_name', 'sub.sub_pid')
+            ->first()
+            ->toArray();
+
+        if(!$data['contract']){
+            return redirectPageMsg('-1', '合同信息获取失败，请刷新后重试', route('contract.index'));
+        }
+        $data['contract']['cont_sum_amount'] = sprintf("%.2f",$data['contract']['cont_sum_amount']);
+
+        //获取合同方信息
+        if($data['contract']['cont_class'] == session('userInfo.sysConfig.contract.income')){
+                $parties = CustomerDb::where('cust_id', $data['contract']['cont_parties'])
+                    ->select('cust_name')
+                    ->first()
+                    ->toArray();
+            }else{
+                $parties = SupplierDb::where('supp_id', $data['contract']['cont_parties'])
+                    ->select('supp_name')
+                    ->first()
+                    ->toArray();
+            }
+        if(!$parties){
+            return redirectPageMsg('-1', '合同方信息获取失败，请刷新后重试', route('contract.index'));
+        }
+        $data['contract']['parties_name'] = $parties['cust_name'];
+
+        //获取上级科目
+        $subject = SubjectsDb::where('sub_id', $data['contract']['sub_pid'])
+            ->select('sub_name')
+            ->get()
+            ->toArray();
+        if($subject){
+            $data['contract']['sub_name'] = $subject[0]['sub_name'] ." - ".$data['contract']['sub_name'];
+        }
+
+        //获取收费期间
+        $data['contDetails'] = ContDetailsDb::where('cont_id', $data['contract']['cont_id'])
+            ->orderBy('cont_details_date')
+            ->get()
+            ->toArray();
+
+        //获取附件
+        $data['contEnclo'] = ContEncloDb::where('cont_id', $data['contract']['cont_id'])
+            ->select('enclo_id', 'enclo_name')
+            ->get()
+            ->toArray();
+
+        //获取合同下拉菜单信息
+        $data['select'] = SysAssDb::whereIn('ass_type', array('contract_class', 'contract_type'))
+            ->select('ass_type', 'ass_text', 'ass_value')
+            ->orderBy('ass_sort')
+            ->get()
+            ->toArray();
+
+        return view('contract.editContract', $data);
+    }
+
+    //更新合同
+    public function updateContract()
+    {
+        //验证表单
+        $input = Input::all();
+        p($input);
+    }
+    //删除合同
+    public function delContract(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        //获取单据信息
+        $contract = ContractDb::where('cont_id', $id)
+            ->get()
+            ->first();
+        if (!$contract) echoAjaxJson('-1', "删除失败，合同信息获取失败");
+        if ($contract['cont_status'] != '302') echoAjaxJson('-1', "删除失败，合同状态不正确");
+
+        //事物删除数据
+        $result = DB::transaction(function () use($id) {
+            ContractDb::where('cont_id', $id)
+                ->delete();
+            ContDetailsDb::where('cont_id', $id)
+                ->delete();
+            ContEncloDb::where('cont_id', $id)
+                ->delete();
+            return true;
+        });
+
+        //删除上传的图片
+        $contractDir = 'contract/'.$id;
+        $uploadsDir = 'contract/'.$contract['created_user'];
+        Storage::disk('storageTemp')->deleteDirectory($uploadsDir);
+        Storage::disk('storage')->deleteDirectory($contractDir);
+        if($result){
+            echoAjaxJson('1', "删除成功");
+        }else{
+            echoAjaxJson('-1', "删除失败，请刷新后重试");
+        }
+    }
+
+    //删除合同收付期间
+    public function delDetails(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        //查询附件是否存在
+        $enclo = ContDetailsDb::where('details_id', $id)
+            ->get()
+            ->toArray();
+        if(!$enclo){
+            echoAjaxJson('-1', "删除失败，期间不存在！");
+        }
+        //删除附件
+        $result = ContDetailsDb::where('details_id', $id)
+            ->delete();
+        if($result){
+            echoAjaxJson('1', "删除成功");
+        }else{
+            echoAjaxJson('-1', "删除失败，请刷新后重试！");
+        }
+    }
+
+    //删除合同附件
+    public function delEnclo(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        //查询附件是否存在
+        $enclo = ContEncloDb::where('enclo_id', $id)
+            ->get()
+            ->toArray();
+        if(!$enclo){
+            echoAjaxJson('-1', "删除失败，附件不存在！");
+        }
+        //删除附件
+        $result = ContEncloDb::where('enclo_id', $id)
+            ->delete();
+        if($result){
+            echoAjaxJson('1', "删除成功");
+        }else{
+            echoAjaxJson('-1', "删除失败，请刷新后重试！");
+        }
+    }
 
     //获取预算科目
     public function getBudgetSub(Request $request)

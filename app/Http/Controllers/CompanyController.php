@@ -14,7 +14,7 @@ class CompanyController extends Common\CommonController
     //用户列表
     public function index()
     {
-        return view('company.index');
+        p(getId());
     }
 
     //用户列表

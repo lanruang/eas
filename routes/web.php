@@ -185,9 +185,15 @@ Route::group(['middleware' => ['permission']], function () {
     /*-----------------------------合同管理-----------------------------*/
     //合同列表
     Route::group(['prefix' => 'contract'], function () {
-        Route::get('index', ['as' => 'contract.index', 'uses' => 'ContractController@index']);//合同列表
+        Route::get('index', ['as' => 'contract.index', 'uses' => 'ContractController@index']);//合同
+        Route::post('getContract', ['as' => 'contract.getContract', 'uses' => 'ContractController@getContract']);//获取合同列表
         Route::get('addContract', ['as' => 'contract.addContract', 'uses' => 'ContractController@addContract']);//添加合同视图
         Route::post('createContract', ['as' => 'contract.createContract', 'uses' => 'ContractController@createContract']);//创建合同
+        Route::get('editContract', ['as' => 'contract.editContract', 'uses' => 'ContractController@editContract']);//编辑合同
+        Route::post('updateContract', ['as' => 'contract.updateContract', 'uses' => 'ContractController@updateContract']);//更新合同
+        Route::post('delContract', ['as' => 'contract.delContract', 'uses' => 'ContractController@delContract']);//删除合同
+        Route::post('delDetails', ['as' => 'contract.delDetails', 'uses' => 'ContractController@delDetails']);//删除合同收付期间
+        Route::post('delEnclo', ['as' => 'contract.delEnclo', 'uses' => 'ContractController@delEnclo']);//删除附件
         Route::post('uploadEnclo', ['as' => 'contract.uploadEnclo', 'uses' => 'ContractController@uploadEnclo']);//上传附件
         Route::post('getBudgetSub', ['as' => 'contract.getBudgetSub', 'uses' => 'ContractController@getBudgetSub']);//获取预算科目
     });

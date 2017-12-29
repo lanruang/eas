@@ -331,8 +331,7 @@ class ReimburseController extends Common\CommonController
             $rel['url'] = $input['enclosure'] ? asset('enclosure/'.$dataEnclo['enclo_url']) : '';
             return $rel;
         });
-
-
+        
         if($result['result']){
             echoAjaxJson('1', "添加成功!", array('id'=>$result['expId'], 'url'=>$result['url']));
         }else{

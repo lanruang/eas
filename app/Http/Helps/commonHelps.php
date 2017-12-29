@@ -17,7 +17,7 @@
         function p($arr)
         {
             echo '<pre>' . print_r($arr,true) . '</pre>';
-            die(1);
+            die();
         }
     };
 
@@ -113,57 +113,6 @@
             {
                 $v['children'] = getTree($data, $v['id']);
                 $tree[] = $v;
-            }
-        }
-        return $tree;
-    }
-
-    /**
-     * 转成树形结构(特殊-树形菜单使用)
-     *
-     * @param	array		$data
-     * @param	string		$pid
-     * @param	string		$icon
-     * @param	string		$iconStr
-     * @param	string		$pidId
-     * @return	array
-     */
-    function getTreeT($data, $pid = '0', $icon = '0', $iconStr = '<i class="ace-icon fa fa-check fa-check green bigger-130"></i>', $pidId = '0')
-    {
-        $tree = array();
-        if($pidId == '1'){
-            foreach($data as $k => $v){
-                if ($v['id'] == $pid) {
-                    $v['oText'] = $v['text'];
-                    if ($icon != '0') {
-                        $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
-                    }
-                    $type = 'item';
-                    $rel = getTreeT($data, $v['id'], $icon);
-                    if ($rel) {
-                        $type = 'folder';
-                        $v['additionalParameters']['children'] = $rel;
-                    }
-                    $v['type'] = $type;
-                    $tree[] = $v;
-                }
-            }
-        }else{
-            foreach($data as $k => $v){
-                if ($v['pid'] == $pid) {
-                    $v['oText'] = $v['text'];
-                    if ($icon != '0') {
-                        $v['text'] = $v['status'] == '1' ? $iconStr . $v['text'] : $v['text'];
-                    }
-                    $type = 'item';
-                    $rel = getTreeT($data, $v['id'], $icon);
-                    if ($rel) {
-                        $type = 'folder';
-                        $v['additionalParameters']['children'] = $rel;
-                    }
-                    $v['type'] = $type;
-                    $tree[] = $v;
-                }
             }
         }
         return $tree;
@@ -276,6 +225,18 @@
         return $str;
     }
 
+    /**
+     * 保留x小数点0补齐
+     *
+     * @param    float        num
+     * @param    int            x
+     * @return   string
+     *
+     */
+    function toDecimal($num = 0, $x = 2){
+        $num = sprintf("%.".$x."f",$num);
+        return $num;
+    }
 
     /**
      * 邮件发送
