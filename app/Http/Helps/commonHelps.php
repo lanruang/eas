@@ -106,7 +106,7 @@
     function getTree($data, $pid = '0', $listPid = '0')
     {
         $typeId = $listPid == '1' ? 'id' : 'pid';
-        $tree = '';
+        $tree = array();
         foreach($data as $k => $v)
         {
             if($v[$typeId] == $pid)

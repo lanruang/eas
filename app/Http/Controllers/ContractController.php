@@ -112,12 +112,19 @@ class ContractController extends Common\CommonController
         if(count($contract_date) != 2){
             return redirectPageMsg('-1', '合同期间错误！', route('contract.addContract'));
         }
+        //检查合同编号
+        $isNum = ContractDb::where('cont_num', $input['contract_num'])
+            ->first();
+        if($isNum){
+            return redirectPageMsg('-1', '合同编号存在！', route('contract.addContract'));
+        }
+
         //合同信息
         $cont_id = getId();
         $contData['cont_id'] = $cont_id;
         $contData['cont_type'] = $input['contract_type'];
         $contData['cont_class'] = $input['contract_class'];
-        $contData['cont_budget'] = '';//$input['budget_id'];
+        $contData['cont_budget'] = session('userInfo.sysConfig.contract.budgetOnOff') == 1 ? $input['budget_id'] : '';
         $contData['cont_subject'] = $input['contract_subject'];
         $contData['cont_num'] = $input['contract_num'];
         $contData['cont_name'] = $input['contract_name'];
@@ -277,8 +284,148 @@ class ContractController extends Common\CommonController
     {
         //验证表单
         $input = Input::all();
-        p($input);
+        $rules = [
+            'contract_class' => 'required|between:32,32',
+            'contract_type' => 'required|between:32,32',
+            'contract_parties' => 'required|between:32,32',
+            'contract_num' => 'required|between:0,150',
+            'contract_name' => 'required|between:0,150',
+            'contract_date' => 'required',
+            'contract_amount' => 'required|numeric|min:0.01',
+            'contract_subject' => 'required|between:32,32',
+            'contract_id' => 'required|between:32,32',
+        ];
+        $message = [
+            'contract_class.required' => '请选择合同分组',
+            'contract_class.between' => '合同分组数据错误',
+            'contract_type.required' => '请选择合同类型',
+            'contract_type.between' => '合同类型数据错误',
+            'contract_parties.required' => '请选择合同方',
+            'contract_parties.between' => '合同方数据错误',
+            'contract_num.required' => '请填写合同编号',
+            'contract_num.between' => '合同编号字符超出范围',
+            'contract_name.required' => '请填写合同名称',
+            'contract_name.between' => '合同名称字符超出范围',
+            'contract_date.required' => '请选择合同期间',
+            'contract_amount.required' => '请填写合同总金额',
+            'contract_amount.numeric' => '合同总金额请输入数字',
+            'contract_amount.min' => '合同总金额不能小于或者等于0',
+            'contract_id.required' => '缺少参数',
+            'contract_id.between' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contract.editContract')."?id=".$input['contract_id']);
+        }
+        //查询合同是否存在
+        $contract = ContractDb::where('cont_id', $input['contract_id'])
+            ->first();
+        if(!$contract){
+            return redirectPageMsg('-1', '合同不存在！', route('contract.editContract')."?id=".$input['contract_id']);
+        }
+
+        if($contract['cont_num'] != $input['contract_num']){
+            //检查合同编号
+            $isNum = ContractDb::where('cont_num', $input['contract_num'])
+                ->first();
+            if($isNum){
+                return redirectPageMsg('-1', '合同编号存在！', route('contract.editContract')."?id=".$input['contract_id']);
+            }
+        }
+
+        //格式化合同期间
+        $contract_date = $input['contract_date'];
+        $contract_date = explode(' 一 ', $contract_date);
+        if(count($contract_date) != 2){
+            return redirectPageMsg('-1', '合同期间错误！', route('contract.editContract')."?id=".$input['contract_id']);
+        }
+
+        //合同信息
+        $contData['cont_type'] = $input['contract_type'];
+        $contData['cont_class'] = $input['contract_class'];
+        $contData['cont_budget'] = session('userInfo.sysConfig.contract.budgetOnOff') == 1 ? $input['budget_id'] : '';
+        $contData['cont_subject'] = $input['contract_subject'];
+        $contData['cont_num'] = $input['contract_num'];
+        $contData['cont_name'] = $input['contract_name'];
+        $contData['cont_parties'] = $input['contract_parties'];
+        $contData['cont_start'] = $contract_date[0];
+        $contData['cont_end'] = $contract_date[1];
+        $contData['cont_status'] = '302';
+        $contData['cont_sum_amount'] = $input['contract_amount'];
+        $contData['cont_remark'] = $input['contract_remark'];
+        $contData['created_user'] = session('userInfo.user_id');
+        $contData['created_at'] = date('Y-m-d H:i:s', time());
+        $contData['updated_at'] = date('Y-m-d H:i:s', time());
+        $contDetails = '';
+        //合同明细
+        if($input['contract_dates']){
+            $contDetails = array();
+            $detailsData = explode('|', $input['contract_dates']);//分割日期
+            foreach($detailsData as $k => $v){
+                $a = explode(',', $v);  //分割数据
+                if(count($a) != 2){
+                    return redirectPageMsg('-1', '合同明细期间参数错误！', route('contract.editContract')."?id=".$input['contract_id']);
+                }
+                $contDetails[$k]['details_id'] = getId();
+                $contDetails[$k]['cont_id'] = $contract['cont_id'];
+                $contDetails[$k]['cont_details_date'] = $a[0];
+                $contDetails[$k]['cont_amount'] = $a[1];
+                $contDetails[$k]['cont_status'] = '302';
+                $contDetails[$k]['created_at'] = date('Y-m-d H:i:s', time());
+                $contDetails[$k]['updated_at'] = date('Y-m-d H:i:s', time());
+            }
+        }
+
+        //合同附件
+        $contEnclo = '';
+        //移动单据文件
+        if($input['enclosure']){
+            $enclosures = explode('|', $input['enclosure']);
+            foreach($enclosures as $k => $v){
+                $fileName = explode(',', $v);
+                if(count($fileName) != 2){
+                    return redirectPageMsg('-1', '保存失败，附件名称格式化错误！', route('contract.editContract')."?id=".$input['contract_id']);
+                }
+                $directory = 'contract/'.session('userInfo.user_id').'/'.$fileName[1];
+                $exists = Storage::disk('storageTemp')->exists($directory);
+                if(!$exists){
+                    return redirectPageMsg('-1', '保存失败，附件获取失败，请刷新后重试！', route('contract.editContract')."?id=".$input['contract_id']);
+                }
+                $oldFile = 'uploads/contract/'.session('userInfo.user_id').'/'.$fileName[1];
+                $newFile = 'enclosure/contract/'.$cont_id.'/'.$fileName[1];
+                $result = Storage::move($oldFile, $newFile);
+                if(!$result){
+                    return redirectPageMsg('-1', '保存失败，附件保存失败，请刷新后重试！', route('contract.editContract')."?id=".$input['contract_id']);
+                }
+                $contEnclo[$k]['enclo_id'] = getId();
+                $contEnclo[$k]['cont_id'] = $cont_id;
+                $contEnclo[$k]['enclo_name'] = $fileName[0];
+                $contEnclo[$k]['enclo_url'] = $newFile;
+                $contEnclo[$k]['created_at'] = date('Y-m-d H:i:s', time());
+                $contEnclo[$k]['updated_at'] = date('Y-m-d H:i:s', time());
+            }
+        }
+
+        //事物创建数据
+        $result = DB::transaction(function () use($contract, $contData, $contDetails, $contEnclo) {
+            ContractDb::where('cont_id', $contract['cont_id'])
+            ->update($contData);
+            if($contDetails){
+                ContDetailsDb::insert($contDetails);
+            }
+            if($contEnclo){
+                ContEncloDb::insert($contEnclo);
+            }
+            return true;
+        });
+
+        if($result){
+            return redirectPageMsg('1', "提交成功", route('contract.index'));
+        }else{
+            return redirectPageMsg('-1', "提交失败", route('contract.editContract')."?id=".$input['contract_id']);
+        }
     }
+
     //删除合同
     public function delContract(Request $request)
     {

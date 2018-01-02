@@ -304,7 +304,7 @@
 		function listSubName(treeId, treeNode) {
 			var aObj = $("#" + treeNode.tId + IDMark_A);
 			var str = '<span>'+ treeNode.text +'</span>';
-			if(treeNode.status == 1 && !treeNode.children){
+			if(treeNode.status == 1 && treeNode.children == ''){
 				var str = str + '<i class="ace-icon fa fa-check fa-check green"></i>';
 			}
 			aObj.append(str);
@@ -312,7 +312,7 @@
 
 		//科目选择
 		function treeOnClick(event, treeId, treeNode) {
-			if(!treeNode.children){
+			if(treeNode.children == ''){
 				if(treeNode.status != '1'){
 					alertDialog('-1', '请选择<i class="ace-icon fa fa-check fa-check green bigger-130"></i>图标的科目。');return false;
 				} else {
