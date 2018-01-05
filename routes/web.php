@@ -196,6 +196,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('delEnclo', ['as' => 'contract.delEnclo', 'uses' => 'ContractController@delEnclo']);//删除附件
         Route::post('uploadEnclo', ['as' => 'contract.uploadEnclo', 'uses' => 'ContractController@uploadEnclo']);//上传附件
         Route::post('getBudgetSub', ['as' => 'contract.getBudgetSub', 'uses' => 'ContractController@getBudgetSub']);//获取预算科目
+        Route::get('listContract', ['as' => 'contract.listContract', 'uses' => 'ContractController@listContract']);//查看合同
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销

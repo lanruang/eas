@@ -46,7 +46,7 @@ class LoginController extends Common\CommonController
                             ->leftjoin('department AS dep', 'ub.department','=','dep.dep_id')
                             ->leftjoin('positions AS pos', 'ub.positions','=','pos.pos_id')
                             ->select('users.*','dep.dep_name','dep.dep_id','pos.pos_name','pos.pos_id')
-                            ->where('users.user_email', $input["userName"])
+                            ->where('users.user_email', $input['userName'])
                             ->first();
 
         //判断用户

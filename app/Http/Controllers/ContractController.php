@@ -649,4 +649,79 @@ class ContractController extends Common\CommonController
         $data['url'] = $fileName;
         echoAjaxJson('1', '上传成功', $data);
     }
+
+    //查看合同详情
+    public function listContract()
+    {
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.integer' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contract.index'));
+        }
+        //合同信息
+        $data['contract'] = ContractDb::from('contract AS cont')
+                ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
+                ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+                ->leftJoin('budget AS budget', 'cont.cont_budget','=','budget.budget_name')
+                ->leftJoin('subjects AS sub', 'cont.cont_subject','=','sub.sub_id')
+                ->select('cont.cont_id AS id',
+                    'cont.cont_type AS contract_type',
+                    'cont.cont_num AS contract_num',
+                    'cont.cont_name AS contract_name',
+                    'cont.cont_start AS date_start',
+                    'cont.cont_end AS date_end',
+                    'cont.cont_sum_amount AS contract_amount',
+                    'cont.cont_status AS status',
+                    'cont.cont_class AS cont_class',
+                    'sysAssType.ass_text AS contract_type',
+                    'sysAssClass.ass_text AS contract_class',
+                    'cont.cont_status AS status',
+                    'budget.budget_name',
+                    'sub.sub_name',
+                    'cont.cont_remark',
+                    'cont.cont_parties')
+                ->where('cont.cont_id', $input['id'])
+                ->first();
+        if(!$data['contract']){
+            return redirectPageMsg('-1', '合同不存在,请刷新后重试', route('contract.index'));
+        }
+        //合同期间
+        $data['contDetails'] = ContDetailsDb::where('cont_id', $data['contract']->id)
+            ->orderBy('cont_details_date', 'ASC')
+            ->get()
+            ->toArray();
+        if(!$data['contDetails']){
+            return redirectPageMsg('-1', '合同期间获取失败,请刷新后重试', route('contract.index'));
+        }
+        //合同附件
+        $data['contEnclo'] = ContEncloDb::where('cont_id', $data['contract']->id)
+            ->orderBy('created_at', 'ASC')
+            ->get()
+            ->toArray();
+        //客户信息
+        $parties = '';
+        if($data['contract']->cont_class == session('userInfo.sysConfig.contract.income')){
+            $parties = CustomerDb::where('cust_id', $data['contract']->cont_parties)
+                ->first();
+        }
+        if($data['contract']->cont_class == session('userInfo.sysConfig.contract.payment')){
+            $parties = SupplierDb::where('supp_id', $data['contract']->cont_parties)
+                ->first();
+        }
+        if(!$parties){
+            return redirectPageMsg('-1', '获取合同方失败', route('contract.index'));
+        }
+        $data['contract']['parties'] = $parties['cust_name'];
+
+        return view('contract.listContract', $data);
+    }
 }

@@ -23,6 +23,7 @@
 						筛选
 					</button>
 					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addContract();">创建合同</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listContract();">详情</button>
 				</div>
 			</div>
 			<p></p>
@@ -55,6 +56,7 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var contractTable;
+		var select_id = '';
 		$(function($) {
 			var html;
 			contractTable = $('#contractTable')
@@ -111,7 +113,22 @@
 										return html;
 									}
 								}],
+								"createdRow": function( row, data ) {
+									$(row).attr( 'id', data.id );
+								}
 							});
+
+			$('#contractTable tbody').on( 'click', 'tr', function () {
+				if ( $(this).hasClass('selected') ) {
+					$(this).removeClass('selected');
+					select_id = '';
+				}
+				else {
+					contractTable.$('tr.selected').removeClass('selected');
+					$(this).addClass('selected');
+					select_id = this.id
+				}
+			});
 		})
 
 		function addContract(){
@@ -158,6 +175,15 @@
 					}
 				}
 			});
+		}
+
+		//预算详情
+		function listContract(){
+			if(select_id == ''){
+				alertDialog('-1', '请选择一个合同！');
+				return false;
+			}
+			window.location.href = "{{route('contract.listContract')}}?id=" + select_id;
 		}
 	</script>
 @endsection()
