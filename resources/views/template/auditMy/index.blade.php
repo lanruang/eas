@@ -29,7 +29,7 @@
                     </li>
 
                     <li>
-                        <a data-toggle="tab" href="#contract">
+                        <a data-toggle="tab" href="#contract" onclick="contractFun();">
                             <i class="blue ace-icon fa fa-briefcase bigger-110"></i>
                             合同类
                             <span class="badge badge-danger">{{ $contract }}</span>
@@ -83,7 +83,21 @@
                     </div>
 
                     <div id="contract" class="tab-pane">
-
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-11">
+                                <table id="contractTable" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="center">&nbsp;</th>
+                                        <th class="center">标题</th>
+                                        <th class="center">提交人</th>
+                                        <th class="center">提交时间</th>
+                                        <th class="center">状态</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="reimburse" class="tab-pane">
@@ -107,7 +121,6 @@
             </div>
         </div><!-- /.col -->
     </div>
-
 @endsection()
 
 {{--页面加载js--}}
@@ -123,6 +136,7 @@
         var budgetTable;
         var budgetSumTable = false;
         var reimburseTable = false;
+        var contractTable = false;
         $(function($) {
             budgetTable = $('#budgetTable')
                     .DataTable({
@@ -223,6 +237,49 @@
                                 "async":false,
                                 "url": '{{route('auditMy.getAuditList')}}',
                                 "data": {"type": 'reimburse' ,"_token": '{{csrf_token()}}'},
+                                "dataSrc": function ( res ) {
+                                    if(res.status == true){
+                                        return res.data;
+                                    }else{
+                                        alertDialog(res.status, res.msg);
+                                    }
+                                }
+                            },
+                            "columns": [
+                                {
+                                    "class": "center",
+                                    "data": null,
+                                    "defaultContent": "", render: function(data, type, row) {
+                                    var html = '<button type="button" class="btn btn-success btn-minier" onclick="auditDoc(\''+row.process_id+'\');"> 审 阅 </button>';
+                                    return html;
+                                }},
+                                {"data": "process_title", "class": "align-middle"},
+                                {"data": "user_name", "class": "center align-middle" },
+                                {"data": "created_at", "class": "center align-middle" },
+                                {"data": "status", render: function(data, type, row) {
+                                    return formatStatus(row.status);
+                                }, "class": "center align-middle" }
+                            ]
+                        });
+            }
+        }
+
+        function contractFun(){
+            if(!contractTable){
+                contractTable = $('#contractTable')
+                        .DataTable({
+                            "lengthChange": false,
+                            "ordering": false,
+                            "searching": false,
+                            "deferRender": true,
+                            "autoWidth": false,
+                            "serverSide": true,
+                            "ajax": {
+                                "type": "post",
+                                "dataType": "json",
+                                "async":false,
+                                "url": '{{route('auditMy.getAuditList')}}',
+                                "data": {"type": 'contract' ,"_token": '{{csrf_token()}}'},
                                 "dataSrc": function ( res ) {
                                     if(res.status == true){
                                         return res.data;

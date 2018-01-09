@@ -10,6 +10,7 @@ use App\Http\Models\Expense\ExpenseMainModel AS ExpenseMainDb;
 use App\Http\Models\Expense\ExpEnclosureModel AS ExpEnclosureDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
+use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
 use App\Http\Models\User\UserModel AS UserDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSubjectDateDb;
@@ -602,7 +603,7 @@ class ReimburseController extends Common\CommonController
             ->get()
             ->first();
         if(!$reimburse) echoAjaxJson('-1', '参数错误，单据不存！');
-        if(!$reimburse['reimburse'] != '202') echoAjaxJson('-1', '提交失败，单据状态错误！');
+        if($reimburse['expense_status'] != '202') echoAjaxJson('-1', '提交失败，单据状态错误！');
 
         if(session('userInfo.sysConfig.reimburse.budgetOnOff') == 1) {
             //查看明细参数是否完整
@@ -732,7 +733,7 @@ class ReimburseController extends Common\CommonController
             ->get()
             ->first();
         if(!$expense){
-            return redirectPageMsg('-1', '单据信息获取失败，请刷新后重试', route('reimburse.index'));
+            echoAjaxJson('-1', '单据信息获取失败，请刷新后重试!');
         }
 
         //获取审批流程信息
@@ -748,27 +749,38 @@ class ReimburseController extends Common\CommonController
         //格式化流程
         $data['audit_user'] = $audit['process_audit_user'];
         $auditUser = explode(',', $audit['process_users']);
+        $data['auditProcess'] = array();
 
+        //审核流程
         $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
             ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
             ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
-            ->leftjoin('audit_info_text AS aif', 'users.user_id', '=', 'aif.created_user')
-            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid',
-                'aif.audit_text', 'aif.audit_res', 'aif.created_at AS audit_time')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
             ->whereIn('users.user_id', $auditUser)
-            ->where('aif.process_id', $audit['process_id'])
+            ->get()
+            ->toArray();
+        //获取审核信息
+        $auditInfoText = AuditInfoTextDb::where('process_id', $audit['process_id'])
+            ->select('audit_text', 'audit_res', 'created_at AS audit_time', 'created_user')
             ->get()
             ->toArray();
 
-        //格式化数据
-        $data['auditProcess'] = array();
-        $data['audit_status'] = $audit['status'];
-        $data['status'] = 1;
         foreach($auditUser as $k => $v){
-            foreach($result as $u => $d){
-                if($v == $d['uid']) $data['auditProcess'][] = $d;
+            foreach($result as $rv){
+                if($v == $rv['uid']){
+                    $data['auditProcess'][$k] = $rv;
+                }
+            }
+            foreach($auditInfoText as $av){
+                if($v == $av['created_user']){
+                    $data['auditProcess'][$k] = array_merge($data['auditProcess'][$k], $av);
+                }
             }
         }
+
+        //格式化数据
+        $data['audit_status'] = $audit['status'];
+        $data['status'] = 1;
  
         //返回结果
         ajaxJsonRes($data);

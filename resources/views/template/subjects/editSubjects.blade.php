@@ -169,7 +169,7 @@
 		function listSubName(treeId, treeNode) {
 			var aObj = $("#" + treeNode.tId + IDMark_A);
 			var str = "<a><span>"+ treeNode.text +"</span></a>";
-			aObj.after(str);
+			aObj.append(str);
 		}
 
 		function treeOnClick(event, treeId, treeNode) {

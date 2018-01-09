@@ -163,13 +163,12 @@
 					$(e).remove();
 				},
 			});
-
 		});
 
 		function listSubName(treeId, treeNode) {
 			var aObj = $("#" + treeNode.tId + IDMark_A);
-			var str = "<a><span>"+ treeNode.text +"</span></a>";
-			aObj.after(str);
+			var str = '<span>'+ treeNode.text +'</span>';
+			aObj.append(str);
 		}
 
 		function treeOnClick(event, treeId, treeNode) {

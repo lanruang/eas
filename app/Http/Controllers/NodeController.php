@@ -67,7 +67,7 @@ class NodeController extends Common\CommonController
         //获取下拉菜单最小pid
         $selectPid = nodeDb::where('status', 1)
             ->min('pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
 
         $node['select'] = json_encode($result);
         return view('node.addNode', $node);
@@ -83,7 +83,7 @@ class NodeController extends Common\CommonController
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|digits_between:1,4',
-            'node_pid' => 'digits_between:0,11',
+            'node_pid' => 'between:32,32',
             'recycle_name' => 'required_with:recycle|max:50',
             'recycle_type' => 'required_with:recycle|max:40'
         ];
@@ -173,7 +173,7 @@ class NodeController extends Common\CommonController
         //获取下拉菜单最小pid
         $selectPid = nodeDb::where('status', 1)
             ->min('pid');
-        $result = !getTreeT($result, $selectPid) ? $result = array() : getTreeT($result, $selectPid);
+        $result = !getTree($result, $selectPid) ? $result = array() : getTree($result, $selectPid);
          
         $node['select'] = json_encode($result);
         return view('node.editNode', $node);
@@ -189,7 +189,7 @@ class NodeController extends Common\CommonController
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|digits_between:1,4',
-            'node_pid' => 'between:0,32',
+            'node_pid' => 'between:32,32',
             'node_id' => 'required|between:32,32',
             'recycle_name' => 'required_with:recycle|max:50',
             'recycle_type' => 'required_with:recycle|max:40'
@@ -302,7 +302,7 @@ class NodeController extends Common\CommonController
 
         //过滤信息
         $rules = [
-            'id' => 'required|integer|digits_between:1,11',
+            'id' => 'required|integer|between:32,32',
             'sort' => 'required|integer|digits_between:1,4',
         ];
         $message = [

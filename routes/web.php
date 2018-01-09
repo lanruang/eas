@@ -46,6 +46,13 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('delRole', ['as' => 'role.delRole', 'uses' => 'RoleController@delRole']);//删除角色
         Route::get('roleInfo', ['as' => 'role.roleInfo', 'uses' => 'RoleController@roleInfo']);//角色详情
     });
+    //系统设置
+    Route::group(['prefix' => 'sysConfig'], function () {
+        Route::get('index', ['as' => 'sysConfig.index', 'uses' => 'SysConfigController@index']);//系统设置
+        Route::post('updateBudget', ['as' => 'sysConfig.updateBudget', 'uses' => 'SysConfigController@updateBudget']);//更新预算配置
+        Route::post('updateContract', ['as' => 'sysConfig.updateContract', 'uses' => 'SysConfigController@updateContract']);//更新合同配置
+        Route::post('updateReimburse', ['as' => 'sysConfig.updateReimburse', 'uses' => 'SysConfigController@updateReimburse']);//更新费用管理配置
+    });
     /*-----------------------------我的工作-----------------------------*/
     //消息通知
     Route::group(['prefix' => 'notice'], function () {
@@ -197,6 +204,9 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('uploadEnclo', ['as' => 'contract.uploadEnclo', 'uses' => 'ContractController@uploadEnclo']);//上传附件
         Route::post('getBudgetSub', ['as' => 'contract.getBudgetSub', 'uses' => 'ContractController@getBudgetSub']);//获取预算科目
         Route::get('listContract', ['as' => 'contract.listContract', 'uses' => 'ContractController@listContract']);//查看合同
+        Route::post('addAudit', ['as' => 'contract.addAudit', 'uses' => 'ContractController@addAudit']);//提交审批
+        Route::get('listReimburse', ['as' => 'contract.listReimburse', 'uses' => 'ContractController@listReimburse']);//查看单据
+        Route::post('listAudit', ['as' => 'contract.listAudit', 'uses' => 'ContractController@listAudit']);//查看审核进度
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销
@@ -225,7 +235,6 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('updateExpense', ['as' => 'reimbursePay.updateExpense', 'uses' => 'ReimbursePayController@updateExpense']);//上传图片
         Route::post('payExpense', ['as' => 'reimbursePay.payExpense', 'uses' => 'ReimbursePayController@payExpense']);//上传图片
     });
-
 
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {

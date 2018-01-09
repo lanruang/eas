@@ -16,6 +16,10 @@ use App\Http\Models\User\UserModel AS UserDb;
 use App\Http\Models\Expense\ExpenseModel AS ExpenseDb;
 use App\Http\Models\Expense\ExpenseMainModel AS ExpenseMainDb;
 use Illuminate\Support\Facades\DB;
+use App\Http\Models\Contract\ContractModel AS ContractDb;
+use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
+use App\Http\Models\Contract\ContEnclosureModel AS ContEncloDb;
+use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 
 class AuditMyController extends Common\CommonController
 {
@@ -141,13 +145,18 @@ class AuditMyController extends Common\CommonController
                 $type = "Reimburse";//模版名称
                 $data['data'] = $this->getReimburse($data['audit']['process_app']);
                 break;
+            case "contract":
+                $type = "Contract";//模版名称
+                $data['data'] = $this->getContract($data['audit']['process_app']);
+                break;
         }
+
         if(!$data['data']){
             return redirectPageMsg('-1', '审核内容不存在', route('auditMy.index'));
         };
      
         $data['process_id'] = $data['audit']['process_id'];
-
+        //p($data);
         return view("auditMy.list$type", $data);
     }
     
@@ -233,6 +242,9 @@ class AuditMyController extends Common\CommonController
                         break;
                     case "reimburse":
                         $this->updateReimburse($audit['process_app'], $input['audit_res']);
+                        break;
+                    case "contract":
+                        $this->updateContract($audit['process_app'], $input['audit_res']);
                         break;
                 }
             }else{
@@ -450,5 +462,87 @@ class AuditMyController extends Common\CommonController
             $this->createNotice($notice);
         }
 
+    }
+
+    /*-----------------------费用报销-----------------------*/
+    //合同
+    private function getContract($id){
+        //合同信息
+        $data['contract'] = ContractDb::from('contract AS cont')
+            ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('budget AS budget', 'cont.cont_budget','=','budget.budget_name')
+            ->leftJoin('subjects AS sub', 'cont.cont_subject','=','sub.sub_id')
+            ->select('cont.cont_id AS id',
+                'cont.cont_type AS contract_type',
+                'cont.cont_num AS contract_num',
+                'cont.cont_name AS contract_name',
+                'cont.cont_start AS date_start',
+                'cont.cont_end AS date_end',
+                'cont.cont_sum_amount AS contract_amount',
+                'cont.cont_status AS status',
+                'cont.cont_class AS cont_class',
+                'sysAssType.ass_text AS contract_type',
+                'sysAssClass.ass_text AS contract_class',
+                'cont.cont_status AS status',
+                'budget.budget_name',
+                'sub.sub_name',
+                'cont.cont_remark',
+                'cont.cont_parties')
+            ->where('cont.cont_id', $id)
+            ->first();
+        if(!$data['contract']){
+            return false;
+        }
+        //合同期间
+        $data['contDetails'] = ContDetailsDb::where('cont_id', $data['contract']->id)
+            ->orderBy('cont_details_date', 'ASC')
+            ->get()
+            ->toArray();
+        if(!$data['contDetails']){
+            return false;
+        }
+        //合同附件
+        $data['contEnclo'] = ContEncloDb::where('cont_id', $data['contract']->id)
+            ->orderBy('created_at', 'ASC')
+            ->get()
+            ->toArray();
+        //客户信息
+        $parties = '';
+        if($data['contract']->cont_class == session('userInfo.sysConfig.contract.income')){
+            $parties = CustomerDb::where('cust_id', $data['contract']->cont_parties)
+                ->first();
+        }
+        if($data['contract']->cont_class == session('userInfo.sysConfig.contract.payment')){
+            $parties = SupplierDb::where('supp_id', $data['contract']->cont_parties)
+                ->first();
+        }
+        if(!$parties){
+            return false;
+        }
+        $data['contract']['parties'] = $parties['cust_name'];
+
+        return $data;
+    }
+    //更新合同
+    private function updateContract($id, $status){
+        //转换状态
+        $data['cont_status'] = $status == '1002' ? '301' : $status;
+        //更新单据状态
+        ContractDb::where('cont_id', $id)
+            ->where('cont_status', '1009')
+            ->update($data);
+        //获取单据信息
+        $contract = ContractDb::where('cont_id', $id)
+            ->select('cont_num', 'created_user', 'cont_status')
+            ->get()
+            ->first();
+
+        //发送通知
+        $notice['notice_id'] = getId();
+        $notice['notice_app'] = $id;//需要确认操作
+        $notice['notice_message'] = '合同编号：'.$contract['cont_num'].'。已通过审批。';
+        $notice['notice_user'] = $contract['cont_status'];
+        $this->createNotice($notice);
     }
 }

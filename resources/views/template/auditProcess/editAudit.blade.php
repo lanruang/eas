@@ -325,8 +325,9 @@
 						'<td class="center align-middle">'+v.dep_name+'</td>' +
 						'<td class="center align-middle">'+v.pos_name+'</td>' +
 						'<td class="center align-middle">'+v.user_name+'</td>' +
-						'<td class="center align-middle">'+'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser(\''+v.uid+'\');">删除</button>'+'</td>' +
-						'</tr>';
+						'<td class="center align-middle">'+
+						'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser(\''+v.uid+'\');">删除</button>'+
+						'</td></tr>';
 				if(audit_data.length > sort){
 					html += '<tr><td colspan="5" class="center">' +
 							'<i class="ace-icon fa fa-long-arrow-down  bigger-110 icon-only"></i>' +
@@ -404,7 +405,7 @@
 					'<td class="center align-middle">'+pos_name+'</td>' +
 					'<td class="center align-middle">'+val.name+'</td>' +
 					'<td class="center align-middle">' +
-					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser('+val.id+');">删除</button>' +
+					'<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delUser(\''+val.id+'\');">删除</button>' +
 					'</td></tr>';
 			if(trLength == 0){
 				$('#auditStart').removeClass('hide');

@@ -249,7 +249,6 @@
 		var budgetTable;
 		var budgetId = '';
 		var budgetOnOff = '{{ session('userInfo.sysConfig.reimburse.budgetOnOff') }}';
-		var initTreeData;
 		var amount = 0;
 		var subTreeSet = {
 			data: {

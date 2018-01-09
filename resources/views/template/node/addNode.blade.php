@@ -3,7 +3,7 @@
 
 {{--页面样式--}}
 @section('pageSpecificPluginStyles')
-
+	<link rel="stylesheet" href="{{asset('resources/views/template')}}/assets/css/zTree/zTreeStyle.css" type="text/css">
 @endsection()
 
 {{--面包削导航--}}
@@ -27,7 +27,7 @@
 
 				<div class="widget-body">
 					<div class="widget-main padding-8">
-						<ul id="tree1"></ul>
+						<div id="treeNode" class="ztree"></div>
 					</div>
 				</div>
 			</div>
@@ -770,7 +770,6 @@
 		</div>
 	</div>
 
-
 	<div class="row">
 		<div class="col-xs-12">
 			<button class="btn btn-sm btn-success" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
@@ -901,15 +900,31 @@
 
 {{--页面加载js--}}
 @section('pageSpecificPluginScripts')
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/jquery.validate.min.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/Bootbox.js"></script>
-	<script src="{{asset('resources/views/template').'/'.config('sysInfo.templateAdminName')}}/assets/js/tree.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/jquery.validate.min.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/Bootbox.js"></script>
+	<script src="{{asset('resources/views/template')}}/assets/js/zTree/jquery.ztree.core.js"></script>
 @endsection()
 
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
 		var html;
+		var treeData = JSON.parse('{!!$select!!}');
+		var treeSet = {
+			data: {
+				key: {
+					name: "text",
+				}
+			},
+			view: {
+				showLine:false,
+				showIcon: false,
+			},
+			callback: {
+				onClick: treeOnClick
+			},
+		};
+		var IDMark_A = "_a";
 		$(function(){
 			$('#validation-form').validate({
 				errorElement: 'div',
@@ -941,53 +956,21 @@
 				},
 			});
 
-			var sampleData = initiateDemoData();//see below
-			$('#tree1').ace_tree({
-				dataSource: sampleData['dataSource1'],
-				loadingHTML:'<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',
-				'itemSelect' : true,
-				'folderSelect': true,
-				'multiSelect': false,
-				'open-icon' : 'tree_null_icon_open',
-				'close-icon' : 'tree_null_icon_close',
-				'folder-open-icon' : 'ace-icon tree-plus',
-				'folder-close-icon' : 'ace-icon tree-minus',
-				'selected-icon' : 'null',
-				'unselected-icon' : 'null',
-			}).on('selected.fu.tree', function(e, item) {
-				$('#node_Fname').val(item.target.text);
-				$('#node_Falias').val(item.target.alias);
-				$('#node_pid').val(item.target.id);
-				$('#close_tree').click();
-			})
-
-			function initiateDemoData(){
-
-				var tree_data = JSON.parse('{!!$select!!}');
-				var dataSource1 = function(options, callback){
-					var $data = null
-					if(!("text" in options) && !("type" in options)){
-						$data = tree_data;//the root tree
-						callback({ data: $data });
-						return;
-					}
-					else if("type" in options && options.type == "folder") {
-						if("additionalParameters" in options && "children" in options.additionalParameters)
-							$data = options.additionalParameters.children || {};
-						else $data = {}
-					}
-
-					if($data != null)//this setTimeout is only for mimicking some random delay
-						setTimeout(function(){callback({ data: $data });} , parseInt(Math.random() * 500) + 200);
-					}
-				return {'dataSource1': dataSource1}
-			}
+			$.fn.zTree.init($("#treeNode"), treeSet, treeData);
 		});
 
 		//返回
 		function goBack(){
 			window.location.href = "{{route('node.index')}}";
 		}
+
+		//选择节点
+		function treeOnClick(event, treeId, treeNode) {
+			$('#node_Fname').val(treeNode.text);
+			$('#node_Falias').val(treeNode.alias);
+			$('#node_pid').val(treeNode.id);
+			$('#close_tree').click();
+		};
 
 		//清除选项
 		function delTree(){

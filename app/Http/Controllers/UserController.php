@@ -216,7 +216,7 @@ class UserController extends Common\CommonController
             $userDb->user_img = "resources/views/template/assets/avatars/user.jpg";
             $userDb->password = md5('123456');
             $userDb->role_id = $input['role_id'];
-            $userDb->supper_admin = 0;
+            $userDb->supper_admin = 1;
             $userDb->status = array_key_exists('status', $input) ? 1 : 0;
             $userDb->save();
             //创建用户基础信息表数据

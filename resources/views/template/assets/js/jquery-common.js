@@ -12,6 +12,7 @@
 	statusArr['202'] = '<span style="color:green;">编辑单据</span>';
 	statusArr['203'] = '<span style="color:orange;">出纳付款</span>';
 	statusArr['204'] = '<span style="color:#bf800c;">确认收款</span>';
+	statusArr['301'] = '<span>已审核</span>';
 	statusArr['302'] = '<span style="color:green;">编辑中</span>';
 	statusArr['1000'] = '<span>未审批</span>';
 	statusArr['1001'] = '<span>已审批</span>';

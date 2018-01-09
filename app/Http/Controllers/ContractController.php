@@ -13,6 +13,10 @@ use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
+use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
+use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
+use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
+use App\Http\Models\User\UserModel AS UserDb;
 use Validator;
 use Storage;
 
@@ -392,13 +396,13 @@ class ContractController extends Common\CommonController
                     return redirectPageMsg('-1', '保存失败，附件获取失败，请刷新后重试！', route('contract.editContract')."?id=".$input['contract_id']);
                 }
                 $oldFile = 'uploads/contract/'.session('userInfo.user_id').'/'.$fileName[1];
-                $newFile = 'enclosure/contract/'.$cont_id.'/'.$fileName[1];
+                $newFile = 'enclosure/contract/'.$contract['cont_id'].'/'.$fileName[1];
                 $result = Storage::move($oldFile, $newFile);
                 if(!$result){
                     return redirectPageMsg('-1', '保存失败，附件保存失败，请刷新后重试！', route('contract.editContract')."?id=".$input['contract_id']);
                 }
                 $contEnclo[$k]['enclo_id'] = getId();
-                $contEnclo[$k]['cont_id'] = $cont_id;
+                $contEnclo[$k]['cont_id'] = $contract['cont_id'];
                 $contEnclo[$k]['enclo_name'] = $fileName[0];
                 $contEnclo[$k]['enclo_url'] = $newFile;
                 $contEnclo[$k]['created_at'] = date('Y-m-d H:i:s', time());
@@ -723,5 +727,199 @@ class ContractController extends Common\CommonController
         $data['contract']['parties'] = $parties['cust_name'];
 
         return view('contract.listContract', $data);
+    }
+
+    //提交审批
+    public function addAudit(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson(0, '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+
+        $contract = ContractDb::where('cont_id', $id)
+            ->first();
+        if(!$contract) echoAjaxJson('-1', '参数错误，合同不存！');
+        if($contract['cont_status'] != '302') echoAjaxJson('-1', '提交失败，单据状态错误！');
+
+        //获取预算审批流程
+        $whereIn[] = 0;
+        $whereIn[] = session('userInfo.dep_id');
+        $auditArr = AuditProcessDb::where('audit_type', 'contract')
+            ->whereIn('audit_dep', $whereIn)
+            ->get()
+            ->toArray();
+
+        //删除临时上传的图片
+        $directory = 'contract/'.$id;
+        Storage::disk('storageTemp')->deleteDirectory($directory);
+
+        if($auditArr){
+            //审批流程大于1则获取对应部门预算
+            if(count($auditArr) > 1){
+                foreach($auditArr as $k => $v){
+                    if($v['audit_dep'] == session('userInfo.dep_id')){
+                        $auditArr = $v;
+                    }
+                }
+            }else{
+                $auditArr = $auditArr[0];
+            }
+
+            if(!$auditArr['audit_process']) echoAjaxJson('-1', '提交失败，审批流程人员获取失败！');
+
+            $result = DB::transaction(function () use($id, $contract, $input, $auditArr) {
+                $process_users = explode(',', $auditArr['audit_process']);
+                //审批内容参数
+                $auditInfoDb = new AuditInfoDb();
+                $auditInfoDb->process_id = getId();
+                $auditInfoDb->process_type = 'contract';
+                $auditInfoDb->process_app = $contract['cont_id'];
+                $auditInfoDb->process_title = '合同编号：'.$contract['cont_num'];
+                $auditInfoDb->process_text = $input['process_text'];
+                $auditInfoDb->process_users = $auditArr['audit_process'];
+                $auditInfoDb->process_audit_user = $process_users[0];
+                $auditInfoDb->created_user = session('userInfo.user_id');
+                $auditInfoDb->status = '1000';
+                $auditInfoDb->save();
+
+                //更新报销单据状态
+                ContractDb::where('cont_id', $id)
+                    ->update(array('cont_status'=>1009));
+                return true;
+            });
+
+            if($result){
+                echoAjaxJson('1', '提交成功，请耐心等待审批！');
+            }else{
+                echoAjaxJson('-1', '审批失败，请重新提交！');
+            }
+        }else{
+            $result = DB::transaction(function () use($id) {
+                //转换状态
+                $data['cont_status'] = '301';
+                //更新单据状态
+                $result = ContractDb::where('cont_id', $id)
+                    ->where('cont_status', '302')
+                    ->update($data);
+                if(!$result){
+                    return false;
+                }
+                //获取单据状态
+                $contract = ContractDb::where('cont_id', $id)
+                    ->select('cont_num')
+                    ->first();
+
+                //发送通知
+                $notice['notice_id'] = getId();
+                $notice['notice_app'] = $id;//需要确认操作
+                $notice['notice_message'] = '合同编号：'.$contract['cont_num'].'。已通过审批。';
+                $notice['notice_user'] = session('userInfo.user_id');
+                $this->createNotice($notice);
+                return true;
+            });
+
+            if($result){
+                echoAjaxJson('1', '审批通过，因未匹配到相应审批流程，预算将直接通过审批！');
+            }else{
+                echoAjaxJson('-1', '审批失败，请重新提交！');
+            }
+        }
+    }
+
+    //查看审批进度
+    public function listAudit(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        $input = Input::all();
+
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误'
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+        $id = $input['id'];
+        //获取编辑状态单据
+        $contract = ContractDb::where('cont_id', $id)
+            ->first();
+        if(!$contract){
+            echoAjaxJson('-1', '合同信息获取失败，请刷新后重试!');
+        }
+
+        //获取审批流程信息
+        $audit = AuditInfoDb::where('process_type', 'contract')
+            ->where('process_app', $id)
+            ->select('process_audit_user', 'process_users', 'process_id', 'status')
+            ->first();
+        if(!$audit){
+            echoAjaxJson('-1', '该项目未提交审批!');
+        }
+
+        //格式化流程
+        $data['audit_user'] = $audit['process_audit_user'];
+        $auditUser = explode(',', $audit['process_users']);
+        $data['auditProcess'] = array();
+
+        //审核流程
+        $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
+            ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
+            ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
+            ->whereIn('users.user_id', $auditUser)
+            ->get()
+            ->toArray();
+        //获取审核信息
+        $auditInfoText = AuditInfoTextDb::where('process_id', $audit['process_id'])
+            ->select('audit_text', 'audit_res', 'created_at AS audit_time', 'created_user')
+            ->get()
+            ->toArray();
+
+        foreach($auditUser as $k => $v){
+            foreach($result as $rv){
+                if($v == $rv['uid']){
+                    $data['auditProcess'][$k] = $rv;
+                }
+            }
+            foreach($auditInfoText as $av){
+                if($v == $av['created_user']){
+                    $data['auditProcess'][$k] = array_merge($data['auditProcess'][$k], $av);
+                }
+            }
+        }
+
+
+        //格式化数据
+        $data['audit_status'] = $audit['status'];
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 }
