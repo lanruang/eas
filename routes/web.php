@@ -235,7 +235,12 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('updateExpense', ['as' => 'reimbursePay.updateExpense', 'uses' => 'ReimbursePayController@updateExpense']);//上传图片
         Route::post('payExpense', ['as' => 'reimbursePay.payExpense', 'uses' => 'ReimbursePayController@payExpense']);//上传图片
     });
-
+    /*-----------------------------发票管理-----------------------------*/
+    Route::group(['prefix' => 'invoice'], function () {
+        Route::get('index', ['as' => 'invoice.index', 'uses' => 'InvoiceController@index']);//发票列表
+        Route::get('addInvoice', ['as' => 'invoice.addInvoice', 'uses' => 'InvoiceController@addInvoice']);//添加发票视图
+        Route::post('createInvoice', ['as' => 'invoice.createInvoice', 'uses' => 'InvoiceController@createInvoice']);//添加发票
+    });
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {
         Route::get('ctRedirectMsg', ['as' => 'component.ctRedirectMsg', 'uses' => 'Common\ComponentController@ctRedirectMsg']);//中间层页面跳转

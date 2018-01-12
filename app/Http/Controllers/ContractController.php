@@ -913,8 +913,7 @@ class ContractController extends Common\CommonController
                 }
             }
         }
-
-
+        
         //格式化数据
         $data['audit_status'] = $audit['status'];
         $data['status'] = 1;

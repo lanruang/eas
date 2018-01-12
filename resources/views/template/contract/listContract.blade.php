@@ -11,7 +11,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li><a href="{{route('auditProcess.index')}}">合同列表</a></li>
+	<li><a href="{{route('contract.index')}}">合同列表</a></li>
 	<li>添加合同</li>
 @endsection()
 
@@ -195,5 +195,10 @@
 
 {{--底部js--}}
 @section('FooterJs')
-
+	<script type="text/javascript">
+		//返回
+		function goBack(){
+			window.location.href = "{{route('contract.index')}}";
+		}
+	</script>
 @endsection()

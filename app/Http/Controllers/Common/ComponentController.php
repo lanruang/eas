@@ -43,7 +43,7 @@ class ComponentController extends CommonController
         $input = Input::all();
 
         //搜索参数
-        $searchSql[] = array('users.supper_admin', '=', '0');
+        //$searchSql[] = array('users.supper_admin', '=', '0');
         $searchSql[] = array('users.recycle', '=', 0);
         if (array_key_exists('s_u_name', $input)) {
             $searchSql[] = array('users.user_name', 'like', '%' . $input['s_u_name'] . '%');

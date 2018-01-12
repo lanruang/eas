@@ -26,7 +26,7 @@
 					<label class="col-sm-3 control-label no-padding-right"> 合同分组 </label>
 					<div class="col-sm-3">
 						<label>
-							<select class="form-control" id="contract_class" name="contract_class">
+							<select id="contract_class" name="contract_class">
 								<option value="">请选择</option>
 								@foreach ($select as $v)
 									@if ($v['ass_type'] == 'contract_class')

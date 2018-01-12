@@ -107,9 +107,9 @@ class SubjectsController extends Common\CommonController
         }
 
         //科目是否存在
-        $result = SubjectsDb::Where('sub_ip', $input['subject_ip'])
+        $sub_ip = SubjectsDb::Where('sub_ip', $input['subject_ip'])
             ->first();
-        if($result){
+        if($sub_ip){
             return redirectPageMsg('-1', "添加失败，科目地址重复", route('subjects.addSubjects'));
         }
 
@@ -117,16 +117,16 @@ class SubjectsController extends Common\CommonController
         $input['subject_status'] = array_key_exists('subject_status', $input) ? 1 : 0;
         $input['subject_budget'] = array_key_exists('subject_budget', $input) ? 1 : 0;
 
-        //添加数据
-        $subjectDb = new SubjectsDb;
-        $subjectDb->sub_id = getId();
-        $subjectDb->sub_type = $input['subject_type'];
-        $subjectDb->sub_ip = $input['subject_ip'];
-        $subjectDb->sub_name = $input['subject_name'];
-        $subjectDb->sub_pid = $input['subject_pid'];
-        $subjectDb->status = $input['subject_status'];
-        $subjectDb->sort = 0;
-        $result = $subjectDb->save();
+            //添加数据
+            $subjectDb = new SubjectsDb;
+            $subjectDb->sub_id = getId();
+            $subjectDb->sub_type = $input['subject_type'];
+            $subjectDb->sub_ip = $input['subject_ip'];
+            $subjectDb->sub_name = $input['subject_name'];
+            $subjectDb->sub_pid = $input['subject_pid'];
+            $subjectDb->status = $input['subject_status'];
+            $subjectDb->sort = 0;
+            $result = $subjectDb->save();
 
         if($result){
             return redirectPageMsg('1', "添加成功", route('subjects.addSubjects'));

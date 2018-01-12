@@ -83,7 +83,7 @@ class NodeController extends Common\CommonController
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|digits_between:1,4',
-            'node_pid' => 'between:32,32',
+            'node_pid' => 'between:0,32',
             'recycle_name' => 'required_with:recycle|max:50',
             'recycle_type' => 'required_with:recycle|max:40'
         ];
@@ -189,7 +189,7 @@ class NodeController extends Common\CommonController
             'node_alias' => 'required|max:90',
             'node_icon' => 'max:40',
             'node_sort' => 'required|digits_between:1,4',
-            'node_pid' => 'between:32,32',
+            'node_pid' => 'between:0,32',
             'node_id' => 'required|between:32,32',
             'recycle_name' => 'required_with:recycle|max:50',
             'recycle_type' => 'required_with:recycle|max:40'
@@ -212,7 +212,7 @@ class NodeController extends Common\CommonController
         ];
         $validator = Validator::make($input, $rules, $message);
         if($validator->fails()){
-            return redirectPageMsg('-1', $validator->errors()->first(), route('node.editNode')."/".$input['node_id']);
+            return redirectPageMsg('-1', $validator->errors()->first(), route('node.editNode')."?id=".$input['node_id']);
         }
         //格式化状态
         $input['node_status'] = array_key_exists('node_status', $input) ? 1 : 0;

@@ -14,6 +14,7 @@ use App\Http\Models\Budget\BudgetDepartmentModel AS BudgetDepartmentDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use App\Http\Models\AuditProcess\AuditProcessModel AS AuditProcessDb;
 use App\Http\Models\AuditProcess\AuditInfoModel AS AuditInfoDb;
+use App\Http\Models\AuditProcess\AuditInfoTextModel AS AuditInfoTextDb;
 use App\Http\Models\User\UserModel AS UserDb;
 use App\Http\Models\Department\DepartmentModel AS DepartmentDb;
 use Illuminate\Support\Facades\DB;
@@ -503,10 +504,10 @@ class BudgetController extends Common\CommonController
         $result = array_reverse($result);
 
         foreach($result as $k => $v){
-            $result[$k]['parent'] = ($v['pid'] == 0) ? 1 : 0;
+            $result[$k]['parent'] = ($v['level'] == 0) ? 1 : 0;
             $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];
             foreach($result as $kk => $vv){
-                if($v['id'] == $vv['pid'] && $v['pid'] != 0){
+                if($v['id'] == $vv['pid'] && $v['level'] != 0){
                     $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $vv['budget_amount']);
                     $result[$k]['parent'] = 1;
                 }
@@ -818,27 +819,38 @@ class BudgetController extends Common\CommonController
         //格式化流程
         $data['audit_user'] = $audit['process_audit_user'];
         $auditUser = explode(',', $audit['process_users']);
+        $data['auditProcess'] = array();
 
         $result = UserDb::leftjoin('users_base AS ub', 'users.user_id', '=', 'ub.user_id')
             ->leftjoin('department AS dep', 'ub.department', '=', 'dep.dep_id')
             ->leftjoin('positions AS pos', 'ub.positions', '=', 'pos.pos_id')
-            ->leftjoin('audit_info_text AS aif', 'users.user_id', '=', 'aif.created_user')
-            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid',
-                'aif.audit_text', 'aif.audit_res', 'aif.created_at AS audit_time')
+            ->select('dep.dep_name', 'pos.pos_name', 'users.user_name', 'users.user_id AS uid')
             ->whereIn('users.user_id', $auditUser)
-            ->where('aif.process_id', $audit['process_id'])
             ->get()
             ->toArray();
 
-        //格式化数据
-        $data['auditProcess'] = array();
-        $data['audit_status'] = $audit['status'];
-        $data['status'] = 1;
+        //获取审核信息
+        $auditInfoText = AuditInfoTextDb::where('process_id', $audit['process_id'])
+            ->select('audit_text', 'audit_res', 'created_at AS audit_time', 'created_user')
+            ->get()
+            ->toArray();
+
         foreach($auditUser as $k => $v){
-            foreach($result as $u => $d){
-                if($v == $d['uid']) $data['auditProcess'][] = $d;
+            foreach($result as $rv){
+                if($v == $rv['uid']){
+                    $data['auditProcess'][$k] = $rv;
+                }
+            }
+            foreach($auditInfoText as $av){
+                if($v == $av['created_user']){
+                    $data['auditProcess'][$k] = array_merge($data['auditProcess'][$k], $av);
+                }
             }
         }
+
+        //格式化数据
+        $data['audit_status'] = $audit['status'];
+        $data['status'] = 1;
 
         //返回结果
         ajaxJsonRes($data);

@@ -34,7 +34,7 @@ class UserController extends Common\CommonController
         $input = Input::all();
 
         //搜索参数
-        $searchSql[] = array('supper_admin', '=', '0');
+        //$searchSql[] = array('supper_admin', '=', '0');
         $searchSql[] = array('recycle', '=', 0);
         if(array_key_exists('s_u_name', $input)){
             $searchSql[] = array('user_name', 'like', '%'.$input['s_u_name'].'%');
@@ -107,11 +107,14 @@ class UserController extends Common\CommonController
         if($dep_leader){
             $data['userInfo']->dep_leader = $dep_leader->dep_leader;
         }
-        
+        /*
         if(!$data['userInfo'] || ($data['userInfo']['supper_admin'] == '1' && session('userInfo.user_id') != $data['userInfo']['user_id'])){
             return redirectPageMsg('-1', "员工不存在", route('user.index'));
         }
-
+        */
+        if(!$data['userInfo']){
+            return redirectPageMsg('-1', "员工不存在", route('user.index'));
+        }
         $data['isSession'] = $isSession;
         $data['userInfo']['status'] = $data['userInfo']['status'] == 1 ? "使用中" : "已禁用";
         return view('user.userInfo', $data);
@@ -216,6 +219,7 @@ class UserController extends Common\CommonController
             $userDb->user_img = "resources/views/template/assets/avatars/user.jpg";
             $userDb->password = md5('123456');
             $userDb->role_id = $input['role_id'];
+            //$userDb->supper_admin = 0;
             $userDb->supper_admin = 1;
             $userDb->status = array_key_exists('status', $input) ? 1 : 0;
             $userDb->save();
@@ -408,11 +412,14 @@ class UserController extends Common\CommonController
         $user = UserDb::select('user_id', 'supper_admin')
             ->where('user_id', $input['id'])
             ->first();
-
+        /*
         if(!$user || ($user->supper_admin == '1' && session('userInfo.user_id') != $user->user_id)){
             echoAjaxJson('-1', '参数错误');
         }
-
+        */
+        if(!$user){
+            echoAjaxJson('-1', '参数错误');
+        }
         //更新数据
         $result = UserDb::where('user_id', $input['id'])
             ->update($data);

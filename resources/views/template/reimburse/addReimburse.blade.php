@@ -32,7 +32,7 @@
 				<tr>
 					<td class="col-xs-4 align-middle">部门：{{ $dep_name }}</td>
 					<td class="col-xs-4 align-middle">日期：
-							<input type="text" name="expense_date" id="expense_date" placeholder="报销日期" class="input-sm date-picker" style="background-color: white !important; cursor: pointer;" value="{{ $expense_date }}" readonly/>
+						<input type="text" name="expense_date" id="expense_date" placeholder="报销日期" class="input-sm date-picker" style="background-color: white !important; cursor: pointer;" value="{{ $expense_date }}" readonly/>
 					</td>
 					<td class="align-right align-middle">单据编号：{{ $expense_num }}</td>
 				</tr>
