@@ -239,6 +239,24 @@
     }
 
     /**
+     * 发票长度补齐8位
+     *
+     * @param	string			$num
+     * @return	array
+     */
+    function formatInvoice($num){
+        $x = '';
+        $a = 8;
+        $strlen = strlen($num);
+        $strlen = 8 - $strlen;
+        for($i = 0; $i < $strlen; $i++){
+            $x .= 0;
+        }
+        $x .= $num;
+        return $x;
+    }
+
+    /**
      * 邮件发送
      *
      * @param	$string			$template
@@ -303,3 +321,5 @@
         }
         return $img_base64;         //返回图片的base64
     }
+
+    //

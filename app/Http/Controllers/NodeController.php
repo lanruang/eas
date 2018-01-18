@@ -35,7 +35,7 @@ class NodeController extends Common\CommonController
         //分页
         $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
         $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
-
+        
         //获取记录总数
         $total = nodeDb::where('pid', $pid)
                                 ->count();

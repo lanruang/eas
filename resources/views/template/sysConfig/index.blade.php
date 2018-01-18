@@ -50,7 +50,7 @@
 										<label class="col-sm-4">
 											<input type="text"  id="budget_subBudget_farm" name="budget_subBudget_farm" readonly="true" class="form-control" value="{{ $sysConfig['budget']['subBudgetText'] }}"/>
 										</label>
-										<input type="text"  id="budget_subBudget" name="budget_subBudget" readonly="true" class="form-control" value="{{ $sysConfig['budget']['subBudget'] }}"/>
+										<input type="hidden"  id="budget_subBudget" name="budget_subBudget" readonly="true" class="form-control" value="{{ $sysConfig['budget']['subBudget'] }}"/>
 										<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('budget_subBudget')">选择</button>
 										<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('budget_subBudget');">清除</button>
 									</div>

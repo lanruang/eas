@@ -10,7 +10,7 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
 	<li><a href="{{route('invoice.index')}}">发票列表</a></li>
-	<li>添加发票集</li>
+	<li>添加发票</li>
 @endsection()
 
 {{--页面内容--}}
@@ -19,50 +19,26 @@
 		<div class="col-xs-12">
 			<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
 			<!-- PAGE CONTENT BEGINS -->
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('invoice.createInvoice')}}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('invoice.createInvoiceChild')}}" >
 
 				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 发票集-起始号码 </label>
+					<label class="col-sm-3 control-label no-padding-right"> 发票集 </label>
+					<div class="col-sm-3 output">
+						<label>
+							{{ $invoice->invo_start_num }} — {{ $invoice->invo_end_num }}
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 发票号码 </label>
 					<div class="col-sm-2">
-						<input type="text" class="form-control" maxlength="8" name="invoice_start_num" id="invoice_start_num" placeholder="发票集-起始号码"/>
+						<input type="text" class="form-control" maxlength="8" name="invoice_num" id="invoice_start_num" placeholder="发票集-起始号码"/>
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 发票集-结束号码 </label>
-					<div class="col-sm-2">
-						<input type="text" class="form-control" maxlength="8" name="invoice_end_num" id="invoice_end_num" placeholder="发票集-结束号码"/>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 购买日期 </label>
-					<div class="col-sm-4">
-						<input type="text" name="invoice_buy_date" id="invoice_buy_date" placeholder="购买日期" class="input-sm date-picker" style="background-color: white !important; cursor: pointer;" value="" readonly/>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 发票种类 </label>
-					<div class="col-sm-3">
-						<select id="invoice_type" name="invoice_type">
-							<option value="">请选择</option>
-							@foreach ($select as $v)
-								@if ($v['ass_type'] == 'invoice_type')
-									<option value="{{ $v['ass_value'] }}">{{ $v['ass_text'] }}</option>
-								@endif
-							@endforeach
-						</select>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 备注 </label>
-					<div class="col-sm-3">
-						<input type="text" name="invoice_text" id="invoice_text" placeholder="备注" class="form-control"/>
-					</div>
-				</div>
 				{{csrf_field()}}
+				<input type="hidden" class="form-control" value="{{ $invoice->invo_id }}"  name="invoice_id" id="invoice_id"/>
 				<div class="clearfix">
 					<div class="col-md-offset-3 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">

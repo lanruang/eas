@@ -225,7 +225,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('listAudit', ['as' => 'reimburse.listAudit', 'uses' => 'ReimburseController@listAudit']);//查看审核进度
         Route::post('confirmPay', ['as' => 'reimburse.confirmPay', 'uses' => 'ReimburseController@confirmPay']);//确认付款
         Route::post('getBudgetSub', ['as' => 'reimburse.getBudgetSub', 'uses' => 'ReimburseController@getBudgetSub']);//获取预算科目
-        Route::post('getCheckAmount', ['as' => 'reimburse.getCheckAmount', 'uses' => 'ReimburseController@getCheckAmount']);//是否超出预算金额
+        Route::post('getChe qckAmount', ['as' => 'reimburse.getCheckAmount', 'uses' => 'ReimburseController@getCheckAmount']);//是否超出预算金额
     });
     //报销付款
     Route::group(['prefix' => 'reimbursePay'], function () {
@@ -238,8 +238,15 @@ Route::group(['middleware' => ['permission']], function () {
     /*-----------------------------发票管理-----------------------------*/
     Route::group(['prefix' => 'invoice'], function () {
         Route::get('index', ['as' => 'invoice.index', 'uses' => 'InvoiceController@index']);//发票列表
-        Route::get('addInvoice', ['as' => 'invoice.addInvoice', 'uses' => 'InvoiceController@addInvoice']);//添加发票视图
-        Route::post('createInvoice', ['as' => 'invoice.createInvoice', 'uses' => 'InvoiceController@createInvoice']);//添加发票
+        Route::post('getInvoice', ['as' => 'invoice.getInvoice', 'uses' => 'InvoiceController@getInvoice']);//获取发票列表
+        Route::get('addInvoice', ['as' => 'invoice.addInvoice', 'uses' => 'InvoiceController@addInvoice']);//添加发票集视图
+        Route::post('createInvoice', ['as' => 'invoice.createInvoice', 'uses' => 'InvoiceController@createInvoice']);//添加发票集
+        Route::post('delInvoice', ['as' => 'invoice.delInvoice', 'uses' => 'InvoiceController@delInvoice']);//删除发票
+        Route::get('listInvoice', ['as' => 'invoice.listInvoice', 'uses' => 'InvoiceController@listInvoice']);//删除发票
+        Route::post('getInvoiceDetails', ['as' => 'invoice.getInvoiceDetails', 'uses' => 'InvoiceController@getInvoiceDetails']);//获取发票明细列表
+        Route::post('delInvoiceDetails', ['as' => 'invoice.delInvoiceDetails', 'uses' => 'InvoiceController@delInvoiceDetails']);//删除发票明细
+        Route::get('addInvoiceChild', ['as' => 'invoice.addInvoiceChild', 'uses' => 'InvoiceController@addInvoiceChild']);//添加发票视图
+        Route::post('createInvoiceChild', ['as' => 'invoice.createInvoiceChild', 'uses' => 'InvoiceController@createInvoiceChild']);//添加发票
     });
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {

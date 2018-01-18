@@ -478,7 +478,7 @@ class ReimburseController extends Common\CommonController
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数错误',
+            'id.between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {
