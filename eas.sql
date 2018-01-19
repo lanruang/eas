@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-01-18 17:45:23
+Date: 2018-01-19 16:30:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -993,7 +993,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:50', '1', '0', '2017-08-17 10:19:20', '2018-01-09 17:28:50');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-18 14:46:24', '1', '0', '2016-05-25 05:56:33', '2018-01-18 14:46:24');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-19 11:07:58', '1', '0', '2016-05-25 05:56:33', '2018-01-19 11:07:58');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:29', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------
