@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-01-19 16:30:21
+Date: 2018-01-24 17:49:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -564,6 +564,7 @@ CREATE TABLE `node` (
 -- ----------------------------
 INSERT INTO `node` VALUES ('00E9B5673E1C36509A7683DA622C3391', '951E9717135DA00B8993489C67DBEE19', '系统组件-页面跳转', 'component.ctRedirectMsg', '0', 'fa fa-caret-right', '0', '0', '1', '0', '', '', '2017-08-04 14:45:44', '2018-01-09 10:18:31');
 INSERT INTO `node` VALUES ('00F7C5E21CB1879BB69806813E91CCFF', '951E9717135DA00B8993489C67DBEE19', '角色列表', 'role.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', null, null, '2016-08-31 15:22:26', '2016-11-25 08:03:06');
+INSERT INTO `node` VALUES ('0A83D4320E4A301CD216D48498B5FC72', '11B5194351A35AEA74301AF53875EFDE', '开具发票', 'invoOpen.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2018-01-23 15:15:26', '2018-01-23 15:15:26');
 INSERT INTO `node` VALUES ('0E29A50F91B020C52DFA529D745A590B', '00F7C5E21CB1879BB69806813E91CCFF', '添加角色列表', 'role.addRole', '2', '', '0', '1', '1', '0', null, null, null, null);
 INSERT INTO `node` VALUES ('1109421DF20C61265AA46FD9C45077A2', '2537185117D81CA1D2EBD0C07F986456', '供应商列表', 'supplier.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-08-14 15:13:18', '2017-08-14 15:13:18');
 INSERT INTO `node` VALUES ('11B5194351A35AEA74301AF53875EFDE', '0', '发票管理', '#', '10', 'fa fa-credit-card', '1', '1', '1', '0', '', '', '2018-01-10 11:19:48', '2018-01-10 11:21:29');
@@ -993,7 +994,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:50', '1', '0', '2017-08-17 10:19:20', '2018-01-09 17:28:50');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-19 11:07:58', '1', '0', '2016-05-25 05:56:33', '2018-01-19 11:07:58');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-24 14:28:22', '1', '0', '2016-05-25 05:56:33', '2018-01-24 14:28:22');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:29', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------

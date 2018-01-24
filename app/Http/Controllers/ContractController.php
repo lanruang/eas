@@ -31,7 +31,6 @@ class ContractController extends Common\CommonController
     //合同列表
     public function getContract(Request $request){
         //验证传输方式
-
         if(!$request->ajax())
         {
             echoAjaxJson('-1', '非法请求');

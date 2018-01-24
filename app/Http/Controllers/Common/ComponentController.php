@@ -12,6 +12,8 @@ use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
+use App\Http\Models\Contract\ContractModel AS ContractDb;
+use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -286,5 +288,43 @@ class ComponentController extends CommonController
         $data['status'] = 1;
         $data['data'] = $subPaySub;
         return ajaxJsonRes($data);
+    }
+    
+    //获取合同列表
+    public function ctGetContract(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取记录总数
+        $total = ContractDb::count();
+        //获取数据
+        $result = ContractDb::from('contract AS cont')
+            ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+            ->select('cont.cont_id AS id', 'cont.cont_type AS contract_type', 'cont.cont_num AS contract_num',
+                'cont.cont_name AS contract_name', 'cont.cont_start AS date_start', 'cont.cont_end AS date_end',
+                'cont.cont_sum_amount AS contract_amount', 'cont.cont_status AS status', 'sysAssType.ass_text AS contract_type',
+                'sysAssClass.ass_text AS contract_class')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
+    //获取合同详情列表
+    public function ctGetContDetails()
+    {
+        
     }
 }
