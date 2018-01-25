@@ -311,7 +311,7 @@ class ComponentController extends CommonController
                 'sysAssClass.ass_text AS contract_class')
             ->get()
             ->toArray();
-
+       
         //创建结果数据
         $data['recordsTotal'] = $total;//总记录数
         $data['recordsFiltered'] = $total;//条件过滤后记录数

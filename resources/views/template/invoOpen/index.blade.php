@@ -60,7 +60,7 @@
 				</div>
 			</div>
 			<p></p>
-			<table id="contractTable" class="table table-striped table-bordered table-hover">
+			<table id="1" class="table table-striped table-bordered table-hover">
 				<thead>
 					<tr>
 						<th class="center">合同编号</th>
@@ -138,7 +138,21 @@
 
 					<div class="widget-body">
 						<div class="widget-main padding-8">
-							<div id="treeSub" class="ztree"></div>
+							<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+							<button type="button" class="btn btn-white btn-sm btn-round" onclick="listContract();">查看期间</button>
+							<p></p>
+							<table id="contractTable" class="table table-striped table-bordered table-hover" style="white-space:nowrap;">
+								<thead>
+									<tr>
+										<th class="center">合同分组</th>
+										<th class="center">合同类型</th>
+										<th class="center">合同编号</th>
+										<th class="center">合同名称</th>
+										<th class="center">合同期间</th>
+										<th class="center">合同总金额</th>
+									</tr>
+								</thead>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -177,13 +191,37 @@
 @section('FooterJs')
 	<script type="text/javascript">
 		var html;
+		var contract_id = '';
 		$(function($) {
+
+		});
+
+		function selectOnClick(e){
+			$('#'+e).click();
+			switch (e){
+				case 'farmCustBtn':
+					initCustTable();
+					break;
+				case 'farmContBtn':
+					initContTable();
+					break;
+			}
+		}
+
+		function selectCustomer(e, name){
+			$('#customer_id').val(e);
+			$('#customerName').text(name);
+			$('#closeCustBtn').click();
+		}
+
+		function initCustTable(){
 			customerTable = $('#customerTable')
 					.DataTable({
 						"lengthChange": false,
 						"ordering": false,
 						"searching": false,
 						"serverSide": true,
+						"scrollX": true,
 						"ajax": {
 							"type": "post",
 							"async": false,
@@ -214,16 +252,66 @@
 							}
 						}]
 					});
-		});
-
-		function selectOnClick(e){
-			$('#'+e).click();
 		}
 
-		function selectCustomer(e, name){
-			$('#customer_id').val(e);
-			$('#customerName').text(name);
-			$('#closeCustBtn').click();
+		function initContTable(){
+			contractTable = $('#contractTable')
+					.DataTable({
+						"lengthChange": false,
+						"ordering": false,
+						"searching": false,
+						"serverSide": true,
+						"scrollX": true,
+						"ajax": {
+							"type": "post",
+							"async": false,
+							"dataType": "json",
+							"url": '{{route('component.ctGetContract')}}',
+							"data": {"_token": '{{csrf_token()}}'},
+							"dataSrc": function ( res ) {
+								if(res.status == true){
+									return res.data;
+								}else{
+									alertDialog(res.status, res.msg);
+								}
+							}
+						},
+						"columns": [
+							{ "data": "contract_class"},
+							{ "data": "contract_type"},
+							{ "data": "contract_num"},
+							{ "data": "contract_name"},
+							{ "data": "date_start", "class": "center", render: function(data, type, row) {
+								var html = row.date_start +  ' 一 ' + row.date_end;
+								return html;
+							}},
+							{ "data": "contract_amount", render: function(data) {
+								var html = '<div class="align-right">'+ toDecimal(data) +'</div>';
+								return html;
+							}}
+						],
+						"createdRow": function( row, data ) {
+							$(row).attr( 'id', data.id );
+						}
+					});
+			$('#contractTable tbody').on( 'click', 'tr', function () {
+				if ( $(this).hasClass('selected') ) {
+					$(this).removeClass('selected');
+					contract_id = '';
+				}
+				else {
+					contractTable.$('tr.selected').removeClass('selected');
+					$(this).addClass('selected');
+					contract_id = this.id;
+				}
+			});
+		}
+
+		function listContract(){
+			if(contract_id == ''){
+				alertDialog('-1', '请选择合同！');
+				return false;
+			}
 		}
 	</script>
 @endsection()
