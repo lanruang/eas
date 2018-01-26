@@ -14,6 +14,8 @@ use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use App\Http\Models\Subjects\SubjectsModel AS SubjectsDb;
 use App\Http\Models\Contract\ContractModel AS ContractDb;
 use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
+use App\Http\Models\Invoice\InvoiceModel AS InvoiceDb;
+use App\Http\Models\Invoice\InvoiceDetailsModel AS InvoiceDetailsDb;
 use Illuminate\Support\Facades\Input;
 use Validator;
 
@@ -323,8 +325,133 @@ class ComponentController extends CommonController
     }
 
     //获取合同详情列表
-    public function ctGetContDetails()
+    public function ctGetContDetails(Request $request)
     {
-        
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        //验证表单
+        $input = Input::all();
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '请选择合同',
+            'id.between' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        $result = ContDetailsDb::where('cont_id', $input['id'])
+            ->select('details_id AS id', 'cont_details_date AS date', 'cont_amount AS amount')
+            ->orderBy('cont_details_date', 'asc')
+            ->get()
+            ->toArray();
+
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+    
+    //获取发票集列表
+    public function ctGetInvoice(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+
+        //分页
+        $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
+        $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
+
+        //获取记录总数
+        $total = InvoiceDb::from('invoice AS i')
+            ->leftjoin('sys_assembly AS sysAss', 'sysAss.ass_value','=','i.invo_type')
+            ->count();
+
+        //获取数据
+        $result = InvoiceDb::from('invoice AS i')
+            ->leftjoin('sys_assembly AS sysAss', 'sysAss.ass_value','=','i.invo_type')
+            ->select('i.invo_id AS id', 'i.invo_start_num AS invoice_start_num',
+                'i.invo_end_num AS invoice_end_num', 'i.invo_buy_date AS invoice_buy_date',
+                'sysAss.ass_text AS invoice_type', 'i.invo_text AS invoice_text')
+            ->skip($skip)
+            ->take($take)
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+    
+    //获取发票详情列表
+    public function ctGetInvoDetails(Request $request)
+    {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'id' => 'required|between:32,32',
+        ];
+        $message = [
+            'id.required' => '参数不存在',
+            'id.between' => '参数错误',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if($validator->fails()){
+            echoAjaxJson('-1', $validator->errors()->first());
+        }
+
+        //分页
+        $take = !empty($input['length']) ? intval($input['length']) : 10;//数据长度
+        $skip = !empty($input['start']) ? intval($input['start']) : 0;//从多少开始
+
+        //获取记录总数
+        $total = InvoiceDetailsDb::where('invo_id', $input['id'])
+            ->count();
+
+        //获取数据
+        $result = InvoiceDetailsDb::where('invo_id', $input['id'])
+            ->select('invo_details_id AS id', 'invo_num AS invoice_num', 'invo_status AS invoice_status',
+                'invo_write_user AS invoice_write_user', 'invo_write_date AS invoice_write_date')
+            ->orderBy('invo_num', 'asc')
+            ->skip($skip)
+            ->take($take)
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 }

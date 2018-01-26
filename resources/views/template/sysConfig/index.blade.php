@@ -110,7 +110,7 @@
 										<label class="col-sm-3 control-label no-padding-right"> 附件大小 </label>
 										<div class="col-sm-2">
 											<input type="text" value="{{ $sysConfig['contract']['uploadSize'] }}" name="uploadSize" id="uploadSize" placeholder="0" class="col-sm-5"/>
-											<div class="bigger-120 output">　兆</div>
+											<div class="bigger-120 output">　MB</div>
 										</div>
 									</div>
 
@@ -169,7 +169,7 @@
 										<label class="col-sm-3 control-label no-padding-right"> 附件大小 </label>
 										<div class="col-sm-2">
 											<input type="text" value="{{ $sysConfig['reimburse']['uploadSize'] }}" name="uploadSize" id="uploadSize" placeholder="0" class="col-sm-5"/>
-											<div class="bigger-120 output">　兆</div>
+											<div class="bigger-120 output">　MB</div>
 										</div>
 									</div>
 

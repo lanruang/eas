@@ -173,6 +173,7 @@
 						<span class="blue bolder">{{config('sysInfo.sysName')}}</span>
 						{{config('sysInfo.copyright')}}
 					</span>
+					<span class="bigger-100">{{config('sysInfo.version')}}</span>
 			</div>
 		</div>
 	</div>

@@ -248,10 +248,13 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('addInvoiceChild', ['as' => 'invoice.addInvoiceChild', 'uses' => 'InvoiceController@addInvoiceChild']);//添加发票视图
         Route::post('createInvoiceChild', ['as' => 'invoice.createInvoiceChild', 'uses' => 'InvoiceController@createInvoiceChild']);//添加发票
     });
+
     /*-----------------------------开具发票-----------------------------*/
     Route::group(['prefix' => 'invoOpen'], function () {
         Route::get('index', ['as' => 'invoOpen.index', 'uses' => 'InvoOpenController@index']);//发票列表
+        Route::post('createInvoOpen', ['as' => 'invoOpen.createInvoOpen', 'uses' => 'InvoOpenController@createInvoOpen']);//开具发票处理
     });
+
     /*-----------------------------系统组件-----------------------------*/
     Route::group(['prefix' => 'component'], function () {
         Route::get('ctRedirectMsg', ['as' => 'component.ctRedirectMsg', 'uses' => 'Common\ComponentController@ctRedirectMsg']);//中间层页面跳转
@@ -266,5 +269,7 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('ajaxGetPaySub', ['as' => 'component.ajaxGetPaySub', 'uses' => 'Common\ComponentController@ajaxGetPaySub']);//获取支付方式科目
         Route::post('ctGetContract', ['as' => 'component.ctGetContract', 'uses' => 'Common\ComponentController@ctGetContract']);//获取合同列表
         Route::post('ctGetContDetails', ['as' => 'component.ctGetContDetails', 'uses' => 'Common\ComponentController@ctGetContDetails']);//获取合同详情列表
+        Route::post('ctGetInvoice', ['as' => 'component.ctGetInvoice', 'uses' => 'Common\ComponentController@ctGetInvoice']);//获取发票集列表
+        Route::post('ctGetInvoDetails', ['as' => 'component.ctGetInvoDetails', 'uses' => 'Common\ComponentController@ctGetInvoDetails']);//获取发票详情列表
     });
 });

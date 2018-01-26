@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-01-24 17:49:48
+Date: 2018-01-26 17:39:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -299,7 +299,8 @@ CREATE TABLE `contract_details` (
   `cont_id` char(32) NOT NULL,
   `cont_details_date` varchar(10) DEFAULT NULL,
   `cont_amount` decimal(10,0) NOT NULL,
-  `cont_status` int(4) DEFAULT NULL,
+  `cont_status` char(4) NOT NULL,
+  `cont_handle_status` char(3) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '000' COMMENT '//合同核销状态-000/应收应付-010/已开票-011/已核销',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`details_id`)
@@ -308,13 +309,13 @@ CREATE TABLE `contract_details` (
 -- ----------------------------
 -- Records of contract_details
 -- ----------------------------
-INSERT INTO `contract_details` VALUES ('0102FEE604E7E00ECA15B3838CD68083', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-26', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
-INSERT INTO `contract_details` VALUES ('45B2BD7648389F016F7B326AB89742C4', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-22', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
-INSERT INTO `contract_details` VALUES ('4CED584D552E02858579DD50FC44062D', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-27', '3000', '302', '2018-01-04 15:51:15', '2018-01-04 15:51:15');
-INSERT INTO `contract_details` VALUES ('511F36CCFAD7ACBE3B9B3AF828E462CB', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-21', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
-INSERT INTO `contract_details` VALUES ('59254638404A7AAEC7A0EBAC69504E0D', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-23', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
-INSERT INTO `contract_details` VALUES ('6BD2BE12E67322690DAE7E18405EC429', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-20', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
-INSERT INTO `contract_details` VALUES ('E6A068710B927164B1DB102692B98D4C', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-25', '1000', '302', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('0102FEE604E7E00ECA15B3838CD68083', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-26', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('45B2BD7648389F016F7B326AB89742C4', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-22', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('4CED584D552E02858579DD50FC44062D', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-27', '3000', '302', '000', '2018-01-04 15:51:15', '2018-01-04 15:51:15');
+INSERT INTO `contract_details` VALUES ('511F36CCFAD7ACBE3B9B3AF828E462CB', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-21', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('59254638404A7AAEC7A0EBAC69504E0D', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-23', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('6BD2BE12E67322690DAE7E18405EC429', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-20', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
+INSERT INTO `contract_details` VALUES ('E6A068710B927164B1DB102692B98D4C', '49A178C504160CEB1CAB22B316BFDCEA', '2017-11-25', '1000', '302', '000', '2017-11-30 15:28:38', '2017-11-30 15:28:38');
 
 -- ----------------------------
 -- Table structure for `contract_enclosure`
@@ -536,6 +537,28 @@ INSERT INTO `invoice_details` VALUES ('F16B06B95147D21698F6DF88524FBE13', '2154A
 INSERT INTO `invoice_details` VALUES ('F571342A8EA41F04D4E4A8FA63D07CD6', '2154A97793A2F557CC55803C60521FCF', '00000337', '400', null, null, '2018-01-16 17:00:07', '2018-01-16 17:00:07');
 INSERT INTO `invoice_details` VALUES ('FF6E6BCA5DA3740F583823661A72F7DD', '2154A97793A2F557CC55803C60521FCF', '00000347', '400', null, null, '2018-01-16 17:00:07', '2018-01-16 17:00:07');
 INSERT INTO `invoice_details` VALUES ('FFADB313DB39A280E271B73A346119F0', '2154A97793A2F557CC55803C60521FCF', '00000333', '400', null, null, '2018-01-16 17:00:07', '2018-01-16 17:00:07');
+
+-- ----------------------------
+-- Table structure for `invoice_main`
+-- ----------------------------
+DROP TABLE IF EXISTS `invoice_main`;
+CREATE TABLE `invoice_main` (
+  `invo_main_id` char(32) COLLATE utf8_bin NOT NULL COMMENT '/*开票数据id*/',
+  `invo_num` char(8) COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '/*发票号码*/',
+  `invo_main_type` varchar(10) COLLATE utf8_bin NOT NULL COMMENT '/*开票业务类型*/-收入-支出',
+  `invo_amount` decimal(10,2) NOT NULL COMMENT '/*开票金额*/',
+  `invo_text` varchar(255) COLLATE utf8_bin DEFAULT NULL COMMENT '/*开票备注*/',
+  `invo_parties` char(32) COLLATE utf8_bin DEFAULT NULL COMMENT '/*合同方*/',
+  `invo_tax_num` varchar(20) COLLATE utf8_bin DEFAULT NULL COMMENT '/*税号*/',
+  `created_user` char(32) COLLATE utf8_bin NOT NULL COMMENT '/*创建用户*/',
+  `created_at` timestamp NULL DEFAULT NULL COMMENT '/*创建时间*/',
+  `updated_at` timestamp NULL DEFAULT NULL COMMENT '/*更新时间*/',
+  PRIMARY KEY (`invo_main_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- ----------------------------
+-- Records of invoice_main
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `node`
@@ -994,7 +1017,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:50', '1', '0', '2017-08-17 10:19:20', '2018-01-09 17:28:50');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-24 14:28:22', '1', '0', '2016-05-25 05:56:33', '2018-01-24 14:28:22');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-26 10:01:30', '1', '0', '2016-05-25 05:56:33', '2018-01-26 10:01:30');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:29', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------

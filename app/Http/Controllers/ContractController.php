@@ -152,6 +152,7 @@ class ContractController extends Common\CommonController
             $contDetails[$k]['cont_details_date'] = $a[0];
             $contDetails[$k]['cont_amount'] = $a[1];
             $contDetails[$k]['cont_status'] = '302';
+            $contDetails[$k]['cont_handle_status'] = '000';
             $contDetails[$k]['created_at'] = date('Y-m-d H:i:s', time());
             $contDetails[$k]['updated_at'] = date('Y-m-d H:i:s', time());
         }
@@ -374,6 +375,7 @@ class ContractController extends Common\CommonController
                 $contDetails[$k]['cont_details_date'] = $a[0];
                 $contDetails[$k]['cont_amount'] = $a[1];
                 $contDetails[$k]['cont_status'] = '302';
+                $contDetails[$k]['cont_handle_status'] = '000';
                 $contDetails[$k]['created_at'] = date('Y-m-d H:i:s', time());
                 $contDetails[$k]['updated_at'] = date('Y-m-d H:i:s', time());
             }
