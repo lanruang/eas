@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-01-26 17:39:58
+Date: 2018-01-29 17:57:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -547,9 +547,10 @@ CREATE TABLE `invoice_main` (
   `invo_num` char(8) COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '/*发票号码*/',
   `invo_main_type` varchar(10) COLLATE utf8_bin NOT NULL COMMENT '/*开票业务类型*/-收入-支出',
   `invo_amount` decimal(10,2) NOT NULL COMMENT '/*开票金额*/',
-  `invo_text` varchar(255) COLLATE utf8_bin DEFAULT NULL COMMENT '/*开票备注*/',
+  `invo_text` text CHARACTER SET utf8 COMMENT '/*开票备注*/',
   `invo_parties` char(32) COLLATE utf8_bin DEFAULT NULL COMMENT '/*合同方*/',
   `invo_tax_num` varchar(20) COLLATE utf8_bin DEFAULT NULL COMMENT '/*税号*/',
+  `invo_cont_id` char(32) COLLATE utf8_bin DEFAULT NULL COMMENT '/*合同明细id*/',
   `created_user` char(32) COLLATE utf8_bin NOT NULL COMMENT '/*创建用户*/',
   `created_at` timestamp NULL DEFAULT NULL COMMENT '/*创建时间*/',
   `updated_at` timestamp NULL DEFAULT NULL COMMENT '/*更新时间*/',
@@ -1017,7 +1018,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:50', '1', '0', '2017-08-17 10:19:20', '2018-01-09 17:28:50');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-26 10:01:30', '1', '0', '2016-05-25 05:56:33', '2018-01-26 10:01:30');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-01-29 14:53:46', '1', '0', '2016-05-25 05:56:33', '2018-01-29 14:53:46');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:29', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------

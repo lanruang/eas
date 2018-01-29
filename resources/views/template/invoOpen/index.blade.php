@@ -80,16 +80,35 @@
 				<div class="form-group">
 					<input type="hidden" name="invoInfo_id" id="invoInfo_id" value="">
 				</div>
-				<table id="invoListTable" class="table table-striped table-bordered table-hover">
-					<thead>
-						<tr>
-							<th class="center">发票号</th>
-							<th class="center">发票种类</th>
-							<th class="center">备注</th>
-							<th class="center">操作</th>
-						</tr>
-					</thead>
-				</table>
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 发票号 </label>
+					<div class="col-sm-5 output">
+						<label id="invoiceNum"></label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 发票种类 </label>
+					<div class="col-sm-5 output">
+						<label id="invoiceType"></label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 开票金额 </label>
+					<div class="col-sm-5">
+						<label id="invoiceType">
+							<input type="text" value="0.00" name="invoiceAmount" id="invoiceAmount" placeholder="合计金额" class="col-sm-8 text-right" />
+						</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label no-padding-right"> 发票备注 </label>
+					<div class="col-sm-5 output">
+						<label id="invoiceText"></label>
+					</div>
+				</div>
 
 				<h4 class="header smaller lighter"></h4>
 				{{csrf_field()}}
@@ -136,7 +155,7 @@
 					<div class="widget-header">
 						<h4 class="widget-title lighter smaller">选择合同</h4>
 					<span class="widget-toolbar">
-						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+						<button id="closeContBtn" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
 					</span>
 					</div>
 
@@ -192,7 +211,7 @@
 					<div class="widget-header">
 						<h4 class="widget-title lighter smaller">选择发票</h4>
 					<span class="widget-toolbar">
-						<button id="close_tree" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+						<button id="closeInvoBtn" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
 					</span>
 					</div>
 
@@ -514,6 +533,8 @@
 				html
 			] ).draw( false );
 			html = '';
+			invoiceAmount = toDecimal(parseFloat($('#invoiceAmount').val()) + parseFloat(a));
+			$('#invoiceAmount').val(invoiceAmount);
 		}
 		function delCont(e){
 			var contInfoId = $('#contInfo_id').val();
@@ -652,41 +673,15 @@
 		}
 		function selectInvo(e, n){
 			var invoInfoId = $('#invoInfo_id').val();
-			if(invoInfoId == ''){
-				$('#invoInfo_id').val(e);
-			}else{
-				invoInfoId = invoInfoId.split(',');
-				for(i in invoInfoId){
-					if(invoInfoId[i] == e){
-						alertDialog('-1', '请不要重复选择');
-						return false;
-					}
-				}
-				invoInfoId.push(e);
-				invoInfoId.join(',');
-				$('#invoInfo_id').val(invoInfoId);
+			if(invoInfoId == e){
+				alertDialog('-1', '请不要重复选择');
+				return false;
 			}
-			html = '<div class="center"><div class="action-buttons">' +
-					'<a class="red" href="#" onclick="delInvo(\''+ e +'\')">' +
-					'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
-					'</a>' +
-					'</div></div>';
-			invoListTable.row.add( [
-				e,
-				n,
-				invoice.type,
-				invoice.text,
-				html
-			] ).draw( false );
-			html = '';
-		}
-		function delInvo(e){
-			var invoInfoId = $('#invoInfo_id').val();
-			invoInfoId = invoInfoId.split(',');
-			invoInfoId.splice($.inArray(e,invoInfoId),1);
-			invoInfoId.join(',');
-			$('#invoInfo_id').val(invoInfoId);
-			invoListTable.row('#'+e).remove().draw( false );
+			$('#invoInfo_id').val(e);
+			$('#invoiceNum').text(n);
+			$('#invoiceType').text(invoice.type);
+			$('#invoiceText').text(invoice.text);
+			$('#closeInvoBtn').click();
 		}
 		function goInvo(){
 			$('#listInvoiceInfo').hide();

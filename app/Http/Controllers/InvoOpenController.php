@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -74,8 +75,8 @@ class InvoOpenController extends Common\CommonController
             'customer_id' => 'required|between:32,32',
         ];
         $message = [
-            'contInfoId.required' => '请选择合同',
-            'invoInfoId.required' => '请选择发票',
+            'contInfo_id.required' => '请选择合同',
+            'invoInfo_id.required' => '请选择发票',
             'customer_id.required' => '请选择客户',
             'customer_id.between' => '客户参数错误',
         ];
@@ -87,10 +88,49 @@ class InvoOpenController extends Common\CommonController
         //客户是否存在
         $customer = CustomerDb::where('cust_id', $input['customer_id'])
             ->first();
-        p($customer);
+        if(!$customer){
+            return redirectPageMsg('-1', '客户不存在', route('invoOpen.index'));
+        }
         //查询发票号码是否存在
+        $invoice = InvoiceDetailsDb::where('invo_details_id', $input['invoInfo_id'])
+            ->where('invo_status', '400')
+            ->first();
+        if(!$invoice){
+            return redirectPageMsg('-1', '发票不存在，或已使用', route('invoOpen.index'));
+        }
         //查询合同详情是否存在
-        p($input);
+        $details_id = explode(',', $input['contInfo_id']);
+        $contract = ContDetailsDb::whereIn('details_id', $details_id)
+            ->where('cont_status', '302')
+            ->get()
+            ->toArray();
+        if(count($contract) != count($details_id)){
+            return redirectPageMsg('-1', '可开票合同期间数量不匹配', route('invoOpen.index'));
+        }
+        //格式化合同数据
+        foreach($contract as $k => $v){
+            $cont[$v['details_id']] = $v['cont_amount'];
+        }
+
+        //创建数据
+        foreach($details_id as $k => $v){
+            $data[$k]['invo_main_id'] = getId();
+            $data[$k]['invo_num'] = $invoice->invo_num;
+            $data[$k]['invo_main_type'] = 'contIncome';
+            if(array_key_exists($v, $cont)){
+                $data[$k]['invo_amount'] = $cont[$v];
+            }else{
+                return redirectPageMsg('-1', '系统错误，请刷新后重试', route('invoOpen.index'));
+            }
+            $data[$k]['invo_text'] = $invoice['invo_text'];
+            $data[$k]['invo_parties'] = $customer['cust_id'];
+            $data[$k]['invo_tax_num'] = '';
+            $data[$k]['invo_cont_id'] = $k;
+            $data[$k]['created_user'] = date('Y-m-d H:i:s', time());
+            $data[$k]['updated_at'] = date('Y-m-d H:i:s', time());
+        }
+
+        p($data);
 
     }
 }
