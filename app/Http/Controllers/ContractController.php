@@ -800,8 +800,11 @@ class ContractController extends Common\CommonController
                 $auditInfoDb->status = '1000';
                 $auditInfoDb->save();
 
-                //更新报销单据状态
+                //更新合同状态
                 ContractDb::where('cont_id', $id)
+                    ->update(array('cont_status'=>1009));
+                //更新合同状态
+                ContDetailsDb::where('cont_id', $id)
                     ->update(array('cont_status'=>1009));
                 return true;
             });

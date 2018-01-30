@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
+use App\Http\Models\Contract\ContractMainModel AS ContMainDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -13,6 +14,7 @@ use Validator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Models\Invoice\InvoiceModel AS InvoiceDb;
 use App\Http\Models\Invoice\InvoiceDetailsModel AS InvoiceDetailsDb;
+use App\Http\Models\Invoice\InvoiceMainModel AS InvoMainDb;
 
 class InvoOpenController extends Common\CommonController
 {
@@ -101,36 +103,74 @@ class InvoOpenController extends Common\CommonController
         //查询合同详情是否存在
         $details_id = explode(',', $input['contInfo_id']);
         $contract = ContDetailsDb::whereIn('details_id', $details_id)
-            ->where('cont_status', '302')
+            ->where('cont_status', '1009')
             ->get()
             ->toArray();
+        if(!$contract){
+            return redirectPageMsg('-1', '合同期间不存在', route('invoOpen.index'));
+        }
         if(count($contract) != count($details_id)){
             return redirectPageMsg('-1', '可开票合同期间数量不匹配', route('invoOpen.index'));
         }
-        //格式化合同数据
+        //获取合同信息
+        $cont = ContDetailsDb::where('cont_id', $contract[0]['cont_id'])
+            ->first();
+        if(!$cont){
+            return redirectPageMsg('-1', '合同信息获取失败', route('invoOpen.index'));
+        }
+
+        //创建开票数据
         foreach($contract as $k => $v){
-            $cont[$v['details_id']] = $v['cont_amount'];
+            $data['dataInvo'][$k]['invo_main_id'] = getId();
+            $data['dataInvo'][$k]['invo_num'] = $invoice->invo_num;
+            $data['dataInvo'][$k]['invo_main_type'] = 'contIncome';
+            $data['dataInvo'][$k]['invo_amount'] = $v['cont_amount'];
+            $data['dataInvo'][$k]['invo_text'] = $invoice['invo_text'];
+            $data['dataInvo'][$k]['invo_parties'] = $customer['cust_id'];
+            $data['dataInvo'][$k]['invo_tax_num'] = '';
+            $data['dataInvo'][$k]['invo_cont_id'] = $v['details_id'];
+            $data['dataInvo'][$k]['created_at'] = date('Y-m-d H:i:s', time());
+            $data['dataInvo'][$k]['updated_at'] = date('Y-m-d H:i:s', time());
+            //创建合同核销数据
+            $data['dataContMain'][$k]['cont_main_id'] = getId();
+            $data['dataContMain'][$k]['cont_id'] = $v['cont_id'];
+            $data['dataContMain'][$k]['details_id'] = $v['details_id'];
+            $data['dataContMain'][$k]['cont_amount'] = $v['cont_amount'];
+            $data['dataContMain'][$k]['budget_id'] = $cont['budget_id'];
+            $data['dataContMain'][$k]['subject_id_debit'] = '';
+            $data['dataContMain'][$k]['subject_id_credit'] = '';
+            $data['dataContMain'][$k]['created_user'] = session('userInfo.user_id');
+            $data['dataContMain'][$k]['created_at'] = date('Y-m-d H:i:s', time());
+            $data['dataContMain'][$k]['updated_at'] = date('Y-m-d H:i:s', time());
         }
 
-        //创建数据
-        foreach($details_id as $k => $v){
-            $data[$k]['invo_main_id'] = getId();
-            $data[$k]['invo_num'] = $invoice->invo_num;
-            $data[$k]['invo_main_type'] = 'contIncome';
-            if(array_key_exists($v, $cont)){
-                $data[$k]['invo_amount'] = $cont[$v];
-            }else{
-                return redirectPageMsg('-1', '系统错误，请刷新后重试', route('invoOpen.index'));
-            }
-            $data[$k]['invo_text'] = $invoice['invo_text'];
-            $data[$k]['invo_parties'] = $customer['cust_id'];
-            $data[$k]['invo_tax_num'] = '';
-            $data[$k]['invo_cont_id'] = $k;
-            $data[$k]['created_user'] = date('Y-m-d H:i:s', time());
-            $data[$k]['updated_at'] = date('Y-m-d H:i:s', time());
-        }
+        //创建合同明细更新数据
+        $data['dataCont']['cont_handle_status'] = 110;
+        //创建发票更新数据
+        $data['dataInvoice']['invo_write_user'] = session('userInfo.user_id');
+        $data['dataInvoice']['invo_write_date'] = date('Y-m-d H:i:s', time());
+        $data['dataInvoice']['invo_status'] = '401';
+        //input数据
+        $data['info']['invo_id'] = $input['invoInfo_id'];
+        $data['info']['cont_details_id'] = $details_id;
 
-        p($data);
+        //开票事务处理
+        $result = DB::transaction(function () use($data) {
+            //添加开票数据
+            InvoMainDb::insert($data['dataInvo']);
+            //更新发票
+            InvoiceDetailsDb::where('invo_details_id', $data['info']['invo_id'])
+                ->update($data['dataInvoice']);
+            //更新合同明细
+            ContDetailsDb::whereIn('details_id', $data['info']['cont_details_id'])
+                ->update($data['dataCont']);
+            //创建合同核销数据
+            ContMainDb::insert($data['dataContMain']);
+
+
+            return true;
+        });
+        p($result);
 
     }
 }

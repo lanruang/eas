@@ -279,9 +279,11 @@ class InvoiceController extends Common\CommonController
             ->count();
 
         //获取数据
-        $result = InvoiceDetailsDb::where('invo_id', $input['id'])
-            ->select('invo_details_id AS id', 'invo_num AS invoice_num', 'invo_status AS invoice_status',
-                'invo_write_user AS invoice_write_user', 'invo_write_date AS invoice_write_date')
+        $result = InvoiceDetailsDb::from('invoice_details AS i')
+            ->leftjoin('users AS u', 'u.user_id','=','i.invo_write_user')
+            ->select('i.invo_details_id AS id', 'i.invo_num AS invoice_num', 'i.invo_status AS invoice_status',
+                'u.user_name AS invoice_write_user', 'i.invo_write_date AS invoice_write_date')
+            ->where('i.invo_id', $input['id'])
             ->orderBy('invo_num', 'asc')
             ->skip($skip)
             ->take($take)

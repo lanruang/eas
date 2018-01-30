@@ -96,10 +96,8 @@
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 开票金额 </label>
-					<div class="col-sm-5">
-						<label id="invoiceType">
-							<input type="text" value="0.00" name="invoiceAmount" id="invoiceAmount" placeholder="合计金额" class="col-sm-8 text-right" />
-						</label>
+					<div class="col-sm-5 output">
+						<label id="invoiceAmount">0.00</label>
 					</div>
 				</div>
 
@@ -284,6 +282,7 @@
 		var customerTable = '';
 		var invoiceTable = '';
 		var invoInfoTable = '';
+        var invoiceAmount = 0;
 		var contListTable;
 		var invoListTable;
 		$(function($) {
@@ -520,7 +519,7 @@
 				$('#contInfo_id').val(contInfoId);
 			}
 			html = '<div class="center"><div class="action-buttons">' +
-						'<a class="red" href="#" onclick="delCont(\''+ e +'\')">' +
+						'<a class="red" href="#" onclick="delCont(\''+ e +'\',\''+ a +'\')">' +
 							'<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
 						'</a>' +
 					'</div></div>';
@@ -533,16 +532,18 @@
 				html
 			] ).draw( false );
 			html = '';
-			invoiceAmount = toDecimal(parseFloat($('#invoiceAmount').val()) + parseFloat(a));
-			$('#invoiceAmount').val(invoiceAmount);
+			invoiceAmount = toDecimal(parseFloat(invoiceAmount) + parseFloat(a));
+			$('#invoiceAmount').html(invoiceAmount);
 		}
-		function delCont(e){
+		function delCont(e, a){
 			var contInfoId = $('#contInfo_id').val();
 			contInfoId = contInfoId.split(',');
 			contInfoId.splice($.inArray(e,contInfoId),1);
 			contInfoId.join(',');
 			$('#contInfo_id').val(contInfoId);
 			contListTable.row('#'+e).remove().draw( false );
+            invoiceAmount = toDecimal(parseFloat(invoiceAmount) - parseFloat(a));
+            $('#invoiceAmount').html(invoiceAmount);
 		}
 		function goCont(){
 			$('#listContractInfo').hide();

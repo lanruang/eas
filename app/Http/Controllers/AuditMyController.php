@@ -532,6 +532,10 @@ class AuditMyController extends Common\CommonController
         ContractDb::where('cont_id', $id)
             ->where('cont_status', '1009')
             ->update($data);
+        //更新单据状态
+        ContDetailsDb::where('cont_id', $id)
+            ->where('cont_status', '1009')
+            ->update($data);
         //获取单据信息
         $contract = ContractDb::where('cont_id', $id)
             ->select('cont_num', 'created_user', 'cont_status')

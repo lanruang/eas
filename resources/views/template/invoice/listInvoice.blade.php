@@ -130,6 +130,12 @@
                                             '<i class="ace-icon fa fa-trash-o bigger-130"></i>' +
                                             '</a></div>';
                                 }
+                                if(row.invoice_status == '401'){
+                                    html = '<div class="action-buttons">' +
+                                            '<a class="greed" href="#" onclick="listInvoOpen(\'' + row.id + '\')">' +
+                                            '查看详情' +
+                                            '</a></div>';
+                                }
                                 return html;
                             }
                         }]
@@ -172,6 +178,10 @@
                     }
                 }
             });
+        }
+
+        function listInvoOpen(){
+            alert('查看开票信息')
         }
     </script>
 @endsection()
