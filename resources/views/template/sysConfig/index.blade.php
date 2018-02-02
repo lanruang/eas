@@ -108,9 +108,224 @@
 
 									<div class="form-group">
 										<label class="col-sm-3 control-label no-padding-right"> 附件大小 </label>
-										<div class="col-sm-2">
+										<div class="col-sm-8">
 											<input type="text" value="{{ $sysConfig['contract']['uploadSize'] }}" name="uploadSize" id="uploadSize" placeholder="0" class="col-sm-5"/>
 											<div class="bigger-120 output">　MB</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"> 合同核销流程 </label>
+										<div class="col-sm-8">
+											<div id="accordion" class="accordion-style1 panel-group">
+												<div class="panel panel-default">
+													<div class="panel-heading">
+														<h4 class="panel-title">
+															<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+																<i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+																收入合同
+															</a>
+														</h4>
+													</div>
+
+													<div class="panel-collapse collapse" id="collapseOne">
+														<div class="panel-body">
+															<h4 class="header smaller lighter clearfix">
+																收入合同核销步奏一—生成应收款
+															</h4>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 应收款生成-借方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 应收款生成-贷方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+
+															<h4 class="header smaller lighter clearfix">
+																收入合同核销步奏二—合同开票
+															</h4>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 合同开票-借方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 合同开票-贷方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+
+															<h4 class="header smaller lighter clearfix">
+																收入合同核销步奏三—确认收款
+															</h4>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 确认收款-借方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 确认收款-贷方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+
+															<h4 class="header smaller lighter clearfix">
+																收入合同核销步奏四—自动结转
+															</h4>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 现金/银行-借方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+															<div class="form-group">
+																<label class="col-sm-3 control-label no-padding-right"> 主营收入-贷方 </label>
+																<label class="col-sm-4">
+																	<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																</label>
+																<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="panel panel-default">
+													<div class="panel-heading">
+														<h4 class="panel-title">
+															<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+																<i class="ace-icon fa fa-angle-right bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+																付款合同
+															</a>
+														</h4>
+													</div>
+
+													<div class="panel-collapse collapse" id="collapseTwo">
+														<div class="panel-body">
+															<div class="panel-body">
+																<h4 class="header smaller lighter clearfix">
+																	付款合同核销步奏一—生成应付款
+																</h4>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 应付款生成-借方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 应付款生成-贷方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+
+																<h4 class="header smaller lighter clearfix">
+																	付款合同核销步奏二—合同收票
+																</h4>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 合同收票-借方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 合同收票-贷方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+
+																<h4 class="header smaller lighter clearfix">
+																	付款合同核销步奏三—确认付款
+																</h4>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 确认付款-借方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 确认付款-贷方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+
+																<h4 class="header smaller lighter clearfix">
+																	付款合同核销步奏四—自动结转
+																</h4>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 现金/银行-借方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+																<div class="form-group">
+																	<label class="col-sm-3 control-label no-padding-right"> 主营应付-贷方 </label>
+																	<label class="col-sm-4">
+																		<input type="text"  id="contract_subContract_farm" name="contract_subContract_farm" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContractText'] }}"/>
+																	</label>
+																	<input type="hidden"  id="contract_subContract" name="contract_subContract" readonly="true" class="form-control" value="{{ $sysConfig['contract']['subContract'] }}"/>
+																	<button type="button" href="#modal-tree" data-toggle="modal" class="btn btn-white btn-sm btn-primary" onclick="setTreeId('contract_subContract')">选择</button>
+																	<button type="button" class="btn btn-white btn-sm btn-danger" onclick="delTree('contract_subContract');">清除</button>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
 										</div>
 									</div>
 
