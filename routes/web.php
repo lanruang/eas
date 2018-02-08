@@ -208,6 +208,10 @@ Route::group(['middleware' => ['permission']], function () {
         Route::get('listReimburse', ['as' => 'contract.listReimburse', 'uses' => 'ContractController@listReimburse']);//查看单据
         Route::post('listAudit', ['as' => 'contract.listAudit', 'uses' => 'ContractController@listAudit']);//查看审核进度
     });
+    //合同结算
+    Route::group(['prefix' => 'contSettle'], function () {
+        Route::get('index', ['as' => 'contSettle.index', 'uses' => 'ContSettleController@index']);//合同
+    });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销
     Route::group(['prefix' => 'reimburse'], function () {

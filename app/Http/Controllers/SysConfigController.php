@@ -32,10 +32,12 @@ class SysConfigController extends Common\CommonController
         if(!$sysConfig){
             return redirectPageMsg('-1', "获取系统配置失败，请联系管理员！", route('main.index'));
         }
+
         foreach($sysConfig as $k => $v){
             $data['sysConfig'][$v['sys_class']][$v['sys_type']] = $v['sys_value'];
             $data['sysConfig'][$v['sys_class']][$v['sys_type'].'Text'] = $v['sys_text'];
         }
+
         if($data['sysConfig']['reimbursePay']['subPay']){
             $arr = explode(',', $data['sysConfig']['reimbursePay']['subPay']);
             if(count($arr) == 2){
@@ -99,16 +101,15 @@ class SysConfigController extends Common\CommonController
         $input = Input::all();
         //过滤信息
         $rules = [
-            'contract_subContract' => 'required|between:0,32',
-            'contract_subContract_farm' => 'required',
+            'sub_contract' => 'required|between:0,32',
+            'sub_contract_farm' => 'required',
             'uploadNum' => 'required|digits_between:0,30|numeric|integer',
             'uploadSize' => 'required|digits_between:0,20|numeric|integer'
-
         ];
         $message = [
-            'contract_subContract.required' => '请选择合同父级科目',
-            'contract_subContract.between' => '参数错误',
-            'contract_subContract_farm.required' => '请选择合同父级科目',
+            'sub_contract.required' => '请选择合同父级科目',
+            'sub_contract.between' => '参数错误',
+            'sub_contract_farm.required' => '请选择合同父级科目',
             'uploadNum.required' => '请填写附件数量',
             'uploadNum.digits_between' => '附件数量不能大于30',
             'uploadNum.numeric' => '附件数量必须是数字',
@@ -118,17 +119,51 @@ class SysConfigController extends Common\CommonController
             'uploadSize.numeric' => '附件大小必须是数字',
             'uploadSize.integer' => '附件大小必须是整数',
         ];
+
+        foreach($input as $k => $v){
+            $a = explode('_',$k);
+            if($a[0] == 'h'){
+                for($i=2;$i<count($a);$i++){
+                    if($a[$i] == 'farm'){
+                        $rules[$k] = 'required';
+                        $message[$k.'.required'] = '合同核销科目未选择';
+                    }else{
+                        $rules[$k] = 'required|between:32,32';
+                        $message[$k.'.required'] = '合同核销科目缺少参数';
+                        $message[$k.'.between'] = '合同核销科目参数错误';
+                    }
+                }
+            }
+        }
+
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {
             return redirectPageMsg('-1', $validator->errors()->first(), route('sysConfig.index'));
         }
+
+        foreach($input as $k => $v){
+            $a = explode('_',$k);
+            if($a[0] == 'h'){
+                $x = $a[1];
+                for($i=2;$i<count($a);$i++){
+                    if($a[$i] == 'farm'){
+                        $a[$i] = $a[$i] == 'farm' ? '_farm' : $a[$i];
+                    }
+                    $x = $x.ucfirst($a[$i]);
+                }
+                $input[$x] = $v;
+                unset($input[$k]);
+            }
+        }
+
         $input['budgetOnOff'] = array_key_exists('budgetOnOff', $input) ? 1 : 0;
-        $input['subContract'] = $input['contract_subContract'];
-        $input['subContract_farm'] = $input['contract_subContract_farm'];
-        unset($input['contract_subContract']);
-        unset($input['contract_subContract_farm']);
+        $input['subContract'] = $input['sub_contract'];
+        $input['subContract_farm'] = $input['sub_contract_farm'];
+
+        unset($input['sub_contract']);
+        unset($input['sub_contract_farm']);
         unset($input['_token']);
-  
+        
         $result = DB::transaction(function () use($input) {
             foreach($input as $k => $v){
                 if (array_key_exists($k.'_farm', $input)) {

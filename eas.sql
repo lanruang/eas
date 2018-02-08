@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-02-02 17:59:04
+Date: 2018-02-08 13:38:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -635,11 +635,12 @@ INSERT INTO `node` VALUES ('4A8D9ABD9EA98193F4928FC08A3DE553', '862A577516209FC3
 INSERT INTO `node` VALUES ('4C2880F52A6D3DDB2211B653C4FE315A', '0', '费用管理', '#', '9', 'glyphicon glyphicon-list-alt', '1', '1', '1', '0', null, null, '2017-05-16 02:36:36', '2017-05-24 07:34:45');
 INSERT INTO `node` VALUES ('535331FC9A1B603D63A8AEFCDD8471A1', '35B31F424A4B5BAC0390544901A0E63F', '岗位列表', 'positions.index', '4', 'fa fa-caret-right', '1', '1', '1', '1', '岗位类', 'positions', '2017-05-10 06:39:18', '2017-06-01 06:59:11');
 INSERT INTO `node` VALUES ('57C5272DFD8B98EEBDA98E03E668690B', '0', '报表管理', '#', '11', 'glyphicon glyphicon-indent-left', '1', '1', '1', '0', '', '', '2017-05-12 03:57:44', '2017-08-14 14:11:11');
-INSERT INTO `node` VALUES ('5E5F1E23B3F66177D89B75EF993FF4A1', 'CBFE711E744E1FD32F231E50FF5BD23B', '合同列表', 'contract.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-08-14 15:18:42', '2017-08-14 15:18:42');
+INSERT INTO `node` VALUES ('5E5F1E23B3F66177D89B75EF993FF4A1', 'CBFE711E744E1FD32F231E50FF5BD23B', '合同列表', 'contract.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-08-14 15:18:42', '2018-02-07 16:40:08');
 INSERT INTO `node` VALUES ('5ED0DAE106A20613C0A8AD990EF29822', 'D16A60E608271D0F2B7ED4E8869634F4', '流程审核', 'auditMy.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2017-07-02 17:50:14', '2017-08-07 15:14:25');
 INSERT INTO `node` VALUES ('5FCE5CD49C7B7E40186872FC05886379', '00F7C5E21CB1879BB69806813E91CCFF', '角色列表', 'role.getRole', '1', '', '0', '1', '1', '0', null, null, null, null);
 INSERT INTO `node` VALUES ('6FBA7C260CE33BDE93FAB9CFEE46CBAC', '862A577516209FC37DFA54D9445D5A80', '添加权限', 'node.createNode', '3', '', '0', '1', '1', '0', null, null, '2016-10-28 08:52:00', '2016-10-28 08:52:00');
 INSERT INTO `node` VALUES ('73BDACB453D8D752DF5D0DA9F3D913A0', '35B31F424A4B5BAC0390544901A0E63F', '公司信息', 'company.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', null, null, '2017-02-20 08:45:03', '2017-04-27 02:07:48');
+INSERT INTO `node` VALUES ('7E65F22C0C5E38680D0B892924E8E145', 'CBFE711E744E1FD32F231E50FF5BD23B', '合同结算', 'contSettle.index', '2', 'fa fa-caret-right', '1', '1', '1', '0', '', '', '2018-02-07 16:39:49', '2018-02-07 16:39:49');
 INSERT INTO `node` VALUES ('7E8FC93D1C9E2C5109EE64D8632F5B83', 'D16A60E608271D0F2B7ED4E8869634F4', '回收站', 'recycle.index', '1', 'fa fa-caret-right', '0', '1', '1', '0', '', '', '2017-05-31 02:46:48', '2017-07-02 17:50:30');
 INSERT INTO `node` VALUES ('841D415E11B88896CED30EE9CA7CB849', '862A577516209FC37DFA54D9445D5A80', '编辑权限', 'node.updateNode', '5', '', '0', '1', '1', '0', null, null, '2016-10-31 07:35:46', '2016-10-31 07:35:46');
 INSERT INTO `node` VALUES ('862A577516209FC37DFA54D9445D5A80', '951E9717135DA00B8993489C67DBEE19', '权限列表', 'node.index', '1', 'fa fa-caret-right', '1', '1', '1', '0', null, null, '2016-08-31 15:50:18', '2016-08-31 15:43:45');
@@ -938,18 +939,32 @@ CREATE TABLE `sys_config` (
 -- ----------------------------
 -- Records of sys_config
 -- ----------------------------
-INSERT INTO `sys_config` VALUES ('073F04B2A5C9D0DF15A9022B91C7DF2D', 'contract', 'uploadNum', '2', '', '上传文件数量', '0000-00-00 00:00:00', '2018-01-09 16:48:55', '0');
-INSERT INTO `sys_config` VALUES ('16FD4343A20A860B4014FFD787D30C7C', 'contract', 'budgetOnOff', '1', '', '合同是否开启预算', '0000-00-00 00:00:00', '2018-01-09 16:48:55', '0');
-INSERT INTO `sys_config` VALUES ('1DC964A79F0E7418AB2D4AF77BAA2897', 'contract', 'subContract', 'CA57493FAEC2B6BD59A43B15B3E86ECE', '2000 — 负债', '合同科目选择起始ID', '0000-00-00 00:00:00', '2018-01-09 16:48:55', '0');
+INSERT INTO `sys_config` VALUES ('073F04B2A5C9D0DF15A9022B91C7DF2D', 'contract', 'uploadNum', '2', '', '上传文件数量', '0000-00-00 00:00:00', '2018-02-07 12:18:24', '0');
+INSERT INTO `sys_config` VALUES ('0AFD01EC625349FB13CDFD65EE9F51E5', 'contract', 'payableSubDebit', 'E3A933A6B15A855A1F26A634A553151A', '1000.1122 — 应收账款', '应付款科目借方', null, '2018-02-07 12:18:24', '1');
+INSERT INTO `sys_config` VALUES ('16FD4343A20A860B4014FFD787D30C7C', 'contract', 'budgetOnOff', '1', '', '合同是否开启预算', '0000-00-00 00:00:00', '2018-02-07 12:18:24', '0');
+INSERT INTO `sys_config` VALUES ('1DC964A79F0E7418AB2D4AF77BAA2897', 'contract', 'subContract', 'CA57493FAEC2B6BD59A43B15B3E86ECE', '1000.1405 — 仓库', '合同科目选择起始ID', '0000-00-00 00:00:00', '2018-02-07 12:18:24', '0');
 INSERT INTO `sys_config` VALUES ('1F9761227638C67A06C52B83028C57C6', 'reimburse', 'uploadNum', '1', '', '上传文件数量', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
+INSERT INTO `sys_config` VALUES ('2646F1479C8EE4BAA5C2FB8E577674B8', 'contract', 'incomeSubDebit', '3A1EB982CF3A97FAAFDBA3D5724FDCB3', '2000.2202.03 — 应付佣金', '收款科目借方', null, '2018-02-07 12:18:24', '3');
+INSERT INTO `sys_config` VALUES ('2B01A87C3BFEACFF81587CFFDBEC5F96', 'contract', 'invoOpenSubCredit', '18977BD2C09A5F0021DAEAB439BA3248', '2000.2202.02 — 预收账款', '开票科目贷方', null, '2018-02-07 12:18:24', '2');
+INSERT INTO `sys_config` VALUES ('5A361B096A6E6A6A2F2B01C0CA7B6B91', 'contract', 'invoCollectSubDebit', '8EC6D3583612404470D631D82D4776B0', '1000.1405 — 仓库', '收票科目借方', null, '2018-02-07 12:18:24', '2');
 INSERT INTO `sys_config` VALUES ('5C3223E2E304C3E20154BCF53D11C289', 'contract', 'income', '88400D89A9DE71258069C6262DEFC34C', '', '合同分组收入选项ID', '0000-00-00 00:00:00', null, '0');
+INSERT INTO `sys_config` VALUES ('63FA730C6AE39C24436DB5F3FB71999D', 'contract', 'incomeSubCredit', 'AFF0C18260B11874DE72AE74AE25D05C', '2000.2241 — 其他应付款', '收款款科目贷方', null, '2018-02-07 12:18:24', '3');
+INSERT INTO `sys_config` VALUES ('6D4BA10E7919246FAFBB652FDC6DC8D6', 'contract', 'incomeAutoSubDebit', '069198AAA6240ED6006BA1A5BB9AA04E', '1000.1001 — 现金', '收入自动结转借方', null, '2018-02-07 12:18:24', '4');
+INSERT INTO `sys_config` VALUES ('6E6DBE1F29B0C219354BA10BB47EA034', 'contract', 'payableSubCredit', '8F7E34440EF09A058535CE4F06B82FDE', '1000.1221 — 其他应收款', '应付款科目贷方', null, '2018-02-07 12:18:24', '1');
 INSERT INTO `sys_config` VALUES ('6EE86608362943C7D053F033514CA658', 'contract', 'payment', '1ED7BB45826EE056124DF47A93CB9072', '', '合同分组支付选项ID', '2018-01-09 14:42:43', null, '0');
 INSERT INTO `sys_config` VALUES ('73CF2DE47AC9BABD04C643179DC436A7', 'reimburse', 'subReimburse', 'CA57493FAEC2B6BD59A43B15B3E86ECE', '2000 — 负债', '报销费用用途科目选择起始ID', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
 INSERT INTO `sys_config` VALUES ('74677DFC36E447A5FC225EC9410920CB', 'reimburse', 'budgetOnOff', '1', '', '报销费用是否开启预算', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
-INSERT INTO `sys_config` VALUES ('7A788EC8B4F5A3E9182CFA9A38EBC7A1', 'contract', 'uploadSize', '3', '', '上传文件大小MB计算', '0000-00-00 00:00:00', '2018-01-09 16:48:55', '0');
+INSERT INTO `sys_config` VALUES ('7A788EC8B4F5A3E9182CFA9A38EBC7A1', 'contract', 'uploadSize', '3', '', '上传文件大小MB计算', '0000-00-00 00:00:00', '2018-02-07 12:18:24', '0');
 INSERT INTO `sys_config` VALUES ('A343A7B3C37E3A94FD326330DC3649CE', 'reimburse', 'uploadSize', '3', '', '上传文件大小MB计算', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
+INSERT INTO `sys_config` VALUES ('A34A84D0B78FDC830C41D366E1BA04E0', 'contract', 'paymentSubCredit', 'E638FC8D0BF74085174D00A069351304', '2000.2202.01 — 合同应付', '付款科目贷方', null, '2018-02-07 12:18:24', '3');
+INSERT INTO `sys_config` VALUES ('A849B7D04C8AEEEBA5853515CC6B5B05', 'contract', 'invoOpenSubDebit', 'DAF633F3CF1AAC11E2C5C906A1A16E5C', '2000.2202 — 应付账款', '开票科目借方', null, '2018-02-07 12:18:24', '2');
+INSERT INTO `sys_config` VALUES ('B19EA9DAA05BAF6F89D3FD4DA2EB3D2C', 'contract', 'paymentAutoSubDebit', 'DCE2994F049D91688F30CD1808FBE9F4', '1000.1002 — 银行', '付款自动结转借方', null, '2018-02-07 12:18:24', '4');
+INSERT INTO `sys_config` VALUES ('B3B5A907BA57D991E1F4992BA615E6F2', 'contract', 'receivableSubDebit', '879E0B158D45AF0D07C47A53E523AC5E', '1000 — 资产', '应收款科目借方', null, '2018-02-07 12:18:24', '1');
+INSERT INTO `sys_config` VALUES ('B9FB7A6ECFBAC8B84202C1A5B317C788', 'contract', 'paymentSubDebit', '18977BD2C09A5F0021DAEAB439BA3248', '2000.2202.02 — 预收账款', '付款科目借方', null, '2018-02-07 12:18:24', '3');
 INSERT INTO `sys_config` VALUES ('BFE650AC88031C06334BA7EE4636DB0A', 'reimbursePay', 'subPay', '069198AAA6240ED6006BA1A5BB9AA04E,DCE2994F049D91688F30CD1808FBE9F4', '1000.1001 — 现金,1000.1002 — 银行', '费用报销出纳付款方式科目ID-现金，银行', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
 INSERT INTO `sys_config` VALUES ('C175246CAD2A902293FE430348E935F1', 'budget', 'subBudget', 'CA57493FAEC2B6BD59A43B15B3E86ECE', '2000 — 负债', '预算科目ID', '0000-00-00 00:00:00', '2018-01-10 15:46:49', '0');
+INSERT INTO `sys_config` VALUES ('C3CA3ADD291037598DD61C3E62A74B56', 'contract', 'invoCollectSubCredit', 'BAB4C60D3A04364D478FE5E5E41A1D1C', '1000.1122.02 — 预付账款', '收票科目贷方', null, '2018-02-07 12:18:24', '2');
+INSERT INTO `sys_config` VALUES ('F929A7ACDED4A2DF2BD1F9AD1D048EDD', 'contract', 'receivableSubCredit', 'CA57493FAEC2B6BD59A43B15B3E86ECE', '2000 — 负债', '应收款科目贷方', null, '2018-02-07 12:18:24', '1');
 INSERT INTO `sys_config` VALUES ('F9886ACE0B05333039CCE31D63B0C52C', 'reimburse', 'userCashier', '105A70A981B6032B0EF41101D335EBF6', '098765', '费用报销核销出纳ID', '2018-01-09 14:42:43', '2018-01-09 17:27:28', '0');
 
 -- ----------------------------
@@ -1044,7 +1059,7 @@ CREATE TABLE `users` (
 -- Records of users
 -- ----------------------------
 INSERT INTO `users` VALUES ('105A70A981B6032B0EF41101D335EBF6', '098765', 'dwqjioq@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:50', '1', '0', '2017-08-17 10:19:20', '2018-01-09 17:28:50');
-INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-02-01 17:34:45', '1', '0', '2016-05-25 05:56:33', '2018-02-01 17:34:45');
+INSERT INTO `users` VALUES ('8454859EDC79BCD6B5250DF817FF10EA', '超级管理员', 'admin@sh.net', 'resources/views/template/assets/avatars/user.jpg', '4297f44b13955235245b2497399d7a93', 'A6F7FAF16C', '1', '2018-02-07 16:40:14', '1', '0', '2016-05-25 05:56:33', '2018-02-07 16:40:14');
 INSERT INTO `users` VALUES ('CCEA58872FD18683E638E047625C17F2', '总经理user', 'test@sh.net', 'resources/views/template/assets/avatars/user.jpg', 'e10adc3949ba59abbe56e057f20f883e', 'A6F7FAF16C38ADF5158C763010D7A880', '1', '2018-01-09 17:28:29', '1', '0', '2016-11-01 15:07:59', '2017-08-17 10:20:57');
 
 -- ----------------------------
