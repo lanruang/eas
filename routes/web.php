@@ -210,7 +210,17 @@ Route::group(['middleware' => ['permission']], function () {
     });
     //合同结算
     Route::group(['prefix' => 'contSettle'], function () {
-        Route::get('index', ['as' => 'contSettle.index', 'uses' => 'ContSettleController@index']);//合同
+        Route::get('index', ['as' => 'contSettle.index', 'uses' => 'ContSettleController@index']);//合同结算视图
+        Route::get('receivable', ['as' => 'contSettle.receivable', 'uses' => 'ContSettleController@receivable']);//合同应收
+        Route::get('payable', ['as' => 'contSettle.payable', 'uses' => 'ContSettleController@payable']);//合同应付
+        Route::get('income', ['as' => 'contSettle.income', 'uses' => 'ContSettleController@income']);//合同收入结算
+        Route::get('payment', ['as' => 'contSettle.payment', 'uses' => 'ContSettleController@payment']);//合同付款结算
+        Route::get('createReceivable', ['as' => 'contSettle.createReceivable', 'uses' => 'ContSettleController@createReceivable']);//生成合同应收
+        Route::post('getReceivable', ['as' => 'contSettle.getReceivable', 'uses' => 'ContSettleController@getReceivable']);//合同应收列表
+        Route::get('createPayable', ['as' => 'contSettle.createPayable', 'uses' => 'ContSettleController@createPayable']);//生成合同应付
+        Route::post('getPayable', ['as' => 'contSettle.getPayable', 'uses' => 'ContSettleController@getPayable']);//合同应付列表
+        Route::post('getIncome', ['as' => 'contSettle.getIncome', 'uses' => 'ContSettleController@getIncome']);//合同收入列表
+        Route::post('createIncome', ['as' => 'contSettle.createIncome', 'uses' => 'ContSettleController@createIncome']);//合同收入结算
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销

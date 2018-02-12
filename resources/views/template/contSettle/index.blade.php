@@ -18,9 +18,14 @@
 		<div class="col-xs-12 col-sm-12">
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addContract();">生成应收应付</button>\
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="addContract();">收入合同</button>
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listContract();">付款合同</button>
+					<button href="#search-form" data-toggle="modal" class="btn btn-white btn-sm btn-round">
+						<i class="ace-icon fa fa-search icon-on-right"></i>
+						筛选
+					</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="receivable();">合同应收</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="payable();">合同应付</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="income();">合同收入结算</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="payment();">合同付款结算</button>
 				</div>
 			</div>
 		</div>
@@ -37,12 +42,20 @@
 @section('FooterJs')
 	<script type="text/javascript">
 
-		function addContract(){
-			window.location.href = "{{route('contract.addContract')}}";
+		function receivable(){
+			window.location.href = "{{route('contSettle.receivable')}}";
 		}
 
-		function editContract(e){
-			window.location.href = "{{ route('contract.editContract') }}?id=" + e;
+		function payable(){
+			window.location.href = "{{route('contSettle.payable')}}";
+		}
+
+		function income(){
+			window.location.href = "{{route('contSettle.income')}}";
+		}
+
+		function payment(){
+			window.location.href = "{{ route('contSettle.payment')}}";
 		}
 
 	</script>

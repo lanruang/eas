@@ -479,7 +479,7 @@
 				alertDialog('-1', '请选择合同！');
 				return false;
 			}
-			var contractInfo = ajaxPost({"id":contract.id, "_token": '{{csrf_token()}}'}, '{{route('component.ctGetContDetails')}}');
+			var contractInfo = ajaxPost({"id":contract.id, "handle_status":'100', "_token": '{{csrf_token()}}'}, '{{route('component.ctGetContDetails')}}');
 			if(contractInfo.status != '1'){
 				alertDialog('-1', contractInfo.msg);
 			}

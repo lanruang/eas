@@ -3,7 +3,7 @@
 /.idea
 Homestead.json
 Homestead.yaml
-/.env
+.env
 /.DS_Store
 /uploads
 /enclosure

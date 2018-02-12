@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
 use App\Http\Models\Contract\ContractMainModel AS ContMainDb;
+use App\Http\Models\Contract\ContractModel AS ContDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -102,8 +103,12 @@ class InvoOpenController extends Common\CommonController
         }
         //查询合同详情是否存在
         $details_id = explode(',', $input['contInfo_id']);
-        $contract = ContDetailsDb::whereIn('details_id', $details_id)
-            ->where('cont_status', '1009')
+        $contract = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'c.cont_id', '=', 'cd.cont_id')
+            ->whereIn('cd.details_id', $details_id)
+            ->where('cd.cont_status', '301')
+            ->where('cd.cont_handle_status', '100')
+            ->select('cd.*', 'c.cont_budget AS budget_id')
             ->get()
             ->toArray();
         if(!$contract){
@@ -111,12 +116,6 @@ class InvoOpenController extends Common\CommonController
         }
         if(count($contract) != count($details_id)){
             return redirectPageMsg('-1', '可开票合同期间数量不匹配', route('invoOpen.index'));
-        }
-        //获取合同信息
-        $cont = ContDetailsDb::where('cont_id', $contract[0]['cont_id'])
-            ->first();
-        if(!$cont){
-            return redirectPageMsg('-1', '合同信息获取失败', route('invoOpen.index'));
         }
 
         //创建开票数据
@@ -133,12 +132,13 @@ class InvoOpenController extends Common\CommonController
             $data['dataInvo'][$k]['updated_at'] = date('Y-m-d H:i:s', time());
             //创建合同核销数据
             $data['dataContMain'][$k]['cont_main_id'] = getId();
+            $data['dataContMain'][$k]['cont_main_type'] = 'invoOpen';
             $data['dataContMain'][$k]['cont_id'] = $v['cont_id'];
             $data['dataContMain'][$k]['details_id'] = $v['details_id'];
             $data['dataContMain'][$k]['cont_amount'] = $v['cont_amount'];
-            $data['dataContMain'][$k]['budget_id'] = $cont['budget_id'];
-            $data['dataContMain'][$k]['subject_id_debit'] = '';
-            $data['dataContMain'][$k]['subject_id_credit'] = '';
+            $data['dataContMain'][$k]['budget_id'] = $v['budget_id'];
+            $data['dataContMain'][$k]['subject_id_debit'] = session('userInfo.sysConfig.contract.invoOpenSubDebit');
+            $data['dataContMain'][$k]['subject_id_credit'] = session('userInfo.sysConfig.contract.invoOpenSubCredit');
             $data['dataContMain'][$k]['created_user'] = session('userInfo.user_id');
             $data['dataContMain'][$k]['created_at'] = date('Y-m-d H:i:s', time());
             $data['dataContMain'][$k]['updated_at'] = date('Y-m-d H:i:s', time());
@@ -167,10 +167,13 @@ class InvoOpenController extends Common\CommonController
             //创建合同核销数据
             ContMainDb::insert($data['dataContMain']);
 
-
             return true;
         });
-        p($result);
 
+        if($result){
+            return redirectPageMsg('1', "开票成功", route('invoOpen.index'));
+        }else{
+            return redirectPageMsg('-1', "开票失败", route('invoOpen.index'));
+        }
     }
 }
