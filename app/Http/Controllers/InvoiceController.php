@@ -133,6 +133,7 @@ class InvoiceController extends Common\CommonController
                 $dataDetails[$i]['invo_details_id'] = getId();
                 $dataDetails[$i]['invo_id'] = $invo_id;
                 $dataDetails[$i]['invo_num'] = formatInvoice($input['invoice_start_num'] + $i);
+                $dataDetails[$i]['invo_class'] = 'inside';
                 $dataDetails[$i]['invo_status'] = '400';
                 $dataDetails[$i]['created_at'] = date('Y-m-d H:i:s', time());
                 $dataDetails[$i]['updated_at'] = date('Y-m-d H:i:s', time());

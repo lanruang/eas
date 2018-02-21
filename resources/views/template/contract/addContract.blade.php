@@ -26,7 +26,7 @@
 					<label class="col-sm-3 control-label no-padding-right"> 合同分组 </label>
 					<div class="col-sm-3">
 						<label>
-							<select id="contract_class" name="contract_class">
+							<select id="customer_type" name="customer_type">
 								<option value="">请选择</option>
 								@foreach ($select as $v)
 									@if ($v['ass_type'] == 'contract_class')
@@ -122,7 +122,7 @@
 					</div>
 				</div>
 
-				<div class="form-group" id="budgetDateFarm">
+				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 合同附件 </label>
 					<div class="col-sm-3">
 

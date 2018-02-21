@@ -136,6 +136,116 @@
 			</div>
 		</div>
 	</div>
+
+    <div id="search-form" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="searchClose" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="blue bigger">筛选</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="profile-user-info profile-user-info-striped">
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 合同分组</div>
+                                    <div>
+                                        <label class="col-xs-5 output">
+                                            <select id="contract_class" name="contract_class">
+                                                <option value="">请选择</option>
+                                                @foreach ($select as $v)
+                                                    @if ($v['ass_type'] == 'contract_class')
+                                                        <option value="{{ $v['ass_value'] }}">{{ $v['ass_text'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 合同分类</div>
+                                    <div>
+                                        <label class="col-xs-5 output">
+                                            <select class="form-control" id="contract_type" name="contract_type">
+                                                <option value="">请选择</option>
+                                                @foreach ($select as $v)
+                                                    @if ($v['ass_type'] == 'contract_type')
+                                                        <option value="{{ $v['ass_value'] }}">{{ $v['ass_text'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 合同编号</div>
+                                    <div>
+                                        <label class="col-xs-5 output">
+                                            <input type="text" name="contract_num" id="contract_num" placeholder="合同编号" class="form-control" />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 合同名称</div>
+                                    <div>
+                                        <label class="col-xs-8 output">
+                                            <input type="text" name="contract_name" id="contract_name" placeholder="合同名称" class="form-control" />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 客户</div>
+                                    <div>
+                                        <label class="col-xs-6 output">
+                                            <input type="text" name="customer_name" id="customer_name" placeholder="客户" class="form-control input-sm"/>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 供应商</div>
+                                    <div>
+                                        <label class="col-xs-6 output">
+                                            <input type="text" name="supplier_name" id="supplier_name" placeholder="供应商" class="form-control input-sm"/>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 合同状态</div>
+                                    <div>
+                                        <label class="col-xs-5 output">
+                                            <select id="contract_status" name="contract_status">
+                                                <option value="">请选择</option>
+                                                <option value="301">已审批</option>
+                                                <option value="302">编辑合同</option>
+                                                <option value="1009">审批中</option>
+                                                <option value="1003">不批准</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary" onclick="searchForm();">
+                        <i class="ace-icon fa fa-search icon-on-right"></i>
+                        搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection()
 
 {{--页面加载js--}}
@@ -405,5 +515,23 @@
 			}
 
 		}
-	</script>
+
+        //筛选
+        function searchForm(){
+            var data = {"contract_class": $('#contract_class').val(),
+                "contract_type": $('#contract_type').val(),
+                "contract_num": $('#contract_num').val(),
+                "contract_name": $('#contract_name').val(),
+                "supplier_name": $('#supplier_name').val(),
+                "customer_name": $('#customer_name').val(),
+                "contract_status": $('#contract_status').val(),
+                "_token": '{{csrf_token()}}'};
+            contractTable.settings()[0].ajax.async = false;
+            contractTable.settings()[0].ajax.data = data;
+            contractTable.ajax.reload(function () {
+                $('#searchClose').click();
+            });
+        }
+
+    </script>
 @endsection()

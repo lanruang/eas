@@ -19,10 +19,11 @@
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
 					<button class="btn btn-white btn-sm btn-round" onclick="addSupplier();">添加</button>
+                    <button type="button" class="btn btn-white btn-sm btn-round" onclick="listSupplier();">详情</button>
 				</div>
 			</div>
 			<p></p>
-			<table id="customerTable" class="table table-striped table-bordered table-hover">
+			<table id="supplierTable" class="table table-striped table-bordered table-hover">
 				<thead>
 				<tr>
 					<th>供应商编号</th>
@@ -45,10 +46,11 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
-		var customerTable;
+        var select_id = '';
+		var supplierTable;
 		$(function($) {
 			var html;
-			customerTable = $('#customerTable')
+            supplierTable = $('#supplierTable')
 							.DataTable({
 								"lengthChange": false,
 								"ordering": false,
@@ -85,7 +87,22 @@
 										return html;
 									}
 								}],
+                                "createdRow": function( row, data ) {
+                                    $(row).attr( 'id', data.id );
+                                }
 							});
+
+            $('#supplierTable tbody').on( 'click', 'tr', function () {
+                if ( $(this).hasClass('selected') ) {
+                    $(this).removeClass('selected');
+                    select_id = '';
+                }
+                else {
+                    supplierTable.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    select_id = this.id
+                }
+            });
 		})
 
 		function addSupplier(){
@@ -96,5 +113,12 @@
 			window.location.href = "{{route('supplier.editSupplier')}}?id=" + e;
 		}
 
+        function listSupplier(){
+            if(select_id == ''){
+                alertDialog('-1', '请选择供应商！');
+                return false;
+            }
+            window.location.href = "{{route('supplier.listSupplier')}}?id=" + select_id;
+        }
 	</script>
 @endsection()

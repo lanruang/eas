@@ -26,7 +26,88 @@ class ContSettleController extends Common\CommonController
     //合同结算视图
     public function index()
     {
-        return view('contSettle.index');
+        //获取合同下拉菜单信息
+        $data['select'] = SysAssDb::whereIn('ass_type', array('contract_class', 'contract_type'))
+            ->select('ass_type', 'ass_text', 'ass_value')
+            ->orderBy('ass_sort')
+            ->get()
+            ->toArray();
+
+        return view('contSettle.index', $data);
+    }
+
+    //合同结算列表
+    public function getSettle(Request $request){
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //验证表单
+        $input = Input::all();
+        $searchSql = array();
+        if(array_key_exists('contract_class', $input) && $input['contract_class']){
+            $searchSql[] = array('c.cont_class', $input['contract_class']);
+        }
+        if(array_key_exists('contract_type', $input) && $input['contract_type']){
+            $searchSql[] = array('c.cont_type', $input['contract_type']);
+        }
+        if(array_key_exists('contract_num', $input) && $input['contract_num']){
+            $searchSql[] = array('c.cont_num', 'like', '%' . $input['contract_num'] . '%');
+        }
+        if(array_key_exists('contract_name', $input) && $input['contract_name']){
+            $searchSql[] = array('c.cont_name', 'like', '%' . $input['contract_name'] . '%');
+        }
+        if(array_key_exists('contract_date', $input) && $input['contract_date']){
+            $iDate = explode(' 一 ', $input['contract_date']);
+            if(count($iDate) != 2){
+                $data['status'] = -1;
+                $data['msg'] = '合同期间错误';
+                ajaxJsonRes($data);
+            }
+            $searchSql[] = array('cd.cont_details_date', '>=', $iDate[0]);
+            $searchSql[] = array('cd.cont_details_date', '<=', $iDate[1]);
+        }
+        if(array_key_exists('supplier_name', $input) && $input['supplier_name']){
+            $searchSql[] = array('supp.supp_name', 'like', '%' . $input['supplier_name'] . '%');
+        }
+        if(array_key_exists('customer_name', $input) && $input['customer_name']){
+            $searchSql[] = array('cust.cust_name', 'like', '%' . $input['customer_name'] . '%');
+        }
+
+
+        //获取记录总数
+        $total = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'cd.cont_id', '=', 'c.cont_id')
+            ->leftJoin('sys_assembly AS sysAssType', 'c.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
+            ->leftJoin('supplier AS supp', 'c.cont_parties','=','supp.supp_id')
+            ->where($searchSql)
+            ->count();
+        //获取数据
+        $result = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'cd.cont_id', '=', 'c.cont_id')
+            ->leftJoin('sys_assembly AS sysAssType', 'c.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
+            ->leftJoin('supplier AS supp', 'c.cont_parties','=','supp.supp_id')
+            ->where($searchSql)
+            ->select('cd.cont_details_date AS contract_details_date', 'cd.cont_amount AS contract_amount',
+                'sysAssType.ass_text AS contract_type', 'sysAssClass.ass_text AS contract_class',
+                'cust.cust_name AS customer_name', 'supp.supp_name AS supplier_name', 'c.cont_name AS contract_name','c.cont_num AS contract_num')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
     }
 
     /******************************************收入合同****************************************/
@@ -151,7 +232,7 @@ class ContSettleController extends Common\CommonController
             ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
             ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
             ->where('c.cont_class', session('userInfo.sysConfig.contract.income'))
-            ->where('cd.cont_handle_status', '100')
+            ->where('cd.cont_handle_status', '110')
             ->count();
         //获取数据
         $result = ContDetailsDb::from('contract_details AS cd')
@@ -159,11 +240,13 @@ class ContSettleController extends Common\CommonController
             ->leftJoin('sys_assembly AS sysAssType', 'c.cont_type','=','sysAssType.ass_id')
             ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
             ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
+            ->leftJoin('invoice_main AS im', 'cd.details_id','=','im.invo_cont_id')
             ->where('c.cont_class', session('userInfo.sysConfig.contract.income'))
-            ->where('cd.cont_handle_status', '100')
+            ->where('cd.cont_handle_status', '110')
             ->select('cd.details_id AS id', 'cd.cont_details_date AS contract_details_date', 'cd.cont_amount AS contract_amount',
                 'sysAssType.ass_text AS contract_type', 'sysAssClass.ass_text AS contract_class',
-                'cust.cust_name AS customer_name', 'c.cont_name AS contract_name','c.cont_num AS contract_num')
+                'cust.cust_name AS customer_name', 'c.cont_name AS contract_name','c.cont_num AS contract_num',
+                'im.invo_num AS invoice_num')
             ->get()
             ->toArray();
 
@@ -188,15 +271,76 @@ class ContSettleController extends Common\CommonController
         $input = Input::all();
         //过滤信息
         $rules = [
-            'id' => 'required|between:32,32',
+            'ids' => 'required',
         ];
         $message = [
-            'id.required' => '参数不存在',
-            'id.integer' => '参数错误',
+            'ids.required' => '请选择合同期间',
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {
-            return redirectPageMsg('-1', $validator->errors()->first(), route('reimburse.index'));
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contSettle.income'));
+        }
+
+        $ids = explode(',', $input['ids']);
+        if(count($ids) > 50){
+            return redirectPageMsg('-1', '合同结算数量一次不能超过50条记录,请重新选择', route('contSettle.income'));
+        }
+
+        $contDetails = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'c.cont_id', '=', 'cd.cont_id')
+            ->whereIn('cd.details_id', $ids)
+            ->where('c.cont_class', session('userInfo.sysConfig.contract.income'))
+            ->select('cd.*', 'c.cont_subject', 'c.cont_budget')
+            ->get()
+            ->toArray();
+        if(count($ids) != count($contDetails)){
+            return redirectPageMsg('-1', '合同期间数量不符,请刷新后重试', route('contSettle.income'));
+        }
+
+        //创建数据
+        $x = 0;
+        foreach($contDetails as $k => $v){
+            //收款核算
+            $data[$x]['cont_main_id'] = getId();
+            $data[$x]['cont_main_type'] = 'income';
+            $data[$x]['cont_id'] = $v['cont_id'];
+            $data[$x]['details_id'] = $v['details_id'];
+            $data[$x]['cont_amount'] = $v['cont_amount'];
+            $data[$x]['budget_id'] = $v['cont_budget'];
+            $data[$x]['subject_id_debit'] = session('userInfo.sysConfig.contract.incomeSubDebit');
+            $data[$x]['subject_id_credit'] = session('userInfo.sysConfig.contract.incomeSubCredit');
+            $data[$x]['created_user'] = session('userInfo.user_id');
+            $data[$x]['created_at'] = date('Y-m-d H:i:s', time());
+            $data[$x]['updated_at'] = date('Y-m-d H:i:s', time());
+            $x++;
+            //自动结转
+            $data[$x]['cont_main_id'] = getId();
+            $data[$x]['cont_main_type'] = 'incomeAuto';
+            $data[$x]['cont_id'] = $v['cont_id'];
+            $data[$x]['details_id'] = $v['details_id'];
+            $data[$x]['cont_amount'] = $v['cont_amount'];
+            $data[$x]['budget_id'] = $v['cont_budget'];
+            $data[$x]['subject_id_debit'] = session('userInfo.sysConfig.contract.incomeAutoSubDebit');
+            $data[$x]['subject_id_credit'] = $v['cont_subject'];
+            $data[$x]['created_user'] = session('userInfo.user_id');
+            $data[$x]['created_at'] = date('Y-m-d H:i:s', time());
+            $data[$x]['updated_at'] = date('Y-m-d H:i:s', time());
+            $x++;
+        }
+
+        //事务处理
+        $result = DB::transaction(function () use($data, $ids) {
+            ContDetailsDb::whereIn('details_id', $ids)
+                ->update(['cont_handle_status' => '111']);
+            ContMainDb::insert($data);
+
+            return true;
+        });
+
+        if($result){
+            return redirectPageMsg('1', "结算".count($ids)."条记录成功", route('contSettle.income'));
+        }else{
+            return redirectPageMsg('-1', "结算失败", route('contSettle.income'));
         }
     }
 
@@ -259,7 +403,7 @@ class ContSettleController extends Common\CommonController
             ->select('contract_details.*', 'c.cont_budget')
             ->where('contract_details.cont_details_date', '<=' , $nowDate)
             ->where('contract_details.cont_status', '301')
-            ->where('contract_details.cont_handle_status', '000')
+            ->where('contract_details.cont_handle_status', '100')
             ->where('c.cont_class', session('userInfo.sysConfig.contract.payment'))
             ->take(50)
             ->get()
@@ -296,6 +440,140 @@ class ContSettleController extends Common\CommonController
             return redirectPageMsg('1', "生成".count($ids)."条记录成功", route('contSettle.payable'));
         }else{
             return redirectPageMsg('-1', "生成失败", route('contSettle.payable'));
+        }
+    }
+
+    //合同收入结算视图
+    public function payment()
+    {
+        return view('contSettle.payment');
+    }
+
+    //合同付款列表
+    public function getPayment(Request $request){
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+
+        //获取记录总数
+        $total = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'cd.cont_id', '=', 'c.cont_id')
+            ->leftJoin('sys_assembly AS sysAssType', 'c.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
+            ->where('c.cont_class', session('userInfo.sysConfig.contract.payment'))
+            ->where('cd.cont_handle_status', '110')
+            ->count();
+        //获取数据
+        $result = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'cd.cont_id', '=', 'c.cont_id')
+            ->leftJoin('sys_assembly AS sysAssType', 'c.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'c.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'c.cont_parties','=','cust.cust_id')
+            ->leftJoin('invoice_main AS im', 'cd.details_id','=','im.invo_cont_id')
+            ->where('c.cont_class', session('userInfo.sysConfig.contract.payment'))
+            ->where('cd.cont_handle_status', '110')
+            ->select('cd.details_id AS id', 'cd.cont_details_date AS contract_details_date', 'cd.cont_amount AS contract_amount',
+                'sysAssType.ass_text AS contract_type', 'sysAssClass.ass_text AS contract_class',
+                'cust.cust_name AS customer_name', 'c.cont_name AS contract_name','c.cont_num AS contract_num',
+                'im.invo_num AS invoice_num')
+            ->get()
+            ->toArray();
+
+        //创建结果数据
+        $data['recordsTotal'] = $total;//总记录数
+        $data['recordsFiltered'] = $total;//条件过滤后记录数
+        $data['data'] = $result;
+        $data['status'] = 1;
+
+        //返回结果
+        ajaxJsonRes($data);
+    }
+
+    //合同付款结算
+    public function createPayment()
+    {
+        if(!session('userInfo.sysConfig.contract.paymentSubDebit') || !session('userInfo.sysConfig.contract.paymentSubCredit') || !session('userInfo.sysConfig.contract.paymentAutoSubDebit')){
+            return redirectPageMsg('-1', '合同核销-合同确认付款或自动结算未设置，请先设置科目', route('contSettle.income'));
+        }
+
+        //获取参数
+        $input = Input::all();
+        //过滤信息
+        $rules = [
+            'ids' => 'required',
+        ];
+        $message = [
+            'ids.required' => '请选择合同期间',
+        ];
+        $validator = Validator::make($input, $rules, $message);
+        if ($validator->fails()) {
+            return redirectPageMsg('-1', $validator->errors()->first(), route('contSettle.payment'));
+        }
+
+        $ids = explode(',', $input['ids']);
+        if(count($ids) > 50){
+            return redirectPageMsg('-1', '合同结算数量一次不能超过50条记录,请重新选择', route('contSettle.payment'));
+        }
+
+        $contDetails = ContDetailsDb::from('contract_details AS cd')
+            ->leftjoin('contract AS c', 'c.cont_id', '=', 'cd.cont_id')
+            ->whereIn('cd.details_id', $ids)
+            ->where('c.cont_class', session('userInfo.sysConfig.contract.payment'))
+            ->select('cd.*', 'c.cont_subject', 'c.cont_budget')
+            ->get()
+            ->toArray();
+
+        if(count($ids) != count($contDetails)){
+            return redirectPageMsg('-1', '合同期间数量不符,请刷新后重试', route('contSettle.payment'));
+        }
+
+        //创建数据
+        $x = 0;
+        foreach($contDetails as $k => $v){
+            //收款核算
+            $data[$x]['cont_main_id'] = getId();
+            $data[$x]['cont_main_type'] = 'payment';
+            $data[$x]['cont_id'] = $v['cont_id'];
+            $data[$x]['details_id'] = $v['details_id'];
+            $data[$x]['cont_amount'] = $v['cont_amount'];
+            $data[$x]['budget_id'] = $v['cont_budget'];
+            $data[$x]['subject_id_debit'] = session('userInfo.sysConfig.contract.paymentSubDebit');
+            $data[$x]['subject_id_credit'] = session('userInfo.sysConfig.contract.paymentSubCredit');
+            $data[$x]['created_user'] = session('userInfo.user_id');
+            $data[$x]['created_at'] = date('Y-m-d H:i:s', time());
+            $data[$x]['updated_at'] = date('Y-m-d H:i:s', time());
+            $x++;
+            //自动结转
+            $data[$x]['cont_main_id'] = getId();
+            $data[$x]['cont_main_type'] = 'paymentAuto';
+            $data[$x]['cont_id'] = $v['cont_id'];
+            $data[$x]['details_id'] = $v['details_id'];
+            $data[$x]['cont_amount'] = $v['cont_amount'];
+            $data[$x]['budget_id'] = $v['cont_budget'];
+            $data[$x]['subject_id_debit'] = session('userInfo.sysConfig.contract.paymentAutoSubDebit');
+            $data[$x]['subject_id_credit'] = $v['cont_subject'];
+            $data[$x]['created_user'] = session('userInfo.user_id');
+            $data[$x]['created_at'] = date('Y-m-d H:i:s', time());
+            $data[$x]['updated_at'] = date('Y-m-d H:i:s', time());
+            $x++;
+        }
+
+        //事务处理
+        $result = DB::transaction(function () use($data, $ids) {
+            ContDetailsDb::whereIn('details_id', $ids)
+                ->update(['cont_handle_status' => '111']);
+            ContMainDb::insert($data);
+
+            return true;
+        });
+
+        if($result){
+            return redirectPageMsg('1', "结算".count($ids)."条记录成功", route('contSettle.payment'));
+        }else{
+            return redirectPageMsg('-1', "结算失败", route('contSettle.payment'));
         }
     }
 }

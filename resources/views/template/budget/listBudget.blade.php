@@ -103,8 +103,6 @@
                         "searching": false,
                         "info": false,
                         "serverSide": true,
-                        "scrollY": '80vh',
-                        "scrollCollapse": true,
                         "paging": false,
                         "ajax": {
                             "type": "post",

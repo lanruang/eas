@@ -822,7 +822,7 @@
         function delEnclo(id){
             var data = {"id": id, "_token": '{{csrf_token()}}'};
             var result = ajaxPost(data, '{{ route('contract.delEnclo') }}');
-            if(result.status == false){
+            if(result.status == true){
                 $('#formId'+id).remove();
             }else{
                 alertDialog(result.status, result.msg);

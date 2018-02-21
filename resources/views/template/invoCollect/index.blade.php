@@ -8,7 +8,7 @@
 
 {{--面包削导航--}}
 @section('breadcrumbNav')
-	<li>开具发票</li>
+	<li>签收发票</li>
 @endsection()
 
 {{--页面内容--}}
@@ -16,35 +16,23 @@
 	<div class="row">
 		<div class="col-xs-12 col-sm-8">
 			<h4 class="header smaller lighter">
-				开票信息
+				发票信息
 			</h4>
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('invoOpen.createInvoOpen') }}" >
-				<!--选择客户-->
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{ route('invoCollect.createInvoCollect') }}" >
+				<!--选择供应商-->
 				<div class="clearfix">
 					<div class="grid2 new_grid2">
-						<button type="button" class="btn btn-white btn-sm btn-round" onclick="selectOnClick('farmCustBtn');">选择客户</button>
-						<button id="farmCustBtn"  href="#customer-form" data-toggle="modal" type="button" class="hide">选择客户视图</button>
+						<button type="button" class="btn btn-white btn-sm btn-round" onclick="selectOnClick('farmSuppBtn');">选择供应商</button>
+						<button id="farmSuppBtn"  href="#supplier-form" data-toggle="modal" type="button" class="hide">选择供应商视图</button>
 					</div>
 				</div>
 				<div class="form-group">
-					<input type="hidden" id="customer_id" name="customer_id" value="">
+					<input type="hidden" id="supplier_id" name="supplier_id" value="">
 				</div>
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 名称 </label>
 					<div class="col-sm-5 output">
-						<label id="customerName"></label>
-					</div>
-				</div>
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 税号 </label>
-					<div class="col-sm-5 output">
-						<label></label>
-					</div>
-				</div>
-				<div class="form-group" id="budgetDateFarm">
-					<label class="col-sm-3 control-label no-padding-right"> 开户行 </label>
-					<div class="col-sm-5 output">
-						<label></label>
+						<label id="supplierName"></label>
 					</div>
 				</div>
 
@@ -71,40 +59,48 @@
 				</table>
 				<p></p>
 				<!--选择发票-->
-				<div class="clearfix">
-					<div class="grid2 new_grid2">
-						<button type="button" class="btn btn-white btn-sm btn-round" onclick="selectOnClick('farmInvoBtn');">选择发票</button>
-						<button id="farmInvoBtn"  href="#invoice-form" data-toggle="modal" type="button" class="hide">选择合同视图</button>
-					</div>
-				</div>
 				<div class="form-group">
 					<input type="hidden" name="invoInfo_id" id="invoInfo_id" value="">
 				</div>
+
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 发票号 </label>
-					<div class="col-sm-5 output">
-						<label id="invoiceNum"></label>
+					<div class="col-sm-5">
+                        <label>
+                            <input type="text" maxlength="8" name="invoice_num" id="invoice_num" placeholder="发票号" class="form-control" />
+                        </label>
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label class="col-sm-3 control-label no-padding-right"> 发票种类 </label>
-					<div class="col-sm-5 output">
-						<label id="invoiceType"></label>
-					</div>
-				</div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right"> 发票种类 </label>
+                    <div class="col-sm-3">
+                        <select id="invoice_type" name="invoice_type">
+                            <option value="">请选择</option>
+                            @foreach ($select as $v)
+                                @if ($v['ass_type'] == 'invoice_type')
+                                    <option value="{{ $v['ass_value'] }}">{{ $v['ass_text'] }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 开票金额 </label>
-					<div class="col-sm-5 output">
-						<label id="invoiceAmount">0.00</label>
+					<div class="col-sm-5">
+                        <label>
+                            <input type="text" name="invoice_amount" id="invoice_amount" readonly="readonly" placeholder="0.00" class="form-control" />
+                        </label>
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label class="col-sm-3 control-label no-padding-right"> 发票备注 </label>
-					<div class="col-sm-5 output">
-						<label id="invoiceText"></label>
+					<div class="col-sm-5">
+						<label>
+                            <input type="text" name="invoice_text" id="invoice_text" placeholder="发票备注" class="form-control" />
+                        </label>
 					</div>
 				</div>
 
@@ -114,30 +110,30 @@
 					<div class="col-md-offset-5 col-md-9">
 						<button class="btn btn-info" type="button" onclick="postFrom();">
 							<i class="ace-icon fa fa-check bigger-110"></i>
-							确认开票
+							确认签收发票
 						</button>
 					</div>
 				</div>
 			</form>
 		</div>
 
-		<div id="customer-form" class="modal" tabindex="-1">
+		<div id="supplier-form" class="modal" tabindex="-1">
 			<div class="modal-dialog">
 				<div class="widget-box widget-color-blue2">
 					<div class="widget-header">
-						<h4 class="widget-title lighter smaller">选择客户</h4>
+						<h4 class="widget-title lighter smaller">选择供应商</h4>
 					<span class="widget-toolbar">
-						<button id="closeCustBtn" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
+						<button id="closeSuppBtn" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
 					</span>
 					</div>
 
 					<div class="widget-body">
 						<div class="widget-main padding-8">
-							<table id="customerTable" class="table table-striped table-bordered table-hover" style="width: 100%;">
+							<table id="supplierTable" class="table table-striped table-bordered table-hover" style="width: 100%;">
 								<thead>
 								<tr>
-									<th class="center">客户编号</th>
-									<th class="center">客户名称</th>
+									<th class="center">供应商编号</th>
+									<th class="center">供应商名称</th>
 									<th class="center">选择</th>
 								</tr>
 								</thead>
@@ -203,64 +199,6 @@
 				</div>
 			</div>
 		</div>
-		<div id="invoice-form" class="modal" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="widget-box widget-color-blue2">
-					<div class="widget-header">
-						<h4 class="widget-title lighter smaller">选择发票</h4>
-					<span class="widget-toolbar">
-						<button id="closeInvoBtn" class="ace-icon fa fa-times white clear_btn_bg bigger-120" class="clear_btn_bg" data-dismiss="modal"></button>
-					</span>
-					</div>
-
-					<div class="widget-body">
-						<div id="listInvoice" class="widget-main padding-8">
-							<button type="button" class="btn btn-white btn-sm btn-round" onclick="listInvoInfo();">查看发票</button>
-							<p></p>
-							<table id="invoiceTable" class="table table-striped table-bordered table-hover" style="white-space:nowrap;">
-								<thead>
-									<tr>
-										<th class="center">发票号（区间）</th>
-										<th class="center">购买日期</th>
-										<th class="center">发票种类</th>
-										<th class="center">备注</th>
-									</tr>
-								</thead>
-							</table>
-						</div>
-						<div style="display: none;" id="listInvoiceInfo" class="widget-main padding-8">
-							<button class="btn btn-white btn-sm btn-round" onclick="goInvo();"><i class="ace-icon fa fa-reply icon-only"></i></button>
-							<p></p>
-							<table class="table table-bordered">
-								<tr>
-									<td class="center col-xs-3">发票集</td>
-									<td id="invoInfoNum"></td>
-								</tr>
-								<tr>
-									<td class="center col-xs-3">发票类型</td>
-									<td id="invoInfoType"></td>
-								</tr>
-								<tr>
-									<td class="center col-xs-3">备注</td>
-									<td id="invoInfoText"></td>
-								</tr>
-							</table>
-							<table id="invoInfoTable" class="table table-striped table-bordered table-hover" style="width: 100%;">
-								<thead>
-								<tr>
-									<th class="center">发票号码</th>
-									<th class="center">使用人</th>
-									<th class="center">使用日期</th>
-									<th class="center">状态</th>
-									<th class="center">操作</th>
-								</tr>
-								</thead>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 @endsection()
 
@@ -277,14 +215,10 @@
 	<script type="text/javascript">
 		var html;
 		var contract = new Array();
-		var invoice = new Array();
 		var contractTable = '';
-		var customerTable = '';
-		var invoiceTable = '';
-		var invoInfoTable = '';
+		var supplierTable = '';
         var invoiceAmount = 0;
 		var contListTable;
-		var invoListTable;
 		$(function($) {
 			contListTable = $('#contListTable').DataTable({
 				"lengthChange": false,
@@ -305,24 +239,6 @@
 					$(row).attr( 'id', data[0] );
 				}
 			});
-			invoListTable = $('#invoListTable').DataTable({
-				"lengthChange": false,
-				"order": [[ 1, "asc" ], [ 0, "asc" ]],
-				"searching": false,
-				"paging": false,
-				"scrollY": "200px",
-				"scrollCollapse": true,
-				"info": false,
-				"columns": [
-					{ "data": "1"},
-					{ "data": "2"},
-					{ "data": "3"},
-					{ "data": "4"},
-				],
-				"createdRow": function( row, data ) {
-					$(row).attr( 'id', data[0] );
-				}
-			});
 
 			$('#validation-form').validate({
 				errorElement: 'div',
@@ -331,13 +247,18 @@
 				ignore: "",
 				rules: {
 					contInfo_id: {required: true},
-					invoInfo_id: {required: true},
-					customer_id: {required: true}
+					supplier_id: {required: true},
+                    invoice_num: {required: true, maxlength:8},
+                    invoice_type: {required: true, maxlength:8},
+                    invoice_text: {maxlength:200},
 				},
 				messages: {
 					contInfo_id: {required: "请选择合同"},
-					invoInfo_id: {required: "请选择发票"},
-					customer_id: {required: "请选择客户"},
+                    supplier_id: {required: "请选择客户"},
+                    invoice_num: {required: "请填写发票号", maxlength: "字符数超出范围"},
+                    invoice_type: {required: "请选择发票种类"},
+                    invoice_text: {maxlength: "字符数超出范围"},
+
 				},
 				highlight: function (e) {
 					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
@@ -352,27 +273,24 @@
 		function selectOnClick(e){
 			$('#'+e).click();
 			switch (e){
-				case 'farmCustBtn':
-					initCustTable();
+				case 'farmSuppBtn':
+					initSuppTable();
 					break;
 				case 'farmContBtn':
 					initContTable();
 					break;
-				case 'farmInvoBtn':
-					initInvoTable();
-					break;
 			}
 		}
 
-		function selectCustomer(e, name){
-			$('#customer_id').val(e);
-			$('#customerName').text(name);
-			$('#closeCustBtn').click();
+		function selectSupplier(e, name){
+			$('#supplier_id').val(e);
+			$('#supplierName').text(name);
+			$('#closeSuppBtn').click();
 		}
 
-		function initCustTable(){
-			if(customerTable == ''){
-				customerTable = $('#customerTable')
+		function initSuppTable(){
+			if(supplierTable == ''){
+                supplierTable = $('#supplierTable')
 						.DataTable({
 							"lengthChange": false,
 							"ordering": false,
@@ -383,7 +301,7 @@
 								"type": "post",
 								"async": false,
 								"dataType": "json",
-								"url": '{{route('component.ctGetCustomer')}}',
+								"url": '{{route('component.ctGetSupplier')}}',
 								"data": {"_token": '{{csrf_token()}}'},
 								"dataSrc": function ( res ) {
 									if(res.status == true){
@@ -402,7 +320,7 @@
 								"targets": 2,
 								"render": function (data, type, row) {
 									var html = '<div class="action-buttons">' +
-											"<a class=\"green\" href=\"#\" onclick=\"selectCustomer('" + row.id + "', '" + row.parties_name + "')\">" +
+											"<a class=\"green\" href=\"#\" onclick=\"selectSupplier('" + row.id + "', '" + row.parties_name + "')\">" +
 											'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
 											'</a></div>';
 									return html;
@@ -428,7 +346,7 @@
 								"async": false,
 								"dataType": "json",
 								"url": '{{route('component.ctGetContract')}}',
-								"data": {"contract_class": '{{ session('userInfo.sysConfig.contract.income') }}', "_token": '{{csrf_token()}}'},
+								"data": {"contract_class": '{{ session('userInfo.sysConfig.contract.payment') }}', "_token": '{{csrf_token()}}'},
 								"dataSrc": function ( res ) {
 									if(res.status == true){
 										return res.data;
@@ -533,7 +451,7 @@
 			] ).draw( false );
 			html = '';
 			invoiceAmount = toDecimal(parseFloat(invoiceAmount) + parseFloat(a));
-			$('#invoiceAmount').html(invoiceAmount);
+			$('#invoice_amount').val(invoiceAmount);
 		}
 		function delCont(e, a){
 			var contInfoId = $('#contInfo_id').val();
@@ -543,151 +461,13 @@
 			$('#contInfo_id').val(contInfoId);
 			contListTable.row('#'+e).remove().draw( false );
             invoiceAmount = toDecimal(parseFloat(invoiceAmount) - parseFloat(a));
-            $('#invoiceAmount').html(invoiceAmount);
+            $('#invoice_amount').val(invoiceAmount);
 		}
 		function goCont(){
 			$('#listContractInfo').hide();
 			$('#listContract').show();
 		}
 
-		function initInvoTable(){
-			$('#listInvoiceInfo').hide();
-			$('#listInvoice').show();
-			if(invoiceTable =='') {
-				invoiceTable = $('#invoiceTable')
-						.DataTable({
-							"lengthChange": false,
-							"ordering": false,
-							"searching": false,
-							"deferRender": true,
-							"serverSide": true,
-							"ajax": {
-								"type": "post",
-								"async": false,
-								"dataType": "json",
-								"url": '{{route('component.ctGetInvoice')}}',
-								"data": {"_token": '{{csrf_token()}}'},
-								"dataSrc": function (res) {
-									if (res.status == true) {
-										return res.data;
-									} else {
-										alertDialog(res.status, res.msg);
-									}
-								}
-							},
-							"columns": [
-								{
-									"data": "invoice_start_num", "class": "center", render: function (data, type, row) {
-									html = row.invoice_start_num + ' 一 ' + row.invoice_end_num;
-									return html;
-								}
-								},
-								{"data": "invoice_buy_date", "class": "center"},
-								{"data": "invoice_type"},
-								{"data": "invoice_text"}
-							],
-							"createdRow": function (row, data) {
-								$(row).attr('id', data.id);
-								$(row).attr('num', (data.invoice_start_num + ' 一 ' + data.invoice_end_num));
-								$(row).attr('type', data.invoice_type);
-								$(row).attr('text', data.invoice_text);
-							}
-						});
-				$('#invoiceTable tbody').on('click', 'tr', function () {
-					if ($(this).hasClass('selected')) {
-						$(this).removeClass('selected');
-						invoice['id'] = '';
-						invoice['num'] = '';
-						invoice['type'] = '';
-						invoice['text'] = '';
-					}
-					else {
-						invoiceTable.$('tr.selected').removeClass('selected');
-						$(this).addClass('selected');
-						invoice['id'] = $(this).attr('id');
-						invoice['num'] = $(this).attr('num');
-						invoice['type'] = $(this).attr('type');
-						invoice['text'] = $(this).attr('text');
-					}
-				});
-			}
-		}
-		function listInvoInfo(){
-			if(invoice.id == ''){
-				alertDialog('-1', '请选择合同！');
-				return false;
-			}
-			if(invoInfoTable == ''){
-				invoInfoTable = $('#invoInfoTable')
-						.DataTable({
-							"lengthChange": false,
-							"ordering": false,
-							"searching": false,
-							"deferRender": true,
-							"serverSide": true,
-							"ajax": {
-								"type": "post",
-								"async": false,
-								"dataType": "json",
-								"url": '{{route('component.ctGetInvoDetails')}}',
-								"data": {"id": invoice.id,"_token": '{{csrf_token()}}'},
-								"dataSrc": function ( res ) {
-									if(res.status == true){
-										return res.data;
-									}else{
-										alertDialog(res.status, res.msg);
-									}
-								}
-							},
-							"columns": [
-								{ "data": "invoice_num", "class": "center"},
-								{ "data": "invoice_write_user"},
-								{ "data": "invoice_write_date"},
-								{ "data": "invoice_status", "class": "center", render: function(data) {
-									return formatStatus(data);
-								}},
-								{ "data": "null", "class": "center"},
-							],
-							"columnDefs": [{
-								"targets": 4,
-								"render": function(data, type, row) {
-									html = '';
-									if(row.invoice_status == '400'){
-										html = '<div class="action-buttons">' +
-												'<a class="green" href="#" onclick="selectInvo(\'' + row.id + '\', \'' + row.invoice_num + '\')">' +
-												'<i class="ace-icon glyphicon glyphicon-ok bigger-130"></i>' +
-												'</a></div>';
-									}
-									return html;
-								}
-							}]
-						});
-			}else{
-				invoInfoTable.settings()[0].ajax.data =  {"id": invoice.id, "_token": '{{csrf_token()}}'};
-				invoInfoTable.ajax.reload();
-			}
-			$('#invoInfoNum').text(invoice.num);
-			$('#invoInfoType').text(invoice.type);
-			$('#invoInfoText').text(invoice.text);
-			$('#listInvoice').hide();
-			$('#listInvoiceInfo').show();
-		}
-		function selectInvo(e, n){
-			var invoInfoId = $('#invoInfo_id').val();
-			if(invoInfoId == e){
-				alertDialog('-1', '请不要重复选择');
-				return false;
-			}
-			$('#invoInfo_id').val(e);
-			$('#invoiceNum').text(n);
-			$('#invoiceType').text(invoice.type);
-			$('#invoiceText').text(invoice.text);
-			$('#closeInvoBtn').click();
-		}
-		function goInvo(){
-			$('#listInvoiceInfo').hide();
-			$('#listInvoice').show();
-		}
 
 		//验证表单
 		function postFrom(){

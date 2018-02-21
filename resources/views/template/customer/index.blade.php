@@ -19,6 +19,7 @@
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
 					<button class="btn btn-white btn-sm btn-round" onclick="addCustomer();">添加</button>
+                    <button type="button" class="btn btn-white btn-sm btn-round" onclick="listCustomer();">详情</button>
 				</div>
 			</div>
 			<p></p>
@@ -45,6 +46,7 @@
 {{--底部js--}}
 @section('FooterJs')
 	<script type="text/javascript">
+        var select_id = '';
 		var customerTable;
 		$(function($) {
 			var html;
@@ -85,7 +87,21 @@
 										return html;
 									}
 								}],
+                                "createdRow": function( row, data ) {
+                                    $(row).attr( 'id', data.id );
+                                }
 							});
+            $('#customerTable tbody').on( 'click', 'tr', function () {
+                if ( $(this).hasClass('selected') ) {
+                    $(this).removeClass('selected');
+                    select_id = '';
+                }
+                else {
+                    customerTable.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    select_id = this.id
+                }
+            });
 		})
 
 		function addCustomer(){
@@ -96,5 +112,12 @@
 			window.location.href = "{{route('customer.editCustomer')}}?id=" + e;
 		}
 
+        function listCustomer(){
+            if(select_id == ''){
+                alertDialog('-1', '请选择客户！');
+                return false;
+            }
+            window.location.href = "{{route('customer.listCustomer')}}?id=" + select_id;
+        }
 	</script>
 @endsection()

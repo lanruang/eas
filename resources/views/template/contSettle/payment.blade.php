@@ -10,7 +10,7 @@
 {{--面包削导航--}}
 @section('breadcrumbNav')
 	<li><a href="{{route('contSettle.index')}}">合同结算</a></li>
-	<li>合同应收</li>
+	<li>合同应付</li>
 @endsection()
 
 {{--页面内容--}}
@@ -19,10 +19,10 @@
 		<div class="col-xs-12 col-sm-12">
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
-					<button type="button" class="btn btn-white btn-sm btn-round" onclick="createIncome();">结算</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="createPayment();">结算</button>
 				</div>
 			</div>
-			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('contSettle.createIncome')}}" >
+			<form class="form-horizontal" role="form" id="validation-form" method="post" action="{{route('contSettle.createPayment')}}" >
 				<div class="form-group">
 					<div class="col-sm-2">
 						<input type="hidden" class="form-control" id="ids" name="ids" value="">
@@ -74,7 +74,7 @@
 							"type": "post",
 							"async": false,
 							"dataType": "json",
-							"url": '{{route('contSettle.getIncome')}}',
+							"url": '{{route('contSettle.getPayment')}}',
 							"data": {"_token": '{{csrf_token()}}'},
 							"dataSrc": function ( res ) {
 								if(res.status == true){
@@ -150,7 +150,7 @@
 			});
 		})
 
-		function createIncome(){
+		function createPayment(){
 			if($('#validation-form').valid()){
 				$('#validation-form').submit();
 			};

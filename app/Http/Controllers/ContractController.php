@@ -25,7 +25,14 @@ class ContractController extends Common\CommonController
     //合同列表
     public function index()
     {
-        return view('contract.index');
+        //获取合同下拉菜单信息
+        $data['select'] = SysAssDb::whereIn('ass_type', array('contract_class', 'contract_type'))
+            ->select('ass_type', 'ass_text', 'ass_value')
+            ->orderBy('ass_sort')
+            ->get()
+            ->toArray();
+
+        return view('contract.index', $data);
     }
 
     //合同列表
@@ -36,12 +43,46 @@ class ContractController extends Common\CommonController
             echoAjaxJson('-1', '非法请求');
         }
 
+        //验证表单
+        $input = Input::all();
+        $searchSql = array();
+        if(array_key_exists('contract_class', $input) && $input['contract_class']){
+            $searchSql[] = array('cont.cont_class', $input['contract_class']);
+        }
+        if(array_key_exists('contract_type', $input) && $input['contract_type']){
+            $searchSql[] = array('cont.cont_type', $input['contract_type']);
+        }
+        if(array_key_exists('contract_num', $input) && $input['contract_num']){
+            $searchSql[] = array('cont.cont_num', 'like', '%' . $input['contract_num'] . '%');
+        }
+        if(array_key_exists('contract_name', $input) && $input['contract_name']){
+            $searchSql[] = array('cont.cont_name', 'like', '%' . $input['contract_name'] . '%');
+        }
+        if(array_key_exists('supplier_name', $input) && $input['supplier_name']){
+            $searchSql[] = array('supp.supp_name', 'like', '%' . $input['supplier_name'] . '%');
+        }
+        if(array_key_exists('customer_name', $input) && $input['customer_name']){
+            $searchSql[] = array('cust.cust_name', 'like', '%' . $input['customer_name'] . '%');
+        }
+        if(array_key_exists('contract_status', $input) && $input['contract_status']){
+            $searchSql[] = array('cont.cont_status', $input['contract_status']);
+        }
+
         //获取记录总数
-        $total = ContractDb::count();
+        $total = ContractDb::from('contract AS cont')
+            ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
+            ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'cont.cont_parties','=','cust.cust_id')
+            ->leftJoin('supplier AS supp', 'cont.cont_parties','=','supp.supp_id')
+            ->where($searchSql)
+            ->count();
         //获取数据
         $result = ContractDb::from('contract AS cont')
             ->leftJoin('sys_assembly AS sysAssType', 'cont.cont_type','=','sysAssType.ass_id')
             ->leftJoin('sys_assembly AS sysAssClass', 'cont.cont_class','=','sysAssClass.ass_id')
+            ->leftJoin('customer AS cust', 'cont.cont_parties','=','cust.cust_id')
+            ->leftJoin('supplier AS supp', 'cont.cont_parties','=','supp.supp_id')
+            ->where($searchSql)
             ->select('cont.cont_id AS id', 'cont.cont_type AS contract_type', 'cont.cont_num AS contract_num',
                 'cont.cont_name AS contract_name', 'cont.cont_start AS date_start', 'cont.cont_end AS date_end',
                 'cont.cont_sum_amount AS contract_amount', 'cont.cont_status AS status', 'sysAssType.ass_text AS contract_type',
@@ -560,6 +601,10 @@ class ContractController extends Common\CommonController
         //删除附件
         $result = ContEncloDb::where('enclo_id', $id)
             ->delete();
+
+        $contDir = substr($enclo->enclo_url ,10 ,strlen($enclo->enclo_url));
+        Storage::disk('storage')->delete($contDir);
+
         if($result){
             echoAjaxJson('1', "删除成功");
         }else{
@@ -666,7 +711,7 @@ class ContractController extends Common\CommonController
         ];
         $message = [
             'id.required' => '参数不存在',
-            'id.integer' => '参数错误',
+            'id.between' => '参数错误',
         ];
         $validator = Validator::make($input, $rules, $message);
         if ($validator->fails()) {

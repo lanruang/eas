@@ -19,7 +19,7 @@
                             <span class="badge badge-danger">{{ $budget }}</span>
                         </a>
                     </li>
-
+<!--
                     <li>
                         <a data-toggle="tab" href="#budgetSum" onclick="budgetSumFun();">
                             <i class="pink ace-icon fa fa-bar-chart-o bigger-110"></i>
@@ -27,7 +27,7 @@
                             <span class="badge badge-danger">{{ $budgetSum }}</span>
                         </a>
                     </li>
-
+-->
                     <li>
                         <a data-toggle="tab" href="#contract" onclick="contractFun();">
                             <i class="blue ace-icon fa fa-briefcase bigger-110"></i>
@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-
+<!--
                     <div id="budgetSum" class="tab-pane">
                         <div class="row">
                             <div class="col-xs-12 col-sm-11">
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </div>
-
+-->
                     <div id="contract" class="tab-pane">
                         <div class="row">
                             <div class="col-xs-12 col-sm-11">

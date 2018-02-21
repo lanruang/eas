@@ -507,7 +507,7 @@ class BudgetController extends Common\CommonController
             $result[$k]['parent'] = ($v['level'] == 0) ? 1 : 0;
             $result[$k]['status'] = !$result[$k]['status'] ? 'false' : $result[$k]['status'];
             foreach($result as $kk => $vv){
-                if($v['id'] == $vv['pid'] && $v['level'] != 0){
+                if($v['id'] == $vv['pid']){
                     $result[$k]['budget_amount'] = sprintf("%.2f", $result[$k]['budget_amount'] + $vv['budget_amount']);
                     $result[$k]['parent'] = 1;
                 }

@@ -301,6 +301,14 @@ class ComponentController extends CommonController
             echoAjaxJson('-1', '非法请求');
         }
 
+        //验证表单
+        $input = Input::all();
+
+        $searchSql['cont.cont_status'] = '301';
+        if (array_key_exists('contract_class', $input)) {
+            $searchSql[] = array('cont.cont_class', $input['contract_class']);
+        }
+
         //获取记录总数
         $total = ContractDb::count();
         //获取数据
@@ -311,7 +319,7 @@ class ComponentController extends CommonController
                 'cont.cont_name AS contract_name', 'cont.cont_start AS date_start', 'cont.cont_end AS date_end',
                 'cont.cont_sum_amount AS contract_amount', 'cont.cont_status AS status', 'sysAssType.ass_text AS contract_type',
                 'sysAssClass.ass_text AS contract_class')
-            ->where('cont.cont_status', '301')
+            ->where($searchSql)
             ->get()
             ->toArray();
        
@@ -347,12 +355,11 @@ class ComponentController extends CommonController
             echoAjaxJson('-1', $validator->errors()->first());
         }
 
-        $searchSql['cont_id'] = $input['id'];
-        $searchSql['cont_status'] = '301';
+        $searchSql[] = array('cont_id', $input['id']);
+        $searchSql[] = array('cont_status', '301');
         if (array_key_exists('handle_status', $input)) {
             $searchSql[] = array('cont_handle_status', $input['handle_status']);
         }
-
         $result = ContDetailsDb::where($searchSql)
             ->select('details_id AS id', 'cont_details_date AS date', 'cont_amount AS amount', 'cont_handle_status AS status')
             ->orderBy('cont_details_date', 'asc')

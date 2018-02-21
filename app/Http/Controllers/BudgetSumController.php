@@ -356,6 +356,7 @@ class BudgetSumController extends Common\CommonController
         if($validator->fails()){
             echoAjaxJson('-1', $validator->errors()->first());
         }
+
         //获取汇总预算信息
         $budgetSum = BudgetDb::where('budget_id', $input['budget_id'])
                             ->select('budget_ids', 'budget_id', 'budget_start', 'budget_end')
@@ -375,7 +376,7 @@ class BudgetSumController extends Common\CommonController
             ->orderBy('subjects.sub_ip', 'ASC')
             ->get()
             ->toArray();
-
+        p($subjectSum);
         //获取预算项金额
         $budget = BudgetSubjectDateDb::select('budget_id', 'subject_id',DB::raw('sum(budget_amount) AS budget_amount'))
             ->whereIn('budget_id', $ids)

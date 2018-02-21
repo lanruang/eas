@@ -178,6 +178,9 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createCustomer', ['as' => 'customer.createCustomer', 'uses' => 'CustomerController@createCustomer']);//添加客户
         Route::get('editCustomer', ['as' => 'customer.editCustomer', 'uses' => 'CustomerController@editCustomer']);//编辑客户视图
         Route::post('updateCustomer', ['as' => 'customer.updateCustomer', 'uses' => 'CustomerController@updateCustomer']);//更新客户
+        Route::get('listCustomer', ['as' => 'customer.listCustomer', 'uses' => 'CustomerController@listCustomer']);//查看客户视图
+        Route::post('delEnclo', ['as' => 'customer.delEnclo', 'uses' => 'CustomerController@delEnclo']);//删除附件
+        Route::post('uploadEnclo', ['as' => 'customer.uploadEnclo', 'uses' => 'CustomerController@uploadEnclo']);//上传附件
     });
     /*-----------------------------供应商列表-----------------------------*/
     //供应商列表
@@ -188,6 +191,9 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('createSupplier', ['as' => 'supplier.createSupplier', 'uses' => 'SupplierController@createSupplier']);//添加供应商
         Route::get('editSupplier', ['as' => 'supplier.editSupplier', 'uses' => 'SupplierController@editSupplier']);//编辑供应商视图
         Route::post('updateSupplier', ['as' => 'supplier.updateSupplier', 'uses' => 'SupplierController@updateSupplier']);//更新供应商
+        Route::get('listSupplier', ['as' => 'supplier.listSupplier', 'uses' => 'SupplierController@listSupplier']);//查看客户视图
+        Route::post('delEnclo', ['as' => 'supplier.delEnclo', 'uses' => 'SupplierController@delEnclo']);//删除附件
+        Route::post('uploadEnclo', ['as' => 'supplier.uploadEnclo', 'uses' => 'SupplierController@uploadEnclo']);//上传附件
     });
     /*-----------------------------合同管理-----------------------------*/
     //合同列表
@@ -211,6 +217,7 @@ Route::group(['middleware' => ['permission']], function () {
     //合同结算
     Route::group(['prefix' => 'contSettle'], function () {
         Route::get('index', ['as' => 'contSettle.index', 'uses' => 'ContSettleController@index']);//合同结算视图
+        Route::post('getSettle', ['as' => 'contSettle.getSettle', 'uses' => 'ContSettleController@getSettle']);//合同结算列表
         Route::get('receivable', ['as' => 'contSettle.receivable', 'uses' => 'ContSettleController@receivable']);//合同应收
         Route::get('payable', ['as' => 'contSettle.payable', 'uses' => 'ContSettleController@payable']);//合同应付
         Route::get('income', ['as' => 'contSettle.income', 'uses' => 'ContSettleController@income']);//合同收入结算
@@ -221,6 +228,8 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('getPayable', ['as' => 'contSettle.getPayable', 'uses' => 'ContSettleController@getPayable']);//合同应付列表
         Route::post('getIncome', ['as' => 'contSettle.getIncome', 'uses' => 'ContSettleController@getIncome']);//合同收入列表
         Route::post('createIncome', ['as' => 'contSettle.createIncome', 'uses' => 'ContSettleController@createIncome']);//合同收入结算
+        Route::post('getPayment', ['as' => 'contSettle.getPayment', 'uses' => 'ContSettleController@getPayment']);//合同应付列表
+        Route::post('createPayment', ['as' => 'contSettle.createPayment', 'uses' => 'ContSettleController@createPayment']);//合同应付结算
     });
     /*-----------------------------费用管理-----------------------------*/
     //费用报销
@@ -265,8 +274,27 @@ Route::group(['middleware' => ['permission']], function () {
 
     /*-----------------------------开具发票-----------------------------*/
     Route::group(['prefix' => 'invoOpen'], function () {
-        Route::get('index', ['as' => 'invoOpen.index', 'uses' => 'InvoOpenController@index']);//发票列表
+        Route::get('index', ['as' => 'invoOpen.index', 'uses' => 'InvoOpenController@index']);//开具发票视图
         Route::post('createInvoOpen', ['as' => 'invoOpen.createInvoOpen', 'uses' => 'InvoOpenController@createInvoOpen']);//开具发票处理
+    });
+
+    /*-----------------------------签收发票-----------------------------*/
+    Route::group(['prefix' => 'invoCollect'], function () {
+        Route::get('index', ['as' => 'invoCollect.index', 'uses' => 'InvoCollectController@index']);//签收发票视图
+        Route::post('createInvoCollect', ['as' => 'invoCollect.createInvoCollect', 'uses' => 'InvoCollectController@createInvoCollect']);//开具发票处理
+    });
+
+    /*-----------------------------预算报表-----------------------------*/
+    Route::group(['prefix' => 'reportBud'], function () {
+        Route::get('index', ['as' => 'reportBud.index', 'uses' => 'ReportBudController@index']);//预算报表视图
+        Route::post('getReport', ['as' => 'reportBud.getReport', 'uses' => 'ReportBudController@getReport']);//获取报表
+        Route::post('getReportDate', ['as' => 'reportBud.getReportDate', 'uses' => 'ReportBudController@getReportDate']);//获取报表
+    });
+
+    /*-----------------------------科目余额表-----------------------------*/
+    Route::group(['prefix' => 'reportSub'], function () {
+        Route::get('index', ['as' => 'reportSub.index', 'uses' => 'ReportSubController@index']);//科目余额表视图
+        Route::post('getReport', ['as' => 'reportSub.getReport', 'uses' => 'ReportSubController@getReport']);//获取报表
     });
 
     /*-----------------------------系统组件-----------------------------*/

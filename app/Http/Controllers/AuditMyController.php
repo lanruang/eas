@@ -20,6 +20,7 @@ use App\Http\Models\Contract\ContractModel AS ContractDb;
 use App\Http\Models\Contract\ContDetailsModel AS ContDetailsDb;
 use App\Http\Models\Contract\ContEnclosureModel AS ContEncloDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
+use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 
 class AuditMyController extends Common\CommonController
 {
