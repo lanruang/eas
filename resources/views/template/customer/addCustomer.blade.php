@@ -324,7 +324,7 @@
 
 		//返回
 		function goBack(){
-			window.location.href = "{{route('customer.index')}}";
+			window.location.href = "{{ route('customer.index') }}";
 		}
 
 		//验证表单

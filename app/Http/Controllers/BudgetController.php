@@ -72,6 +72,8 @@ class BudgetController extends Common\CommonController
             ->skip($skip)
             ->take($take)
             ->orderBy('budget.status', 'Desc')
+            ->orderBy('budget.department', 'ASC')
+            ->orderBy('budget.budget_num', 'ASC')
             ->get()
             ->toArray();
 

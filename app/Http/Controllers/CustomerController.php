@@ -23,20 +23,29 @@ class CustomerController extends Common\CommonController
     //客户列表
     public function getCustomer(Request $request){
         //验证传输方式
-
         if(!$request->ajax())
         {
             echoAjaxJson('-1', '非法请求');
         }
+        //验证表单
+        $input = Input::all();
+        //分页
+        $skip = isset($input['start']) ? intval($input['start']) : 0;//从多少开始
+        $take = isset($input['length']) ? intval($input['length']) : 10;//数据长度
 
         //获取记录总数
         $total = CustomerDb::count();
         //获取数据
         $result = CustomerDb::select('cust_id AS id', 'cust_num', 'cust_name')
+            ->orderBy('cust_status', 'DESC')
+            ->orderBy('cust_name', 'ASC')
+            ->skip($skip)
+            ->take($take)
             ->get()
             ->toArray();
 
         //创建结果数据
+        $data['draw'] = isset($input['draw']) ? intval($input['draw']) : 1;
         $data['recordsTotal'] = $total;//总记录数
         $data['recordsFiltered'] = $total;//条件过滤后记录数
         $data['data'] = $result;

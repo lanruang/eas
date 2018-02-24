@@ -16,8 +16,14 @@ class NodeController extends Common\CommonController
         return view('node.index');
     }
 
-    public function getNode()
+    public function getNode(Request $request)
     {
+        //验证传输方式
+        if(!$request->ajax())
+        {
+            echoAjaxJson('-1', '非法请求');
+        }
+        
         //获取参数
         $input = Input::all();
         $pid = isset($input['pid']) ? $input['pid'] : '0';

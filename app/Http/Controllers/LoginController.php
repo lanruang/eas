@@ -86,8 +86,11 @@ class LoginController extends Common\CommonController
             ->orderBy('sub_ip', 'asc')
             ->get()
             ->toArray();
-        foreach($subRel as $v){
-            $subject[$v['id']] = $v;
+        $subject = array();
+        if($subRel){
+            foreach($subRel as $v){
+                $subject[$v['id']] = $v;
+            }
         }
 
         //更新登录时间

@@ -268,7 +268,6 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
-								"paging": false,
 								"serverSide": true,
 								"ajax": {
 									"type": "post",

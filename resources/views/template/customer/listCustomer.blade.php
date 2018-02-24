@@ -20,6 +20,8 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<button class="btn btn-white btn-sm btn-round" onclick="goBack();"><i class="ace-icon fa fa-reply icon-only"></i></button>
+			<button type="button" class="btn btn-white btn-sm btn-round" onclick="addContact();">添加联系人</button>
+			<button type="button" class="btn btn-white btn-sm btn-round" onclick="listContact();">查看联系人</button>
 			<!-- PAGE CONTENT BEGINS -->
 			<form class="form-horizontal">
 				<h4 class="header smaller lighter">
@@ -169,6 +171,16 @@
 		//返回
 		function goBack(){
 			window.location.href = "{{route('customer.index')}}";
+		}
+
+		//查看联系人
+		function addContact(){
+			window.location.href = "{{route('contact.addContact')}}?type=customer&partie="+"{{ $cust_id }}";
+		}
+
+		//查看联系人
+		function listContact(){
+			window.location.href = "{{route('contact.index')}}?type=customer&partie="+"{{ $cust_id }}";
 		}
 	</script>
 @endsection()

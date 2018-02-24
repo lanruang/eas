@@ -19,7 +19,7 @@
 			<div class="clearfix">
 				<div class="grid2 new_grid2">
 					<button class="btn btn-white btn-sm btn-round" onclick="addCustomer();">添加</button>
-                    <button type="button" class="btn btn-white btn-sm btn-round" onclick="listCustomer();">详情</button>
+					<button type="button" class="btn btn-white btn-sm btn-round" onclick="listCustomer();">详情</button>
 				</div>
 			</div>
 			<p></p>
@@ -55,7 +55,6 @@
 								"lengthChange": false,
 								"ordering": false,
 								"searching": false,
-								"paging": false,
 								"serverSide": true,
 								"ajax": {
 									"type": "post",
@@ -119,5 +118,6 @@
             }
             window.location.href = "{{route('customer.listCustomer')}}?id=" + select_id;
         }
+
 	</script>
 @endsection()

@@ -40,7 +40,7 @@
 				</ul>
 
 				<div class="tab-content">
-					<div id="budget" class="tab-pane">
+					<div id="budget" class="tab-pane in active">
 						<div class="row">
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="budgetForm" method="post" action="{{ route('sysConfig.updateBudget') }}" >
@@ -74,7 +74,7 @@
 						</div>
 					</div>
 
-					<div id="contract" class="tab-pane in active">
+					<div id="contract" class="tab-pane">
 						<div class="row">
 							<div class="col-xs-12">
 								<form class="form-horizontal" id="contractForm" method="post" action="{{ route('sysConfig.updateContract') }}" >

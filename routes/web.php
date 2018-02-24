@@ -314,4 +314,21 @@ Route::group(['middleware' => ['permission']], function () {
         Route::post('ctGetInvoice', ['as' => 'component.ctGetInvoice', 'uses' => 'Common\ComponentController@ctGetInvoice']);//获取发票集列表
         Route::post('ctGetInvoDetails', ['as' => 'component.ctGetInvoDetails', 'uses' => 'Common\ComponentController@ctGetInvoDetails']);//获取发票详情列表
     });
+
+    /*-----------------------------联系人--------------------------------*/
+    //联系人列表
+    Route::group(['prefix' => 'contact'], function () {
+        Route::get('index', ['as' => 'contact.index', 'uses' => 'ContactController@index']);//部门列表
+        Route::post('getContact', ['as' => 'contact.getContact', 'uses' => 'ContactController@getContact']);//获取部门列表
+        Route::get('addContact', ['as' => 'contact.addContact', 'uses' => 'ContactController@addContact']);//添加部门视图
+        Route::post('createContact', ['as' => 'contact.createContact', 'uses' => 'ContactController@createContact']);//添加部门
+        Route::get('editContact', ['as' => 'contact.editContact', 'uses' => 'ContactController@editContact']);//修改部门视图
+        Route::post('updateContact', ['as' => 'contact.updateContact', 'uses' => 'ContactController@updateContact']);//更新部门
+    });
+
+    /*-----------------------------系统组件-----------------------------*/
+    Route::group(['prefix' => 'updateData'], function () {
+        Route::get('index', ['as' => 'updateData.index', 'uses' => 'UpdateDataController@index']);//中间层页面跳转
+    });
+
 });
