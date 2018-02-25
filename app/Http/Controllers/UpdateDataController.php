@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Models\Fullback\ContDetailsModel;
+use App\Http\Models\Invoice\InvoiceDetailsModel;
+use App\Http\Models\Invoice\InvoiceModel;
 use Illuminate\Support\Facades\DB;
 use App\Http\Models\Fullback\ContractTypeModel AS ContractTypeDb;
 use App\Http\Models\System\SysAssemblyModel AS SysAssDb;
@@ -17,12 +20,22 @@ use App\Http\Models\User\UsersBaseModel AS UsersBaseDb;
 use App\Http\Models\User\UsersInfoModel AS UsersInfoDb;
 use App\Http\Models\Fullback\UserModel AS UsDb;
 use App\Http\Models\Customer\CustomerModel AS CustomerDb;
+use App\Http\Models\Supplier\SupplierModel AS SupplierDb;
 use App\Http\Models\Fullback\BudgetModel AS BudDb;
 use App\Http\Models\Fullback\BudgetSubjectModel AS BudSubDb;
 use App\Http\Models\Fullback\BudgetSubjectDateModel AS BudSubDateDb;
 use App\Http\Models\Budget\BudgetModel AS BudgetDb;
 use App\Http\Models\Budget\BudgetSubjectModel AS BudgetSubjectDb;
 use App\Http\Models\Budget\BudgetSubjectDateModel AS BudgetSubjectDateDb;
+use App\Http\Models\Fullback\ContractModel AS ContDb;
+use App\Http\Models\Fullback\ContDetailsModel AS ContDetailsDb;
+use App\Http\Models\Contract\ContractModel AS ContractDb;
+use App\Http\Models\Contract\ContractDetailsModel AS ContractDetailsDb;
+use App\Http\Models\Fullback\InvoiceModel AS InvoDb;
+use App\Http\Models\Fullback\InvoiceDetailsModel AS InvoDetailsDb;
+use App\Http\Models\Invoice\InvoiceModel AS InvoiceDb;
+use App\Http\Models\Invoice\InvoiceDetailsModel AS InvoiceDDb;
+use App\Http\Models\Fullback\RchsModel AS RchsDb;
 
 class UpdateDataController extends Common\CommonController
 {
@@ -253,7 +266,7 @@ class UpdateDataController extends Common\CommonController
             return $x;
         });
         echo('导入数据'.$result.'条');*/
-        /*---------------------------------供应商*/
+        /*---------------------------------预算
         $Bud = BudDb::whereIn('id', ['11', '12', '13', '14', '15'])->get()->toArray();
         echo('导出预算数据'.count($Bud).'条<br>');
         $BudData = array();
@@ -327,7 +340,274 @@ class UpdateDataController extends Common\CommonController
                 }
                 return $x;
         });
-        echo('导入预算数据'.$result.'条<br>');
+        echo('导入预算数据'.$result.'条<br>');*/
+        /*---------------------------------发票
+        $invo = InvoDb::get()->toArray();
+        echo('导出发票数据'.count($invo).'条<br>');
+        $result = DB::transaction(function () use($invo) {
+            $x = 0;
+            $result = '';
+            $invoData = array();
+            foreach($invo as $k => $v){
+                $id = getId();
+                $invo_type = SysAssDb::where('ass_type','invoice_type')
+                    ->where('old_id', $v['fpzl'])->first();
+                $invoData['invo_id'] = $id;
+                $invoData['invo_pid'] = 0;
+                $invoData['invo_start_num'] = $v['fpqsh'];
+                $invoData['invo_end_num'] = $v['fpzzh'];
+                $invoData['invo_buy_date'] = date('Y-m-d', $v['gmrq']);
+                $invoData['invo_text'] = '';
+                $invoData['invo_type'] = $invo_type->ass_id;
+                $invoData['old_id'] = $v['id'];
+                $invoData['old_company'] = $v['gs'];
+                $invoData['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                $invoData['created_at'] = date('Y-m-d H:i:s', time());
+                $invoData['updated_at'] = date('Y-m-d H:i:s', time());
+                $result = InvoiceDb::insert($invoData);
+                $x = $result ? $x + 1 : $x;
+            }
+            return $x;
+        });
+        echo('导入发票数据'.$result.'条');*/
+        /*---------------------------------发票明细
+        $invo = InvoDetailsDb::get()->toArray();
+        echo('导出发票明细数据'.count($invo).'条<br>');
+        $result = DB::transaction(function () use($invo) {
+            $x = 0;
+            $result = '';
+            $invoData = array();
+            foreach($invo as $k => $v){
+                $id = getId();
+                $invo_id = InvoiceDb::where('old_id', $v['fpgr_id'])->first();
+                $invoData['invo_details_id'] = $id;
+                $invoData['invo_id'] = $invo_id->invo_id;
+                $invoData['invo_num'] = formatInvoice($v['fphm']);
+                $invoData['invo_status'] = $v['fpzt'] == '1' ? '401' : '400';
+                $invoData['invo_write_user'] = formatInvoice($v['fphm']);
+                $invoData['invo_write_date'] = formatInvoice($v['fphm']);
+                $invoData['invo_class'] = 'inside';
+                $invoData['created_at'] = date('Y-m-d H:i:s', time());
+                $invoData['updated_at'] = date('Y-m-d H:i:s', time());
+                $invoData['old_id'] = $v['id'];
+                $result = InvoiceDDb::insert($invoData);
+                $x = $result ? $x + 1 : $x;
+            }
+            return $x;
+        });
+        echo('导入发票数据明细'.$result.'条');*/
+        /*---------------------------------获取合同
+        $cont = ContDb::from('ht AS ht')
+            ->leftjoin('ht_name AS hn', 'hn.id', '=', 'ht.htname')
+            ->where('ht.review', 'yes')
+            ->where('ht.htstart', '>=', strtotime('2017-01-01'))
+            ->select('ht.*', 'hn.name')
+            ->get()->toArray();
+        echo('导出数据合同'.count($cont).'条<br>');
+        $contData = array();
+        $result = DB::transaction(function () use($cont) {
+            $x = 0;
+            $result = '';
+            foreach($cont as $k => $v){
+                $id = getId();
+                $cont_type = SysAssDb::where('ass_type', 'contract_type')
+                    ->where('old_id', $v['type'])
+                    ->first();
+                $cont_budget = BudgetDb::where('old_id', $v['ys'])->first();
+                $cont_subject = SubjectDb::where('old_id', $v['km'])->first();
+                if($v['sz_type'] == 'sr'){
+                    $cont_parties = CustomerDb::where('old_id', $v['htf'])->first();
+                    $cont_parties = $cont_parties->cust_id;
+                }else{
+                    $cont_parties = SupplierDb::where('old_id', $v['htf'])->first();
+                    $cont_parties = $cont_parties->supp_id;
+                }
+                $contData['old_id'] = $v['id'];
+                $contData['cont_id'] = $id;
+                $contData['cont_type'] = $cont_type->ass_id;
+                $contData['cont_class'] = $v['sz_type'] == 'sr' ? '88400D89A9DE71258069C6262DEFC34C' : '1ED7BB45826EE056124DF47A93CB9072';
+                $contData['cont_budget'] = $cont_budget ? $cont_budget->budget_id : '';
+                $contData['cont_subject'] = $cont_subject->sub_id;
+                $contData['cont_num'] = $v['htid'];
+                $contData['cont_name'] = $v['name'];
+                $contData['cont_name'] = $v['name'];
+                $contData['cont_name'] = $v['name'];
+                $contData['cont_name'] = $v['name'];
+                $contData['cont_name'] = $v['name'];
+                $contData['cont_parties'] = $cont_parties;
+                $contData['cont_start'] = date('Y-m-d', $v['htstart']);
+                $contData['cont_end'] = date('Y-m-d', $v['htfinish']);
+                $contData['cont_status'] = '301';
+                $contData['cont_sum_amount'] = '0';
+                $contData['cont_remark'] = '';
+                $contData['cont_auto'] = '0';
+                $contData['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                $contData['created_at'] = date('Y-m-d H:i:s', time());
+                $contData['updated_at'] = date('Y-m-d H:i:s', time());
+                $result = ContractDb::insert($contData);
+                $x = $result ? $x + 1 : $x;
+            }
+            return $x;
+        });
+        echo('导入数据'.$result.'条');*/
+        /*---------------------------------获取合同明细*/
+        $cont = ContDetailsDb::where('review', 'yes')
+            ->whereBetween('htrq', array(strtotime('2017-01-01'),strtotime('2018-12-31')))
+            ->get()->toArray();
+        echo('导出数据合同明细'.count($cont).'条<br>');
+        $contData = array();
+        $result = DB::transaction(function () use($cont) {
+            $x = 0;
+            $result = '';
+            foreach($cont as $k => $v){
+                $id = getId();
+                $cont_handle_status = 000;
+                $cont_id = ContractDb::where('old_id', $v['ht'])->first();
+                if($cont_id){
+                    if($v['check_ys'] == '1' && $v['check_kp'] == '0' && $v['check'] == '0'){
+                        $cont_handle_status = '100';
+                    }
+                    if($v['check_ys'] == '1' && $v['check_kp'] == '1' && $v['check'] == '0'){
+                        $cont_handle_status = '110';
+                    }
+                    if($v['check_ys'] == '1' && $v['check_kp'] == '1' && $v['check'] == '1'){
+                        $cont_handle_status = '111';
+                    }
+                    $contData['details_id'] = $id;
+                    $contData['cont_id'] = $cont_id->cont_id;
+                    $contData['cont_details_date'] = date('Y-m-d', $v['htrq']);
+                    $contData['cont_amount'] = $v['htje'];
+                    $contData['cont_status'] = '301';
+                    $contData['cont_handle_status'] = $cont_handle_status;
+                    $contData['created_at'] = date('Y-m-d H:i:s', time());
+                    $contData['updated_at'] = date('Y-m-d H:i:s', time());
+                    //$result = ContractDb::insert($contData);
+                    //$x = $result ? $x + 1 : $x;
+                    //合同核销数据
+                    /*
+                    if($v['check_ys'] == '1'){
+                        $htType = $v['sz_type'] == 'sr' ? '应收款生成' : '应付款生成' ;
+                        $ht = RchsDb::where('ht_hx', $v['id'])
+                            ->where('title', 'like', '%'.$htType.'%')
+                            ->get()->toArray();
+                        if(count($ht) == '2'){
+                            $debit = SubjectDb::where('old_id', $ht[1]['km'])->first();
+                            $subject_id_debit = $debit->sub_id;
+                            $credit = SubjectDb::where('old_id', $ht[0]['km'])->first();
+                            $subject_id_credit = $credit->sub_id;
+                            $receivable = $cont_id->cont_class == '88400D89A9DE71258069C6262DEFC34C' ? 'receivable' : 'payable' ;
+                            $data['cont_main_id'] = getId();
+                            $data['cont_main_type'] = $receivable;
+                            $data['cont_id'] = $cont_id->cont_id;
+                            $data['details_id'] = $id;
+                            $data['cont_amount'] = $v['htje'];
+                            $data['budget_id'] = $cont_id->cont_budget;
+                            $data['subject_id_debit'] = $subject_id_debit;
+                            $data['subject_id_credit'] = $subject_id_credit;
+                            $data['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                            $data['created_at'] = date('Y-m-d H:i:s', time());
+                            $data['updated_at'] = date('Y-m-d H:i:s', time());
+                            //
+                        }else{
+                            echo('hthx_ys'.$v['id']."<br>");
+                        }
+                    }
+                    */
+                    if($v['check_kp'] == '1'){
+                        $htType = $v['sz_type'] == 'sr' ? '开票生成' : '收票生成' ;
+                        $ht = RchsDb::where('ht_hx', $v['id'])
+                            ->where('title', 'like', '%'.$htType.'%')
+                            ->get()->toArray();
+                        if(count($ht) == '2'){
+                            $debit = SubjectDb::where('old_id', $ht[1]['km'])->first();
+                            $subject_id_debit = $debit->sub_id;
+                            $credit = SubjectDb::where('old_id', $ht[0]['km'])->first();
+                            $subject_id_credit = $credit->sub_id;
+                            $receivable = $cont_id->cont_class == '88400D89A9DE71258069C6262DEFC34C' ? 'invoOpen' : 'invoCollect' ;
+                            $data['cont_main_id'] = getId();
+                            $data['cont_main_type'] = $receivable;
+                            $data['cont_id'] = $cont_id->cont_id;
+                            $data['details_id'] = $id;
+                            $data['cont_amount'] = $v['htje'];
+                            $data['budget_id'] = $cont_id->cont_budget;
+                            $data['subject_id_debit'] = $subject_id_debit;
+                            $data['subject_id_credit'] = $subject_id_credit;
+                            $data['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                            $data['created_at'] = date('Y-m-d H:i:s', time());
+                            $data['updated_at'] = date('Y-m-d H:i:s', time());
+                            if($v['sz_type']){
+                                
+                            }else{
+                                
+                            }
+                        }else{
+                            echo('hthx_kp'.$v['id']."<br>");
+                        }
+                    }
+                    /*
+                    if($v['check'] == '1'){
+                        $htType = $v['sz_type'] == 'sr' ? '收款确认' : '付款确认' ;
+                        $ht = RchsDb::where('ht_hx', $v['id'])
+                            ->where('title', 'like', '%'.$htType.'%')
+                            ->get()->toArray();
+                        if(count($ht) == '2'){
+                            $debit = SubjectDb::where('old_id', $ht[1]['km'])->first();
+                            $subject_id_debit = $debit->sub_id;
+                            $credit = SubjectDb::where('old_id', $ht[0]['km'])->first();
+                            $subject_id_credit = $credit->sub_id;
+                            $receivable = $cont_id->cont_class == '88400D89A9DE71258069C6262DEFC34C' ? 'income' : 'payment' ;
+                            $data['cont_main_id'] = getId();
+                            $data['cont_main_type'] = $receivable;
+                            $data['cont_id'] = $cont_id->cont_id;
+                            $data['details_id'] = $id;
+                            $data['cont_amount'] = $v['htje'];
+                            $data['budget_id'] = $cont_id->cont_budget;
+                            $data['subject_id_debit'] = $subject_id_debit;
+                            $data['subject_id_credit'] = $subject_id_credit;
+                            $data['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                            $data['created_at'] = date('Y-m-d H:i:s', time());
+                            $data['updated_at'] = date('Y-m-d H:i:s', time());
+                            //
+                        }else{
+                            echo('hthx_js'.$v['id']."<br>");
+                        }
+                    }
+
+                    if($v['check'] == '1'){
+                        $ht = RchsDb::where('ht_hx', $v['id'])
+                            ->where('title', 'like', '%自动结转%')
+                            ->get()->toArray();
+                        if(count($ht) == '2'){
+                            $debit = SubjectDb::where('old_id', $ht[1]['km'])->first();
+                            $subject_id_debit = $debit->sub_id;
+                            $credit = SubjectDb::where('old_id', $ht[0]['km'])->first();
+                            $subject_id_credit = $credit->sub_id;
+                            $receivable = $cont_id->cont_class == '88400D89A9DE71258069C6262DEFC34C' ? 'incomeAuto' : 'paymentAuto' ;
+                            $data['cont_main_id'] = getId();
+                            $data['cont_main_type'] = $receivable;
+                            $data['cont_id'] = $cont_id->cont_id;
+                            $data['details_id'] = $id;
+                            $data['cont_amount'] = $v['htje'];
+                            $data['budget_id'] = $cont_id->cont_budget;
+                            $data['subject_id_debit'] = $subject_id_debit;
+                            $data['subject_id_credit'] = $subject_id_credit;
+                            $data['created_user'] = 'A4049242B8B6B3323A8E2269261761E0';
+                            $data['created_at'] = date('Y-m-d H:i:s', time());
+                            $data['updated_at'] = date('Y-m-d H:i:s', time());
+                            //
+                        }else{
+                            echo('hthx_zd'.$v['id']."<br>");
+                        }
+                    }
+                    */
+                }else{
+                    echo('htid='.$v['ht']."<br>");
+                }
+            }
+            return $x;
+        });
+        echo('导入数据合同明细'.$result.'条');
+
     }
 
 }
