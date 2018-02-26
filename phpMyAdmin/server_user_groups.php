@@ -5,6 +5,7 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\Response;
 
 require_once 'libraries/common.inc.php';
 require_once 'libraries/server_users.lib.php';
@@ -15,7 +16,7 @@ if (! $GLOBALS['cfgRelation']['menuswork']) {
     exit;
 }
 
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
 $scripts->addFile('server_user_groups.js');
@@ -24,7 +25,10 @@ $scripts->addFile('server_user_groups.js');
  * Only allowed to superuser
  */
 if (! $GLOBALS['is_superuser']) {
-    $response->addHTML(PMA_Message::error(__('No Privileges'))->getDisplay());
+    $response->addHTML(
+        PMA\libraries\Message::error(__('No Privileges'))
+            ->getDisplay()
+    );
     exit;
 }
 
@@ -69,4 +73,3 @@ if (isset($_REQUEST['addUserGroup'])) {
 }
 
 $response->addHTML('</div>');
-?>

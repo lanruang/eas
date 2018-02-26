@@ -23,7 +23,7 @@ function setDropdownValues($dropdown, values, selectedValue) {
     // add an empty string to the beginning for empty selection
     values.unshift('');
     $.each(values, function () {
-        optionsAsString += "<option value='" + this + "'" + (selectedValue == this ? " selected='selected'" : "") + ">" + this + "</option>";
+        optionsAsString += "<option value='" + escapeHtml(this) + "'" + (selectedValue == this ? " selected='selected'" : "") + ">" + escapeHtml(this) + "</option>";
     });
     $dropdown.append($(optionsAsString));
 }
@@ -35,18 +35,18 @@ function setDropdownValues($dropdown, values, selectedValue) {
  */
 function getDropdownValues($dropdown) {
     var foreignDb = null, foreignTable = null;
-    var $tableDd, $columnDd;
+    var $databaseDd, $tableDd, $columnDd;
     var foreign = '';
     // if the changed dropdown is for foreign key constraints
     if ($dropdown.is('select[name^="destination_foreign"]')) {
         $databaseDd = $dropdown.parent().parent().parent().find('select[name^="destination_foreign_db"]');
-        $tableDd  = $dropdown.parent().parent().parent().find('select[name^="destination_foreign_table"]');
-        $columnDd = $dropdown.parent().parent().parent().find('select[name^="destination_foreign_column"]');
+        $tableDd    = $dropdown.parent().parent().parent().find('select[name^="destination_foreign_table"]');
+        $columnDd   = $dropdown.parent().parent().parent().find('select[name^="destination_foreign_column"]');
         foreign = '_foreign';
     } else { // internal relations
         $databaseDd = $dropdown.parent().find('select[name^="destination_db"]');
-        $tableDd  = $dropdown.parent().find('select[name^="destination_table"]');
-        $columnDd = $dropdown.parent().find('select[name^="destination_column"]');
+        $tableDd    = $dropdown.parent().find('select[name^="destination_table"]');
+        $columnDd   = $dropdown.parent().find('select[name^="destination_column"]');
     }
 
     // if the changed dropdown is a database selector
@@ -101,7 +101,8 @@ function getDropdownValues($dropdown) {
                     ) {
                         primary = data.primary[0];
                     }
-                    setDropdownValues($columnDd, data.columns, primary);
+                    setDropdownValues($columnDd.first(), data.columns, primary);
+                    setDropdownValues($columnDd.slice(1), data.columns);
                 }
             } else {
                 PMA_ajaxShowMessage(data.error, false);
@@ -173,8 +174,7 @@ AJAX.registerOnload('tbl_relation.js', function () {
         event.stopPropagation();
 
         var $prev_row = $(this).closest('tr').prev('tr');
-        var odd_even = ($prev_row.attr('class') == 'odd') ? 'even' : 'odd';
-        var $new_row = $prev_row.clone(true, true).attr('class', odd_even);
+        var $new_row = $prev_row.clone(true, true);
 
         // Update serial number.
         var curr_index = $new_row
@@ -219,7 +219,12 @@ AJAX.registerOnload('tbl_relation.js', function () {
 
         $anchor.PMA_confirm(question, $anchor.attr('href'), function (url) {
             var $msg = PMA_ajaxShowMessage(PMA_messages.strDroppingForeignKey, false);
-            $.get(url, {'is_js_confirmed': 1, 'ajax_request': true}, function (data) {
+            var params = {
+                'is_js_confirmed': 1,
+                'ajax_request': true,
+                'token': PMA_commonParams.get('token')
+            };
+            $.post(url, params, function (data) {
                 if (data.success === true) {
                     PMA_ajaxRemoveMessage($msg);
                     PMA_commonActions.refreshMain(false, function () {
@@ -228,7 +233,7 @@ AJAX.registerOnload('tbl_relation.js', function () {
                 } else {
                     PMA_ajaxShowMessage(PMA_messages.strErrorProcessingRequest + " : " + data.error, false);
                 }
-            }); // end $.get()
+            }); // end $.post()
         }); // end $.PMA_confirm()
     }); //end Drop Foreign key
 });

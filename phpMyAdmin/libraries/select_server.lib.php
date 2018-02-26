@@ -5,9 +5,8 @@
  *
  * @package PhpMyAdmin
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
+
+use PMA\libraries\URL;
 
 /**
  * Renders the server selection in list or selectbox form, or option tags only
@@ -31,19 +30,23 @@ function PMA_selectServer($not_only_options, $omit_fieldset)
 
     if ($not_only_options) {
         $retval .= '<form method="post" action="'
-            . $GLOBALS['cfg']['DefaultTabServer'] . '" class="disableAjax">';
-        $retval .= PMA_getHiddenFields(array('token' => $_SESSION[' PMA_token ']));
+            . PMA\libraries\Util::getScriptNameForOption(
+                $GLOBALS['cfg']['DefaultTabServer'], 'server'
+            )
+            . '" class="disableAjax">';
 
         if (! $omit_fieldset) {
             $retval .= '<fieldset>';
         }
+
+        $retval .= '<input type="hidden" name="token" value="' . $_SESSION[" PMA_token "] . '" >';
         $retval .= '<label for="select_server">'
-            . __('Current Server:') . '</label> ';
+            . __('Current server:') . '</label> ';
 
         $retval .= '<select name="server" id="select_server" class="autosubmit">';
         $retval .= '<option value="">(' . __('Servers') . ') ...</option>' . "\n";
     } elseif ($list) {
-        $retval .= __('Current Server:') . '<br />';
+        $retval .= __('Current server:') . '<br />';
         $retval .= '<ul id="list_server">';
     }
 
@@ -84,8 +87,10 @@ function PMA_selectServer($not_only_options, $omit_fieldset)
             } else {
 
                 $retval .= '<a class="disableAjax item" href="'
-                    . $GLOBALS['cfg']['DefaultTabServer']
-                    . PMA_URL_getCommon(array('server' => $key))
+                    . PMA\libraries\Util::getScriptNameForOption(
+                        $GLOBALS['cfg']['DefaultTabServer'], 'server'
+                    )
+                    . URL::getCommon(array('server' => $key))
                     . '" >' . htmlspecialchars($label) . '</a>';
             }
             $retval .= '</li>';
@@ -108,4 +113,3 @@ function PMA_selectServer($not_only_options, $omit_fieldset)
 
     return $retval;
 }
-?>

@@ -6,11 +6,13 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\URL;
+use PMA\libraries\Response;
+
 /**
  * Gets some core libraries
  */
 require_once 'libraries/common.inc.php';
-require_once 'libraries/tbl_columns_definition_form.lib.php';
 require_once 'libraries/central_columns.lib.php';
 
 if (isset($_POST['edit_save']) || isset($_POST['add_new_column'])) {
@@ -22,7 +24,7 @@ if (isset($_POST['edit_save']) || isset($_POST['add_new_column'])) {
     if ($col_default == 'NONE' && $_POST['col_default_sel'] != 'USER_DEFINED') {
         $col_default = "";
     }
-    $col_extra = $_POST['col_extra'];
+    $col_extra = isset($_POST['col_extra']) ? $_POST['col_extra'] : '';
     $col_isNull = isset($_POST['col_isNull'])?1:0;
     $col_length = $_POST['col_length'];
     $col_attribute = $_POST['col_attribute'];
@@ -30,13 +32,13 @@ if (isset($_POST['edit_save']) || isset($_POST['add_new_column'])) {
     $collation = $_POST['collation'];
     if (isset($orig_col_name) && $orig_col_name) {
         echo PMA_updateOneColumn(
-            $db, $orig_col_name, $col_name, $col_type,$col_attribute,
+            $db, $orig_col_name, $col_name, $col_type, $col_attribute,
             $col_length, $col_isNull, $collation, $col_extra, $col_default
         );
         exit;
     } else {
         $tmp_msg = PMA_updateOneColumn(
-            $db, "", $col_name, $col_type,$col_attribute,
+            $db, "", $col_name, $col_type, $col_attribute,
             $col_length, $col_isNull, $collation, $col_extra, $col_default
         );
     }
@@ -56,7 +58,7 @@ if (isset($_POST['add_column'])) {
     $selected_col[] = $_POST['column-select'];
     $tmp_msg = PMA_syncUniqueColumns($selected_col, false, $selected_tbl);
 }
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header = $response->getHeader();
 $scripts = $header->getScripts();
 $scripts->addFile('jquery/jquery.uitablefilter.js');
@@ -65,23 +67,42 @@ $scripts->addFile('db_central_columns.js');
 $cfgCentralColumns = PMA_centralColumnsGetParams();
 $pmadb = $cfgCentralColumns['db'];
 $pmatable = $cfgCentralColumns['table'];
-$max_rows = $GLOBALS['cfg']['MaxRows'];
+$max_rows = intval($GLOBALS['cfg']['MaxRows']);
+
+if (isset($_REQUEST['edit_central_columns_page'])) {
+    $selected_fld = $_REQUEST['selected_fld'];
+    $selected_db = $_REQUEST['db'];
+    $edit_central_column_page = PMA_getHTMLforEditingPage(
+        $selected_fld, $selected_db
+    );
+    $response->addHTML($edit_central_column_page);
+    exit;
+}
+if (isset($_POST['multi_edit_central_column_save'])) {
+    $message = PMA_updateMultipleColumn();
+    if (!is_bool($message)) {
+        $response->setRequestStatus(false);
+        $response->addJSON('message', $message);
+    }
+}
 if (isset($_POST['delete_save'])) {
     $col_name = array();
-    $col_name[] = $_REQUEST['col_name'];
-    $tmp_msg = PMA_deleteColumnsFromList($col_name, false);
+    parse_str($_POST['col_name'], $col_name);
+    $tmp_msg = PMA_deleteColumnsFromList($col_name['selected_fld'], false);
 }
-if (isset($_REQUEST['total_rows']) && $_REQUEST['total_rows']) {
+if (!empty($_REQUEST['total_rows'])
+    && PMA_isValid($_REQUEST['total_rows'], 'integer')
+) {
     $total_rows = $_REQUEST['total_rows'];
 } else {
     $total_rows = PMA_getCentralColumnsCount($db);
 }
 if (PMA_isValid($_REQUEST['pos'], 'integer')) {
-    $pos = $_REQUEST['pos'];
+    $pos = intval($_REQUEST['pos']);
 } else {
     $pos = 0;
 }
-$addNewColumn = PMA_getHTMLforAddNewColumn($db);
+$addNewColumn = PMA_getHTMLforAddNewColumn($db, $total_rows);
 $response->addHTML($addNewColumn);
 if ($total_rows <= 0) {
     $response->addHTML(
@@ -98,7 +119,7 @@ $response->addHTML($table_navigation_html);
 $columnAdd = PMA_getHTMLforAddCentralColumn($total_rows, $pos, $db);
 $response->addHTML($columnAdd);
 $deleteRowForm = '<form method="post" id="del_form" action="db_central_columns.php">'
-        . PMA_URL_getHiddenInputs(
+        . URL::getHiddenInputs(
             $db
         )
         . '<input id="del_col_name" type="hidden" name="col_name" value="">'
@@ -106,6 +127,7 @@ $deleteRowForm = '<form method="post" id="del_form" action="db_central_columns.p
         . '<input type="hidden" name="delete_save" value="delete"></form>';
 $response->addHTML($deleteRowForm);
 $table_struct = '<div id="tableslistcontainer">'
+        . '<form name="tableslistcontainer">'
         . '<table id="table_columns" class="tablesorter" '
         . 'style="min-width:100%" class="data">';
 $response->addHTML($table_struct);
@@ -114,21 +136,21 @@ $tableheader = PMA_getCentralColumnsTableHeader(
 );
 $response->addHTML($tableheader);
 $result = PMA_getColumnsList($db, $pos, $max_rows);
-$odd_row = true;
-$row_num=0;
+$row_num = 0;
 foreach ($result as $row) {
     $tableHtmlRow = PMA_getHTMLforCentralColumnsTableRow(
-        $row, $odd_row, $row_num, $db
+        $row, $row_num, $db
     );
     $response->addHTML($tableHtmlRow);
-    $odd_row = !$odd_row;
     $row_num++;
 }
-$response->addHTML('</table></div>');
-$message = PMA_Message::success(
+$response->addHTML('</table>');
+$tablefooter = PMA_getCentralColumnsTableFooter($pmaThemeImage, $text_dir);
+$response->addHTML($tablefooter);
+$response->addHTML('</form></div>');
+$message = PMA\libraries\Message::success(
     sprintf(__('Showing rows %1$s - %2$s.'), ($pos + 1), ($pos + count($result)))
 );
 if (isset($tmp_msg) && $tmp_msg !== true) {
     $message = $tmp_msg;
 }
-?>

@@ -5,6 +5,10 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\config\ConfigFile;
+use PMA\libraries\Message;
+use PMA\libraries\URL;
+
 if (! defined('PHPMYADMIN')) {
     exit;
 }
@@ -56,12 +60,12 @@ function PMA_loadUserprefs()
             'type' => 'session');
     }
     // load configuration from pmadb
-    $query_table = PMA_Util::backquote($cfgRelation['db']) . '.'
-        . PMA_Util::backquote($cfgRelation['userconfig']);
+    $query_table = PMA\libraries\Util::backquote($cfgRelation['db']) . '.'
+        . PMA\libraries\Util::backquote($cfgRelation['userconfig']);
     $query = 'SELECT `config_data`, UNIX_TIMESTAMP(`timevalue`) ts'
         . ' FROM ' . $query_table
         . ' WHERE `username` = \''
-        . PMA_Util::sqlAddSlashes($cfgRelation['user'])
+        . $GLOBALS['dbi']->escapeString($cfgRelation['user'])
         . '\'';
     $row = $GLOBALS['dbi']->fetchSingleRow($query, 'ASSOC', $GLOBALS['controllink']);
 
@@ -76,7 +80,7 @@ function PMA_loadUserprefs()
  *
  * @param array $config_array configuration array
  *
- * @return true|PMA_Message
+ * @return true|PMA\libraries\Message
  */
 function PMA_saveUserprefs(array $config_array)
 {
@@ -97,11 +101,11 @@ function PMA_saveUserprefs(array $config_array)
     }
 
     // save configuration to pmadb
-    $query_table = PMA_Util::backquote($cfgRelation['db']) . '.'
-        . PMA_Util::backquote($cfgRelation['userconfig']);
+    $query_table = PMA\libraries\Util::backquote($cfgRelation['db']) . '.'
+        . PMA\libraries\Util::backquote($cfgRelation['userconfig']);
     $query = 'SELECT `username` FROM ' . $query_table
         . ' WHERE `username` = \''
-        . PMA_Util::sqlAddSlashes($cfgRelation['user'])
+        . $GLOBALS['dbi']->escapeString($cfgRelation['user'])
         . '\'';
 
     $has_config = $GLOBALS['dbi']->fetchValue(
@@ -111,28 +115,28 @@ function PMA_saveUserprefs(array $config_array)
     if ($has_config) {
         $query = 'UPDATE ' . $query_table
             . ' SET `timevalue` = NOW(), `config_data` = \''
-            . PMA_Util::sqlAddSlashes($config_data)
+            . $GLOBALS['dbi']->escapeString($config_data)
             . '\''
             . ' WHERE `username` = \''
-            . PMA_Util::sqlAddSlashes($cfgRelation['user'])
+            . $GLOBALS['dbi']->escapeString($cfgRelation['user'])
             . '\'';
     } else {
         $query = 'INSERT INTO ' . $query_table
             . ' (`username`, `timevalue`,`config_data`) '
             . 'VALUES (\''
-            . PMA_Util::sqlAddSlashes($cfgRelation['user']) . '\', NOW(), '
-            . '\'' . PMA_Util::sqlAddSlashes($config_data) . '\')';
+            . $GLOBALS['dbi']->escapeString($cfgRelation['user']) . '\', NOW(), '
+            . '\'' . $GLOBALS['dbi']->escapeString($config_data) . '\')';
     }
     if (isset($_SESSION['cache'][$cache_key]['userprefs'])) {
         unset($_SESSION['cache'][$cache_key]['userprefs']);
     }
     if (!$GLOBALS['dbi']->tryQuery($query, $GLOBALS['controllink'])) {
-        $message = PMA_Message::error(__('Could not save configuration'));
-        $message->addMessage('<br /><br />');
+        $message = Message::error(__('Could not save configuration'));
         $message->addMessage(
-            PMA_Message::rawError(
+            Message::rawError(
                 $GLOBALS['dbi']->getError($GLOBALS['controllink'])
-            )
+            ),
+            '<br /><br />'
         );
         return $message;
     }
@@ -252,9 +256,8 @@ function PMA_userprefsRedirect($file_name,
     if ($hash) {
         $hash = '#' . urlencode($hash);
     }
-    PMA_sendHeaderLocation(
-        $GLOBALS['cfg']['PmaAbsoluteUri'] . $file_name
-        . PMA_URL_getCommon($url_params, '&') . $hash
+    PMA_sendHeaderLocation('./' . $file_name
+        . URL::getCommonRaw($url_params) . $hash
     );
 }
 
@@ -266,36 +269,23 @@ function PMA_userprefsRedirect($file_name,
  */
 function PMA_userprefsAutoloadGetHeader()
 {
-    $retval = '';
-
     if (isset($_REQUEST['prefs_autoload'])
         && $_REQUEST['prefs_autoload'] == 'hide'
     ) {
         $_SESSION['userprefs_autoload'] = true;
-    } else {
-        $script_name = basename(basename($GLOBALS['PMA_PHP_SELF']));
-        $return_url = htmlspecialchars(
-            $script_name . '?' . http_build_query($_GET, '', '&')
-        );
-
-        $retval .= '<div id="prefs_autoload" class="notice" style="display:none">';
-        $retval .= '<form action="prefs_manage.php" method="post" class="disableAjax">';
-        $retval .= PMA_URL_getHiddenInputs();
-        $retval .= '<input type="hidden" name="json" value="" />';
-        $retval .= '<input type="hidden" name="submit_import" value="1" />';
-        $retval .= '<input type="hidden" name="return_url" value="'
-            . $return_url . '" />';
-        $retval .=  __(
-            'Your browser has phpMyAdmin configuration for this domain. '
-            . 'Would you like to import it for current session?'
-        );
-        $retval .= '<br />';
-        $retval .= '<a href="#yes">' . __('Yes') . '</a>';
-        $retval .= ' / ';
-        $retval .= '<a href="#no">' . __('No') . '</a>';
-        $retval .= '</form>';
-        $retval .= '</div>';
+        return '';
     }
-    return $retval;
+
+    $script_name = basename(basename($GLOBALS['PMA_PHP_SELF']));
+    $return_url = htmlspecialchars(
+        $script_name . '?' . http_build_query($_GET, '', '&')
+    );
+
+    return PMA\libraries\Template::get('prefs_autoload')
+        ->render(
+            array(
+                'hiddenInputs' => URL::getHiddenInputs(),
+                'return_url' => $return_url,
+            )
+        );
 }
-?>

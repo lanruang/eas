@@ -16,6 +16,12 @@ AJAX.registerTeardown('server_status_advisor.js', function () {
 });
 
 AJAX.registerOnload('server_status_advisor.js', function () {
+
+	// if no advisor is loaded
+	if ($('#advisorData').length == 0) {
+		return;
+	}
+
     /**** Server config advisor ****/
     var $dialog = $('<div />').attr('id', 'advisorDialog');
     var $instructionsDialog = $('<div />')
@@ -37,7 +43,7 @@ AJAX.registerOnload('server_status_advisor.js', function () {
     var $cnt = $('#statustabs_advisor');
     var $tbody, $tr, str, even = true;
 
-    data = $.parseJSON($('#advisorData').text());
+    data = JSON.parse($('#advisorData').text());
     $cnt.html('');
 
     if (data.parse.errors.length > 0) {
@@ -64,7 +70,7 @@ AJAX.registerOnload('server_status_advisor.js', function () {
         $.each(data.run.fired, function (key, value) {
             // recommendation may contain links, don't show those in overview table (clicking on them redirects the user)
             rc_stripped = $.trim($('<div>').html(value.recommendation).text());
-            $tbody.append($tr = $('<tr class="linkElem noclick ' + (even ? 'even' : 'odd') + '"><td>' +
+            $tbody.append($tr = $('<tr class="linkElem noclick"><td>' +
                                     value.issue + '</td><td>' + rc_stripped + ' </td></tr>'));
             even = !even;
             $tr.data('rule', value);

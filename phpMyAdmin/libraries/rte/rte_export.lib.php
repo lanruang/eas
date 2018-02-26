@@ -5,6 +5,9 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\Message;
+use PMA\libraries\Response;
+
 if (! defined('PHPMYADMIN')) {
     exit;
 }
@@ -21,34 +24,36 @@ function PMA_RTE_handleExport($export_data)
 {
     global $db;
 
-    $item_name = htmlspecialchars(PMA_Util::backquote($_GET['item_name']));
+    $response = Response::getInstance();
+
+    $item_name = htmlspecialchars(PMA\libraries\Util::backquote($_GET['item_name']));
     if ($export_data !== false) {
-        $export_data = '<textarea cols="40" rows="15" style="width: 100%;">'
-                     . htmlspecialchars(trim($export_data)) . '</textarea>';
+        $export_data = htmlspecialchars(trim($export_data));
         $title = sprintf(PMA_RTE_getWord('export'), $item_name);
-        if ($GLOBALS['is_ajax_request'] == true) {
-            $response = PMA_Response::getInstance();
+        if ($response->isAjax()) {
             $response->addJSON('message', $export_data);
             $response->addJSON('title', $title);
             exit;
         } else {
+            $export_data = '<textarea cols="40" rows="15" style="width: 100%;">'
+               . $export_data . '</textarea>';
             echo "<fieldset>\n"
-               . "<legend>$title</legend>\n"
-               . $export_data
-               . "</fieldset>\n";
+               , "<legend>$title</legend>\n"
+               , $export_data
+               , "</fieldset>\n";
         }
     } else {
-        $_db = htmlspecialchars(PMA_Util::backquote($db));
+        $_db = htmlspecialchars(PMA\libraries\Util::backquote($db));
         $message  = __('Error in processing request:') . ' '
-                  . sprintf(PMA_RTE_getWord('not_found'), $item_name, $_db);
-        $response = PMA_message::error($message);
-        if ($GLOBALS['is_ajax_request'] == true) {
-            $response = PMA_Response::getInstance();
-            $response->isSuccess(false);
+                  . sprintf(PMA_RTE_getWord('no_view'), $item_name, $_db);
+        $message = Message::error($message);
+
+        if ($response->isAjax()) {
+            $response->setRequestStatus(false);
             $response->addJSON('message', $message);
             exit;
         } else {
-            $response->display();
+            $message->display();
         }
     }
 } // end PMA_RTE_handleExport()
@@ -66,6 +71,9 @@ function PMA_EVN_handleExport()
     if (! empty($_GET['export_item']) && ! empty($_GET['item_name'])) {
         $item_name = $_GET['item_name'];
         $export_data = $GLOBALS['dbi']->getDefinition($db, 'EVENT', $item_name);
+        if (! $export_data) {
+            $export_data = false;
+        }
         PMA_RTE_handleExport($export_data);
     }
 } // end PMA_EVN_handleExport()
@@ -80,16 +88,25 @@ function PMA_RTN_handleExport()
 {
     global $_GET, $db;
 
-    if (   ! empty($_GET['export_item'])
+    if (! empty($_GET['export_item'])
         && ! empty($_GET['item_name'])
         && ! empty($_GET['item_type'])
     ) {
         if ($_GET['item_type'] == 'FUNCTION' || $_GET['item_type'] == 'PROCEDURE') {
-            $export_data = $GLOBALS['dbi']->getDefinition(
-                $db,
-                $_GET['item_type'],
-                $_GET['item_name']
-            );
+            $rtn_definition
+                = $GLOBALS['dbi']->getDefinition(
+                    $db,
+                    $_GET['item_type'],
+                    $_GET['item_name']
+                );
+            if (! $rtn_definition) {
+                $export_data = false;
+            } else {
+                $export_data = "DELIMITER $$\n"
+                    . $rtn_definition
+                    . "$$\nDELIMITER ;\n";
+            }
+
             PMA_RTE_handleExport($export_data);
         }
     }
@@ -118,4 +135,3 @@ function PMA_TRI_handleExport()
         PMA_RTE_handleExport($export_data);
     }
 } // end PMA_TRI_handleExport()
-?>

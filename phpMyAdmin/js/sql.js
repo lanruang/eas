@@ -37,6 +37,23 @@ function PMA_urlencode(str)
 }
 
 /**
+ * Saves SQL query in local storage or cooie
+ *
+ * @param string SQL query
+ * @return void
+ */
+function PMA_autosaveSQL(query)
+{
+    if (query) {
+        if (isStorageSupported('localStorage')) {
+            window.localStorage.auto_saved_sql = query;
+        } else {
+            $.cookie('auto_saved_sql', query);
+        }
+    }
+}
+
+/**
  * Get the field name for the current field.  Required to construct the query
  * for grid editing
  *
@@ -91,6 +108,7 @@ AJAX.registerTeardown('sql.js', function () {
     $(document).off('stickycolumns', ".sqlqueryresults");
     $("#togglequerybox").unbind('click');
     $(document).off('click', "#button_submit_query");
+    $(document).off('change', '#id_bookmark');
     $("input[name=bookmark_variable]").unbind("keypress");
     $(document).off('submit', "#sqlqueryform.ajax");
     $(document).off('click', "input[name=navig].ajax");
@@ -100,6 +118,7 @@ AJAX.registerTeardown('sql.js', function () {
     $(document).off('click', 'th.column_heading.marker');
     $(window).unbind('scroll');
     $(document).off("keyup", ".filter_rows");
+    $(document).off('click', "#printView");
     if (codemirror_editor) {
         codemirror_editor.off('change');
     } else {
@@ -133,17 +152,11 @@ AJAX.registerOnload('sql.js', function () {
     $(function () {
         if (codemirror_editor) {
             codemirror_editor.on('change', function () {
-                var query = codemirror_editor.getValue();
-                if (query) {
-                    $.cookie('auto_saved_sql', query);
-                }
+                PMA_autosaveSQL(codemirror_editor.getValue());
             });
         } else {
             $('#sqlquery').on('input propertychange', function () {
-                var query = $('#sqlquery').val();
-                if (query) {
-                    $.cookie('auto_saved_sql', query);
-                }
+                PMA_autosaveSQL($('#sqlquery').val());
             });
         }
     });
@@ -158,7 +171,12 @@ AJAX.registerOnload('sql.js', function () {
             if ($link.hasClass('formLinkSubmit')) {
                 submitFormLink($link);
             } else {
-                $.get(url, {'ajax_request': true, 'is_js_confirmed': true}, function (data) {
+                var params = {
+                    'ajax_request': true,
+                    'is_js_confirmed': true,
+                    'token': PMA_commonParams.get('token')
+                };
+                $.post(url, params, function (data) {
                     if (data.success) {
                         PMA_ajaxShowMessage(data.message);
                         $link.closest('tr').remove();
@@ -189,6 +207,102 @@ AJAX.registerOnload('sql.js', function () {
             .parent()
             .toggle($(this).val().length > 0);
     }).trigger('keyup');
+
+    /**
+     * Attach Event Handler for 'Copy to clipbpard
+     */
+    $(document).on('click', "#copyToClipBoard", function (event) {
+        event.preventDefault();
+
+        var textArea = document.createElement("textarea");
+
+        //
+        // *** This styling is an extra step which is likely not required. ***
+        //
+        // Why is it here? To ensure:
+        // 1. the element is able to have focus and selection.
+        // 2. if element was to flash render it has minimal visual impact.
+        // 3. less flakyness with selection and copying which **might** occur if
+        //    the textarea element is not visible.
+        //
+        // The likelihood is the element won't even render, not even a flash,
+        // so some of these are just precautions. However in IE the element
+        // is visible whilst the popup box asking the user for permission for
+        // the web page to copy to the clipboard.
+        //
+
+        // Place in top-left corner of screen regardless of scroll position.
+        textArea.style.position = 'fixed';
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+
+        // Ensure it has a small width and height. Setting to 1px / 1em
+        // doesn't work as this gives a negative w/h on some browsers.
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+
+        // We don't need padding, reducing the size if it does flash render.
+        textArea.style.padding = 0;
+
+        // Clean up any borders.
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+
+        // Avoid flash of white box if rendered for any reason.
+        textArea.style.background = 'transparent';
+
+        textArea.value = '';
+
+        $('#serverinfo a').each(function(){
+            textArea.value += $(this).text().split(':')[1].trim() + '/';
+        });
+        textArea.value += '\t\t' + window.location.href;
+        textArea.value += '\n';
+
+        $('.notice,.success').each(function(){
+            textArea.value += $(this).text() + '\n\n';
+        });
+
+        $('.sql pre').each(function() {
+            textArea.value += $(this).text() + '\n\n';
+        });
+
+        $('.table_results .column_heading a').each(function() {
+            textArea.value += $(this).text() + '\t';
+        });
+
+        textArea.value += '\n';
+        $('.table_results tbody tr').each(function() {
+            $(this).find('.data span').each(function(){
+                textArea.value += $(this).text() + '\t';
+            });
+            textArea.value += '\n';
+        });
+
+        document.body.appendChild(textArea);
+
+        textArea.select();
+
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            alert('Sorry! Unable to copy');
+        }
+
+        document.body.removeChild(textArea);
+
+    }); //end of Copy to Clipboard action
+
+    /**
+     * Attach Event Handler for 'Print' link
+     */
+    $(document).on('click', "#printView", function (event) {
+        event.preventDefault();
+
+        // Take to preview mode
+        printPreview();
+    }); //end of 'Print' action
 
     /**
      * Attach the {@link makegrid} function to a custom event, which will be
@@ -272,6 +386,31 @@ AJAX.registerOnload('sql.js', function () {
     });
 
     /**
+     * Event handler to show appropiate number of variable boxes
+     * based on the bookmarked query
+     */
+    $(document).on('change', '#id_bookmark', function (event) {
+
+        var varCount = $(this).find('option:selected').data('varcount');
+        if (typeof varCount == 'undefined') {
+            varCount = 0;
+        }
+
+        var $varDiv = $('#bookmark_variables');
+        $varDiv.empty();
+        for (var i = 1; i <= varCount; i++) {
+            $varDiv.append($('<label for="bookmark_variable_' + i + '">' + PMA_sprintf(PMA_messages.strBookmarkVariable, i) + '</label>'));
+            $varDiv.append($('<input type="text" size="10" name="bookmark_variable[' + i + ']" id="bookmark_variable_' + i + '"></input>'));
+        }
+
+        if (varCount == 0) {
+            $varDiv.parent('.formelement').hide();
+        } else {
+            $varDiv.parent('.formelement').show();
+        }
+    });
+
+    /**
      * Event handler for hitting enter on sqlqueryform bookmark_variable
      * (the Variable textfield in Bookmarked SQL query section)
      *
@@ -351,10 +490,21 @@ AJAX.registerOnload('sql.js', function () {
                 PMA_highlightSQL($sqlqueryresultsouter);
 
                 if (data._menu) {
-                    AJAX.cache.menus.replace(data._menu);
-                    AJAX.cache.menus.add(data._menuHash, data._menu);
+                    if (history && history.pushState) {
+                        history.replaceState({
+                                menu : data._menu
+                            },
+                            null
+                        );
+                        AJAX.handleMenu.replace(data._menu);
+                    } else {
+                        PMA_MicroHistory.menus.replace(data._menu);
+                        PMA_MicroHistory.menus.add(data._menuHash, data._menu);
+                    }
                 } else if (data._menuHash) {
-                    AJAX.cache.menus.replace(AJAX.cache.menus.get(data._menuHash));
+                    if (! (history && history.pushState)) {
+                        PMA_MicroHistory.menus.replace(PMA_MicroHistory.menus.get(data._menuHash));
+                    }
                 }
 
                 if (data._params) {
@@ -463,7 +613,7 @@ AJAX.registerOnload('sql.js', function () {
     // Prompt to confirm on Show All
     $('body').on('click', '.navigation .showAllRows', function (e) {
         e.preventDefault();
-        $form = $(this).parents('form');
+        var $form = $(this).parents('form');
 
         if (! $(this).is(':checked')) { // already showing all rows
             submitShowAllForm();
@@ -511,7 +661,8 @@ AJAX.registerOnload('sql.js', function () {
             type: 'POST',
             url: $form.attr('action'),
             data: {
-                token: $form.find('input[name="token"]').val(),
+                token: PMA_commonParams.get('token'),
+                server: PMA_commonParams.get('server'),
                 db: db_name,
                 ajax_request: '1',
                 simulate_dml: '1',
@@ -538,7 +689,7 @@ AJAX.registerOnload('sql.js', function () {
                         dialog_content += response.message;
                     }
                     dialog_content += '</div>';
-                    $dialog_content = $(dialog_content);
+                    var $dialog_content = $(dialog_content);
                     var button_options = {};
                     button_options[PMA_messages.strClose] = function () {
                         $(this).dialog('close');
@@ -572,9 +723,10 @@ AJAX.registerOnload('sql.js', function () {
     $('body').on('click', 'form[name="resultsForm"].ajax button[name="submit_mult"], form[name="resultsForm"].ajax input[name="submit_mult"]', function (e) {
         e.preventDefault();
         var $button = $(this);
-        var $form = $button.parent('form');
+        var $form = $button.closest('form');
         var submitData = $form.serialize() + '&ajax_request=true&ajax_page_request=true&submit_mult=' + $button.val();
         PMA_ajaxShowMessage();
+        AJAX.source = $form;
         $.post($form.attr('action'), submitData, AJAX.responseHandler);
     });
 }); // end $()
@@ -592,7 +744,11 @@ function PMA_changeClassForColumn($this_th, newclass, isAddClass)
     if (has_big_t) {
         th_index--;
     }
-    var $tds = $this_th.parents(".table_results").find('tbody tr').find('td.data:eq(' + th_index + ')');
+    var $table = $this_th.parents('.table_results');
+    if (! $table.length) {
+        $table = $this_th.parents('table').siblings('.table_results');
+    }
+    var $tds = $table.find('tbody tr').find('td.data:eq(' + th_index + ')');
     if (isAddClass === undefined) {
         $tds.toggleClass(newclass);
     } else {
@@ -714,7 +870,7 @@ function makeProfilingChart()
     }
 
     var data = [];
-    $.each(jQuery.parseJSON($('#profilingChartData').html()), function (key, value) {
+    $.each(JSON.parse($('#profilingChartData').html()), function (key, value) {
         data.push([key, parseFloat(value)]);
     });
 
@@ -722,7 +878,7 @@ function makeProfilingChart()
     $('#profilingchart').html('').show();
     $('#profilingChartData').html('');
 
-    PMA_createProfilingChartJqplot('profilingchart', data);
+    PMA_createProfilingChart('profilingchart', data);
 }
 
 /*
@@ -775,7 +931,7 @@ function setStickyColumnsPosition($sticky_columns, $table_results, position, top
  * Initialize sticky columns
  */
 function initStickyColumns($table_results) {
-    var $sticky_columns = $('<table class="sticky_columns"></table>')
+    return $('<table class="sticky_columns"></table>')
             .insertBefore($table_results)
             .css("position", "fixed")
             .css("z-index", "99")
@@ -783,7 +939,6 @@ function initStickyColumns($table_results) {
             .css("margin-left", $('#page_content').css("margin-left"))
             .css("top", $('#floating_menubar').height())
             .css("display", "none");
-    return $sticky_columns;
 }
 
 /*

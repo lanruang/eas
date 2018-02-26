@@ -5,6 +5,7 @@
  *
  * @package PhpMyAdmin-Setup
  */
+use PMA\libraries\config\ConfigFile;
 
 /**
  * Do not include full common.
@@ -19,11 +20,8 @@ if (!file_exists('./libraries/common.inc.php')) {
 }
 
 require_once './libraries/common.inc.php';
-require_once './libraries/Util.class.php';
 require_once './libraries/config/config_functions.lib.php';
 require_once './libraries/config/messages.inc.php';
-require_once './libraries/config/ConfigFile.class.php';
-require_once './libraries/url_generating.lib.php';
 require_once './libraries/user_preferences.lib.php';
 
 // use default error handler
@@ -43,7 +41,6 @@ $GLOBALS['ConfigFile']->setPersistKeys(
         'Servers/1/host',
         'Servers/1/port',
         'Servers/1/socket',
-        'Servers/1/connect_type',
         'Servers/1/auth_type',
         'Servers/1/user',
         'Servers/1/password'
@@ -53,4 +50,3 @@ $GLOBALS['ConfigFile']->setPersistKeys(
 // allows for redirection even after sending some data
 ob_start();
 
-?>

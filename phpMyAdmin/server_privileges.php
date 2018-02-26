@@ -5,6 +5,7 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\Response;
 
 /**
  * include common file
@@ -16,20 +17,21 @@ require_once 'libraries/common.inc.php';
  */
 require_once 'libraries/display_change_password.lib.php';
 require_once 'libraries/server_privileges.lib.php';
+require_once 'libraries/check_user_privileges.lib.php';
 
 $cfgRelation = PMA_getRelationsParam();
 
 /**
  * Does the common work
  */
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
 $scripts->addFile('server_privileges.js');
+$scripts->addFile('zxcvbn.js');
 
 if ((isset($_REQUEST['viewing_mode'])
     && $_REQUEST['viewing_mode'] == 'server')
-    && isset($GLOBALS['cfgRelation']['menuswork'])
     && $GLOBALS['cfgRelation']['menuswork']
 ) {
     include_once 'libraries/server_users.lib.php';
@@ -68,8 +70,9 @@ $strPrivDescDropTbl = __('Allows dropping tables.');
 $strPrivDescEvent = __('Allows to set up events for the event scheduler.');
 $strPrivDescExecute = __('Allows executing stored routines.');
 $strPrivDescFile = __('Allows importing data from and exporting data into files.');
-$strPrivDescGrant = __(
-    'Allows adding users and privileges without reloading the privilege tables.'
+$strPrivDescGrantTbl = __(
+    'Allows user to give to other users or remove from other users the privileges '
+    . 'that user possess yourself.'
 );
 $strPrivDescIndex = __('Allows creating and dropping indexes.');
 $strPrivDescInsert = __('Allows inserting and replacing data.');
@@ -115,7 +118,7 @@ $_add_user_error = false;
  * tablename, db_and_table, dbname_is_wildcard
  */
 list(
-    $username, $hostname, $dbname, $tablename,
+    $username, $hostname, $dbname, $tablename, $routinename,
     $db_and_table, $dbname_is_wildcard
 ) = PMA_getDataForDBInfo();
 
@@ -126,7 +129,10 @@ if (!$GLOBALS['is_superuser'] && !$GLOBALS['is_grantuser']
     && !$GLOBALS['is_createuser']
 ) {
     $response->addHTML(PMA_getHtmlForSubPageHeader('privileges', '', false));
-    $response->addHTML(PMA_Message::error(__('No Privileges'))->getDisplay());
+    $response->addHTML(
+        PMA\libraries\Message::error(__('No Privileges'))
+            ->getDisplay()
+    );
     exit;
 }
 
@@ -138,9 +144,15 @@ if (isset($_REQUEST['change_copy']) && $username == $_REQUEST['old_username']
     && $hostname == $_REQUEST['old_hostname']
 ) {
     $response->addHTML(
-        PMA_Message::error(__('Username and hostname didn\'t change.'))->getDisplay()
+        PMA\libraries\Message::error(
+            __(
+                "Username and hostname didn't change. "
+                . "If you only want to change the password, "
+                . "'Change password' tab should be used."
+            )
+        )->getDisplay()
     );
-    $response->isSuccess(false);
+    $response->setRequestStatus(false);
     exit;
 }
 
@@ -180,6 +192,11 @@ if (isset($_REQUEST['change_copy'])) {
     );
 }
 
+$itemType = '';
+if (! empty($routinename)) {
+    $itemType = PMA_getRoutineType($dbname, $routinename);
+}
+
 /**
  * Updates privileges
  */
@@ -189,8 +206,11 @@ if (! empty($_POST['update_privs'])) {
             list($sql_query[$key], $message) = PMA_updatePrivileges(
                 (isset($username) ? $username : ''),
                 (isset($hostname) ? $hostname : ''),
-                (isset($tablename) ? $tablename : ''),
-                (isset($db_name) ? $db_name : '')
+                (isset($tablename)
+                    ? $tablename
+                    : (isset($routinename) ? $routinename : '')),
+                (isset($db_name) ? $db_name : ''),
+                $itemType
             );
         }
 
@@ -199,8 +219,11 @@ if (! empty($_POST['update_privs'])) {
         list($sql_query, $message) = PMA_updatePrivileges(
             (isset($username) ? $username : ''),
             (isset($hostname) ? $hostname : ''),
-            (isset($tablename) ? $tablename : ''),
-            (isset($dbname) ? $dbname : '')
+            (isset($tablename)
+                ? $tablename
+                : (isset($routinename) ? $routinename : '')),
+            (isset($dbname) ? $dbname : ''),
+            $itemType
         );
     }
 }
@@ -212,7 +235,7 @@ if (! empty($_REQUEST['changeUserGroup']) && $cfgRelation['menuswork']
     && $GLOBALS['is_superuser'] && $GLOBALS['is_createuser']
 ) {
     PMA_setUserGroup($username, $_REQUEST['userGroup']);
-    $message = PMA_Message::success();
+    $message = PMA\libraries\Message::success();
 }
 
 /**
@@ -221,8 +244,12 @@ if (! empty($_REQUEST['changeUserGroup']) && $cfgRelation['menuswork']
 if (isset($_REQUEST['revokeall'])) {
     list ($message, $sql_query) = PMA_getMessageAndSqlQueryForPrivilegesRevoke(
         (isset($dbname) ? $dbname : ''),
-        (isset($tablename) ? $tablename : ''),
-        $username, $hostname
+        (isset($tablename)
+            ? $tablename
+            : (isset($routinename) ? $routinename : '')),
+        $username,
+        $hostname,
+        $itemType
     );
 }
 
@@ -242,6 +269,7 @@ if (isset($_REQUEST['change_pw'])) {
 if (isset($_REQUEST['delete'])
     || (isset($_REQUEST['change_copy']) && $_REQUEST['mode'] < 4)
 ) {
+    include_once 'libraries/relation_cleanup.lib.php';
     $queries = PMA_getDataForDeleteUsers($queries);
     if (empty($_REQUEST['change_copy'])) {
         list($sql_query, $message) = PMA_deleteUser($queries);
@@ -253,7 +281,7 @@ if (isset($_REQUEST['delete'])
  */
 if (isset($_REQUEST['change_copy'])) {
     $queries = PMA_getDataForQueries($queries, $queries_for_display);
-    $message = PMA_Message::success();
+    $message = PMA\libraries\Message::success();
     $sql_query = join("\n", $queries);
 }
 
@@ -270,13 +298,13 @@ if (isset($message_ret)) {
  * If we are in an Ajax request for Create User/Edit User/Revoke User/
  * Flush Privileges, show $message and exit.
  */
-if ($GLOBALS['is_ajax_request']
+if ($response->isAjax()
     && empty($_REQUEST['ajax_page_request'])
     && ! isset($_REQUEST['export'])
     && (! isset($_REQUEST['submit_mult']) || $_REQUEST['submit_mult'] != 'export')
     && ((! isset($_REQUEST['initial']) || $_REQUEST['initial'] === null
     || $_REQUEST['initial'] === '')
-    || (isset($_REQUEST['delete']) && $_REQUEST['delete'] === 'Go'))
+    || (isset($_REQUEST['delete']) && $_REQUEST['delete'] === __('Go')))
     && ! isset($_REQUEST['showall'])
     && ! isset($_REQUEST['edit_user_group_dialog'])
     && ! isset($_REQUEST['db_specific'])
@@ -288,9 +316,8 @@ if ($GLOBALS['is_ajax_request']
         (isset($username) ? $username : '')
     );
 
-    if (! empty($message) && $message instanceof PMA_Message) {
-        $response = PMA_Response::getInstance();
-        $response->isSuccess($message->isSuccess());
+    if (! empty($message) && $message instanceof PMA\libraries\Message) {
+        $response->setRequestStatus($message->isSuccess());
         $response->addJSON('message', $message);
         $response->addJSON($extra_data);
         exit;
@@ -308,13 +335,25 @@ if (isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'db') {
     // Gets the database structure
     $sub_part = '_structure';
     ob_start();
-    include 'libraries/db_info.inc.php';
+
+    list(
+        $tables,
+        $num_tables,
+        $total_num_tables,
+        $sub_part,
+        $is_show_stats,
+        $db_is_system_schema,
+        $tooltip_truename,
+        $tooltip_aliasname,
+        $pos
+    ) = PMA\libraries\Util::getDbInfo($db, isset($sub_part) ? $sub_part : '');
+
     $content = ob_get_contents();
     ob_end_clean();
     $response->addHTML($content . "\n");
 } else {
     if (! empty($GLOBALS['message'])) {
-        $response->addHTML(PMA_Util::getMessage($GLOBALS['message']));
+        $response->addHTML(PMA\libraries\Util::getMessage($GLOBALS['message']));
         unset($GLOBALS['message']);
     }
 }
@@ -340,8 +379,7 @@ if (isset($_REQUEST['export'])
 
     unset($username, $hostname, $grants, $one_grant);
 
-    $response = PMA_Response::getInstance();
-    if ($GLOBALS['is_ajax_request']) {
+    if ($response->isAjax()) {
         $response->addJSON('message', $export);
         $response->addJSON('title', $title);
         exit;
@@ -370,25 +408,35 @@ if (isset($_REQUEST['adduser'])) {
         );
     }
 } else {
+    if (isset($dbname) && ! is_array($dbname)) {
+        $url_dbname = urlencode(
+            str_replace(
+                array('\_', '\%'),
+                array('_', '%'),
+                $_REQUEST['dbname']
+            )
+        );
+    }
+
     if (! isset($username)) {
         // No username is given --> display the overview
         $response->addHTML(
             PMA_getHtmlForUserOverview($pmaThemeImage, $text_dir)
         );
+    } else if (!empty($routinename)) {
+        $response->addHTML(
+            PMA_getHtmlForRoutineSpecificPrivilges(
+                $username, $hostname, $dbname, $routinename,
+                (isset($url_dbname) ? $url_dbname : '')
+            )
+        );
     } else {
         // A user was selected -> display the user's properties
         // In an Ajax request, prevent cached values from showing
-        if ($GLOBALS['is_ajax_request'] == true) {
+        if ($response->isAjax()) {
             header('Cache-Control: no-cache');
         }
-        if (isset($dbname) && ! is_array($dbname)) {
-            $url_dbname = urlencode(
-                str_replace(
-                    array('\_', '\%'),
-                    array('_', '%'), $_REQUEST['dbname']
-                )
-            );
-        }
+
         $response->addHTML(
             PMA_getHtmlForUserProperties(
                 (isset($dbname_is_wildcard) ? $dbname_is_wildcard : ''),
@@ -406,5 +454,3 @@ if ((isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'server')
 ) {
     $response->addHTML('</div>');
 }
-
-?>

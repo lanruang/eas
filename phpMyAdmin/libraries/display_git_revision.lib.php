@@ -5,9 +5,7 @@
  *
  * @package PhpMyAdmin
  */
-if (! defined('PHPMYADMIN')) {
-    exit;
-}
+use PMA\libraries\Response;
 
 /**
 * Prints details about the current Git commit revision
@@ -17,8 +15,8 @@ if (! defined('PHPMYADMIN')) {
 function PMA_printGitRevision()
 {
     if (! $GLOBALS['PMA_Config']->get('PMA_VERSION_GIT')) {
-        $response = PMA_Response::getInstance();
-        $response->isSuccess(false);
+        $response = Response::getInstance();
+        $response->setRequestStatus(false);
         return;
     }
 
@@ -40,7 +38,7 @@ function PMA_printGitRevision()
                 'https://github.com/phpmyadmin/phpmyadmin/commit/'
                 . $GLOBALS['PMA_Config']->get('PMA_VERSION_GIT_COMMITHASH')
             )
-            . '" target="_blank">' . $commit_hash . '</a>';
+            . '" rel="noopener noreferrer" target="_blank">' . $commit_hash . '</a>';
     }
 
     $branch = $GLOBALS['PMA_Config']->get('PMA_VERSION_GIT_BRANCH');
@@ -50,7 +48,7 @@ function PMA_printGitRevision()
                 'https://github.com/phpmyadmin/phpmyadmin/tree/'
                 . $GLOBALS['PMA_Config']->get('PMA_VERSION_GIT_BRANCH')
             )
-            . '" target="_blank">' . $branch . '</a>';
+            . '" rel="noopener noreferrer" target="_blank">' . $branch . '</a>';
     }
     if ($branch !== false) {
         $branch = sprintf(__('%1$s from %2$s branch'), $commit_hash, $branch);
@@ -65,16 +63,20 @@ function PMA_printGitRevision()
         . $branch . ',<br /> '
         . sprintf(
             __('committed on %1$s by %2$s'),
-            PMA_Util::localisedDate(strtotime($committer['date'])),
-            '<a href="' . PMA_linkURL('mailto:' . htmlspecialchars($committer['email'])) . '">'
+            PMA\libraries\Util::localisedDate(strtotime($committer['date'])),
+            '<a href="' . PMA_linkURL(
+                'mailto:' . htmlspecialchars($committer['email'])
+            ) . '">'
             . htmlspecialchars($committer['name']) . '</a>'
         )
         . ($author != $committer
             ? ', <br />'
             . sprintf(
                 __('authored on %1$s by %2$s'),
-                PMA_Util::localisedDate(strtotime($author['date'])),
-                '<a href="' . PMA_linkURL('mailto:' . htmlspecialchars($author['email'])) . '">'
+                PMA\libraries\Util::localisedDate(strtotime($author['date'])),
+                '<a href="' . PMA_linkURL(
+                    'mailto:' . htmlspecialchars($author['email'])
+                ) . '">'
                 . htmlspecialchars($author['name']) . '</a>'
             )
             : ''),

@@ -1,16 +1,11 @@
 <?php
-
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * set of functions for structure section in pma
  *
  * @package PhpMyAdmin
  */
-if (!defined('PHPMYADMIN')) {
-    exit;
-}
-
-require_once 'libraries/Index.class.php';
+use PMA\libraries\URL;
 
 /**
  * Get HTML for display indexes
@@ -20,14 +15,13 @@ require_once 'libraries/Index.class.php';
 function PMA_getHtmlForDisplayIndexes()
 {
     $html_output = '<div id="index_div" class="ajax" >';
-
-    $html_output .= PMA_Util::getDivForSliderEffect(
-        'indexes', __('Indexes')
+    $html_output .= PMA\libraries\Index::getHtmlForIndexes(
+        $GLOBALS['table'],
+        $GLOBALS['db']
     );
-    $html_output .= PMA_Index::getView($GLOBALS['table'], $GLOBALS['db']);
-    $html_output .= '<fieldset class="tblFooters" style="text-align: left;">'
-        . '<form action="tbl_indexes.php" method="post">';
-    $html_output .= PMA_URL_getHiddenInputs(
+    $html_output .= '<fieldset class="tblFooters print_ignore" style="text-align: '
+        . 'left;"><form action="tbl_indexes.php" method="post">';
+    $html_output .= URL::getHiddenInputs(
         $GLOBALS['db'], $GLOBALS['table']
     );
     $html_output .= sprintf(
@@ -41,7 +35,6 @@ function PMA_getHtmlForDisplayIndexes()
 
     $html_output .= '</form>'
         . '</fieldset>'
-        . '</div>'
         . '</div>';
 
     return $html_output;

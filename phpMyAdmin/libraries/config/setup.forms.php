@@ -32,17 +32,12 @@ $forms['Servers']['Server'] = array('Servers' => array(1 => array(
     'port',
     'socket',
     'ssl',
-    'connect_type',
-    'compress',
-    'nopassword')));
+    'compress')));
 $forms['Servers']['Server_auth'] = array('Servers' => array(1 => array(
     'auth_type',
     ':group:' . __('Config authentication'),
         'user',
         'password',
-        ':group:end',
-    ':group:' . __('Cookie authentication'),
-        'auth_swekey_config' => './swekey.conf',
         ':group:end',
     ':group:' . __('HTTP authentication'),
         'auth_http_realm',
@@ -83,6 +78,8 @@ $forms['Servers']['Server_pmadb'] = array('Servers' => array(1 => array(
     'pdf_pages' => 'pma__pdf_pages',
     'savedsearches' => 'pma__savedsearches',
     'central_columns' => 'pma__central_columns',
+    'designer_settings' => 'pma__designer_settings',
+    'export_templates' => 'pma__export_templates',
     'MaxTableUiprefs' => 100)));
 $forms['Servers']['Server_tracking'] = array('Servers' => array(1 => array(
     'tracking_version_auto_create',
@@ -103,7 +100,6 @@ $forms['Features']['Import_export'] = array(
     'CompressOnFly');
 $forms['Features']['Security'] = array(
     'blowfish_secret',
-    'ForceSSL',
     'CheckConfigurationPermissions',
     'TrustedProxies',
     'AllowUserDropDatabase',
@@ -121,7 +117,6 @@ $forms['Features']['Page_titles'] = array(
     'TitleDatabase',
     'TitleServer');
 $forms['Features']['Warnings'] = array(
-    'ServerLibraryDifference_DisableWarning',
     'PmaNoRelation_DisableWarning',
     'SuhosinDisableWarning',
     'LoginCookieValidityDisableWarning');
@@ -144,11 +139,13 @@ $forms['Features']['Other_core_settings'] = array(
     'UseDbSearch',
     'VersionCheck',
     'SendErrorReports',
+    'ConsoleEnterExecutes',
     'ProxyUrl',
     'ProxyUser',
     'ProxyPass',
     'AllowThirdPartyFraming',
-    'ZeroConf'
+    'ZeroConf',
+    'DisableShortcutKeys'
 );
 $forms['Sql_queries']['Sql_queries'] = array(
     'ShowSQL',
@@ -158,7 +155,10 @@ $forms['Sql_queries']['Sql_queries'] = array(
     'IgnoreMultiSubmitErrors',
     'MaxCharactersInDisplayedSQL',
     'RetainQueryBox',
-    'CodemirrorEnable');
+    'CodemirrorEnable',
+    'LintEnable',
+    'EnableAutocompleteForTablesAndColumns',
+    'DefaultForeignKeyChecks');
 $forms['Sql_queries']['Sql_box'] = array('SQLQuery' => array(
     'Edit',
     'Explain',
@@ -172,12 +172,19 @@ $forms['Navi_panel']['Navi_panel'] = array(
     'NavigationLogoLinkWindow',
     'NavigationTreePointerEnable',
     'FirstLevelNavigationItems',
-    'MaxNavigationItems',
-    'NavigationTreeEnableGrouping',
-    'NavigationTreeEnableExpansion',
     'NavigationTreeDisplayItemFilterMinimum',
     'NumRecentTables',
     'NumFavoriteTables'
+);
+$forms['Navi_panel']['Navi_tree'] = array(
+    'MaxNavigationItems',
+    'NavigationTreeEnableGrouping',
+    'NavigationTreeEnableExpansion',
+    'NavigationTreeShowTables',
+    'NavigationTreeShowViews',
+    'NavigationTreeShowFunctions',
+    'NavigationTreeShowProcedures',
+    'NavigationTreeShowEvents'
 );
 $forms['Navi_panel']['Navi_servers'] = array(
     'NavigationDisplayServers',
@@ -197,11 +204,14 @@ $forms['Main_panel']['Startup'] = array(
     'ShowPhpInfo',
     'ShowChgPassword');
 $forms['Main_panel']['DbStructure'] = array(
+    'ShowDbStructureCharset',
+    'ShowDbStructureComment',
     'ShowDbStructureCreation',
     'ShowDbStructureLastUpdate',
     'ShowDbStructureLastCheck');
 $forms['Main_panel']['TableStructure'] = array(
-    'HideStructureActions');
+    'HideStructureActions',
+    'ShowColumnComments');
 $forms['Main_panel']['Browse'] = array(
     'TableNavigationLinksMode',
     'ShowAll',
@@ -214,6 +224,7 @@ $forms['Main_panel']['Browse'] = array(
     'RepeatCells',
     'LimitChars',
     'RowActionLinks',
+    'RowActionLinksWithoutUnique',
     'TablePrimaryKeyOrder',
     'RememberSorting',
     'RelationalDisplay');
@@ -280,6 +291,8 @@ $forms['Export']['Export_defaults'] = array('Export' => array(
         'format',
         'compression',
         'charset',
+        'lock_tables',
+        'as_separate_files',
         'asfile' => ':group',
             'onserver',
             'onserver_overwrite',
@@ -297,21 +310,20 @@ $forms['Export']['Sql'] = array('Export' => array(
     'sql_use_transaction',
     'sql_disable_fk',
     'sql_views_as_tables',
+    'sql_metadata',
     'sql_compatibility',
-    ':group:' . __('Database export options'),
-        'sql_drop_database',
-        'sql_structure_or_data',
-        ':group:end',
+    'sql_structure_or_data',
     ':group:' . __('Structure'),
+        'sql_drop_database',
+        'sql_create_database',
         'sql_drop_table',
         'sql_procedure_function',
-        'sql_create_table',
-        'sql_create_view',
-        'sql_create_trigger',
-        'sql_create_table_statements' => ':group',
+        'sql_create_table' => ':group',
             'sql_if_not_exists',
             'sql_auto_increment',
             ':group:end',
+        'sql_create_view',
+        'sql_create_trigger',
         'sql_backquotes',
         ':group:end',
     ':group:' . __('Data'),
@@ -381,4 +393,3 @@ $forms['Export']['Texy'] = array('Export' => array(
     ':group:' . __('Data'),
         'texytext_null',
         'texytext_columns'));
-?>

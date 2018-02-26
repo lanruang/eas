@@ -5,25 +5,27 @@
  *
  * @package PhpMyAdmin
  */
+use PMA\libraries\URL;
+use PMA\libraries\Response;
 
 /**
  * Get some core libraries
  */
 require_once 'libraries/common.inc.php';
 
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
 $scripts->addFile('tbl_structure.js');
 
 // Check parameters
-PMA_Util::checkParameters(array('db', 'table'));
+PMA\libraries\Util::checkParameters(array('db', 'table'));
 
 
 /**
  * Defines the url to return to in case of error in a sql statement
  */
-$err_url = 'tbl_sql.php' . PMA_URL_getCommon(
+$err_url = 'tbl_sql.php' . URL::getCommon(
     array(
         'db' => $db, 'table' => $table
     )
@@ -42,10 +44,13 @@ if (isset($_REQUEST['submit_num_fields'])) {
     if (isset($_REQUEST['orig_field_where'])) {
         $_REQUEST['field_where'] = $_REQUEST['orig_field_where'];
     }
-    $num_fields = $_REQUEST['orig_num_fields'] + $_REQUEST['added_fields'];
+    $num_fields = min(
+        intval($_REQUEST['orig_num_fields']) + intval($_REQUEST['added_fields']),
+        4096
+    );
     $regenerate = true;
 } elseif (isset($_REQUEST['num_fields']) && intval($_REQUEST['num_fields']) > 0) {
-    $num_fields = (int) $_REQUEST['num_fields'];
+    $num_fields = min(4096, intval($_REQUEST['num_fields']));
 } else {
     $num_fields = 1;
 }
@@ -68,11 +73,9 @@ if (isset($_REQUEST['do_save_data'])) {
             && is_array($_REQUEST['field_mimetype'])
             && $cfg['BrowseMIME']
         ) {
-            /** @var PMA_String $pmaString */
-            $pmaString = $GLOBALS['PMA_String'];
             foreach ($_REQUEST['field_mimetype'] as $fieldindex => $mimetype) {
                 if (isset($_REQUEST['field_name'][$fieldindex])
-                    && /*overload*/mb_strlen($_REQUEST['field_name'][$fieldindex])
+                    && strlen($_REQUEST['field_name'][$fieldindex]) > 0
                 ) {
                     PMA_setMIME(
                         $db, $table,
@@ -88,18 +91,25 @@ if (isset($_REQUEST['do_save_data'])) {
         }
 
         // Go back to the structure sub-page
-        $message = PMA_Message::success(
+        $message = PMA\libraries\Message::success(
             __('Table %1$s has been altered successfully.')
         );
         $message->addParam($table);
         $response->addJSON(
-            'message', PMA_Util::getMessage($message, $sql_query, 'success')
+            'message',
+            PMA\libraries\Util::getMessage($message, $sql_query, 'success')
         );
         exit;
     } else {
-        $error_message_html = PMA_Util::mysqlDie('', '', false, $err_url, false);
+        $error_message_html = PMA\libraries\Util::mysqlDie(
+            '',
+            '',
+            false,
+            $err_url,
+            false
+        );
         $response->addHTML($error_message_html);
-        $response->isSuccess(false);
+        $response->setRequestStatus(false);
         exit;
     }
 } // end do alter table
@@ -109,7 +119,7 @@ if (isset($_REQUEST['do_save_data'])) {
  */
 if ($abort == false) {
     /**
-     * Gets tables informations
+     * Gets tables information
      */
     include_once 'libraries/tbl_common.inc.php';
     include_once 'libraries/tbl_info.inc.php';
@@ -121,4 +131,3 @@ if ($abort == false) {
     $action = 'tbl_addfield.php';
     include_once 'libraries/tbl_columns_definition_form.inc.php';
 }
-?>
